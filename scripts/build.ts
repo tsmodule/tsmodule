@@ -15,10 +15,19 @@ try {
 		}
 	};
 
+	/**
+	 * Build this file as a bootstrap script.
+	 */
+	await build({
+		...shared,
+		entryPoints: ['scripts/build.ts'],
+		outfile: 'scripts/bootstrap.mjs'
+	});
+
 	await build({
 		...shared,
 		entryPoints: ['src/utils.ts'],
-		outfile: './dist/utils.js',
+		outfile: 'dist/utils.mjs',
 	});
 
 	await build({
@@ -27,11 +36,11 @@ try {
 		outfile: pkg.bin,
 	});
 
-	await build({
-		...shared,
-		entryPoints: ['src/require.ts'],
-		outfile: pkg.exports['.'].require,
-	});
+	// await build({
+	// 	...shared,
+	// 	entryPoints: ['src/require.ts'],
+	// 	outfile: pkg.exports['.'].require,
+	// });
 
 	await build({
 		...shared,

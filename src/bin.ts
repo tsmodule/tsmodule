@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+
+import { URL, fileURLToPath } from 'url'
+import { spawn } from 'child_process'
+
 let argv = process.argv.slice(2);
 
 // note: injected @ build
@@ -27,6 +31,15 @@ if (argv.includes('-v') || argv.includes('--version')) {
 	process.exit(0);
 }
 
-let { URL, pathToFileURL } = require('url') as typeof import('url');
-argv = ['--loader', new URL('loader.mjs', pathToFileURL(__filename)).href, ...argv];
-require('child_process').spawn('node', argv, { stdio: 'inherit' }).on('exit', process.exit);
+const loaderURL = new URL('loader.mjs', import.meta.url);
+argv = [
+	'--loader',
+	fileURLToPath(loaderURL.href),
+	...argv
+];
+
+spawn(
+	'node',
+	argv,
+	{ stdio: 'inherit' }
+).on('exit', process.exit);

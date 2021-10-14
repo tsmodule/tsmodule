@@ -2,8 +2,9 @@
   "compilerOptions": {
     "strict": true,
     "allowJs": true,
-    "lib": ["es2019"],
-    "target": "es2019",
+    "lib": ["esnext"],
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
     "strictBindCallApply": true,
     "allowSyntheticDefaultImports": false,
@@ -14,7 +15,6 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "alwaysStrict": true,
-    "module": "esnext",
     "checkJs": true,
     "noEmit": true,
     "jsx": "react",
@@ -24,7 +24,7 @@
   },
   "include": [
     "src",
-    "build",
+    "scripts",
     "test",
   ],
   "exclude": [

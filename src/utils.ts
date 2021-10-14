@@ -1,11 +1,11 @@
-const { resolve } = require('path');
-const { existsSync } = require('fs');
+import { existsSync } from 'fs';
+import { resolve } from 'path';
 
 import type { Format } from 'esbuild';
 import type * as tsm from 'tsm/config';
 import type { Defaults } from './utils.d';
 
-exports.$defaults = function (format: Format): Defaults {
+export const $defaults = function (format: Format): Defaults {
 	let { FORCE_COLOR, NO_COLOR, NODE_DISABLE_COLORS, TERM } = process.env;
 
 	let argv = process.argv.slice(2);
@@ -35,7 +35,7 @@ exports.$defaults = function (format: Format): Defaults {
 	};
 };
 
-exports.$finalize = function (env: Defaults, custom?: tsm.ConfigFile): tsm.Config {
+export const $finalize = function (env: Defaults, custom?: tsm.ConfigFile): tsm.Config {
 	let base = env.options;
 	if (custom && custom.common) {
 		Object.assign(base, custom.common!);

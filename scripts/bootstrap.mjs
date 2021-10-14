@@ -1,0 +1,2 @@
+#!/usr/bin/env tsm
+import{build as i}from"esbuild";import{readFile as r}from"fs/promises";const s=JSON.parse(await r("package.json","utf-8"));try{let t={logLevel:"info",charset:"utf8",minify:!0,define:{VERSION:JSON.stringify(s.version)}};await i({...t,entryPoints:["scripts/build.ts"],outfile:"scripts/bootstrap.mjs"}),await i({...t,entryPoints:["src/utils.ts"],outfile:"dist/utils.mjs"}),await i({...t,entryPoints:["src/bin.ts"],outfile:s.bin}),await i({...t,entryPoints:["src/loader.ts"],outfile:s.exports["."].import})}catch(t){console.error(t.stack||t),process.exitCode=1}
