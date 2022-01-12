@@ -5,45 +5,72 @@ import { readFile } from 'fs/promises';
 
 const pkg = JSON.parse(await readFile('package.json', 'utf-8'));
 
-try {
-	let shared: BuildOptions = {
-		logLevel: 'info',
-		charset: 'utf8',
-		minify: true,
-		define: {
-			VERSION: JSON.stringify(pkg.version)
-		}
-	};
+const defaultOptions: BuildOptions = {
+	logLevel: 'info',
+	charset: 'utf8',
+	minify: true,
+	define: {
+		VERSION: JSON.stringify(pkg.version)
+	}
+};
 
+const buildCjsAndEsm = async (entry: string, outDir: string) => {
+	const options: BuildOptions = {
+		...defaultOptions,
+		entryPoints: [entry],
+		outdir: outDir,
+	};
+	/**
+	 * Build ESM.
+	 */
+	await build(options);
+	/**
+	 * Build CJS.
+	 */
+	await build({
+		...options,
+		format: 'cjs',
+		outExtension: {
+			'.js': '.cjs'
+		}
+	});
+}
+
+try {
 	/**
 	 * Build this file as a bootstrap script.
 	 */
+
 	await build({
-		...shared,
+		...defaultOptions,
 		entryPoints: ['scripts/build.ts'],
-		outfile: 'scripts/bootstrap.mjs'
+		outfile: 'scripts/bootstrap.js'
 	});
 
-	await build({
-		...shared,
-		entryPoints: ['src/utils.ts'],
-		outfile: 'dist/utils.mjs',
-	});
+	/**
+	 * CJS + ESM versions of utils.
+	 */
+
+	await buildCjsAndEsm('src/utils.ts', 'dist/');
+
+	/**
+	 * Build package.json entry points.
+	 */
 
 	await build({
-		...shared,
+		...defaultOptions,
 		entryPoints: ['src/bin.ts'],
 		outfile: pkg.bin,
 	});
 
-	// await build({
-	// 	...shared,
-	// 	entryPoints: ['src/require.ts'],
-	// 	outfile: pkg.exports['.'].require,
-	// });
+	await build({
+		...defaultOptions,
+		entryPoints: ['src/require.ts'],
+		outfile: pkg.exports['.'].require,
+	});
 
 	await build({
-		...shared,
+		...defaultOptions,
 		entryPoints: ['src/loader.ts'],
 		outfile: pkg.exports['.'].import,
 	});

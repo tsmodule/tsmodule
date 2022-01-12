@@ -7,7 +7,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strictBindCallApply": true,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strictFunctionTypes": true,
     "resolveJsonModule": true,

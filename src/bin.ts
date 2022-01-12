@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsm
 
 import { URL, fileURLToPath } from 'url'
 import { spawn } from 'child_process'
@@ -31,7 +31,7 @@ if (argv.includes('-v') || argv.includes('--version')) {
 	process.exit(0);
 }
 
-const loaderURL = new URL('loader.mjs', import.meta.url);
+const loaderURL = new URL('loader.js', import.meta.url);
 argv = [
 	'--loader',
 	fileURLToPath(loaderURL.href),

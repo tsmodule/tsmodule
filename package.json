@@ -5,7 +5,7 @@
   "repository": "lukeed/tsm",
   "description": "TypeScript Module Loader",
   "license": "MIT",
-  "bin": "dist/bin.mjs",
+  "bin": "dist/bin.js",
   "author": {
     "name": "Luke Edwards",
     "email": "luke.edwards05@gmail.com",
@@ -13,23 +13,21 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/loader.mjs"
+      "import": "./dist/loader.js",
+      "require": "./dist/require.cjs"
     },
     "./config": "./config/index.js",
     "./package.json": "./package.json"
   },
   "files": [
-    "bin.js",
-    "utils.js",
-    "require.js",
-    "loader.mjs",
+    "dist/",
     "config"
   ],
   "engines": {
     "node": ">=12"
   },
   "scripts": {
-    "bootstrap": "node scripts/bootstrap.mjs",
+    "bootstrap": "node scripts/bootstrap.js",
     "build": "./scripts/build.ts",
     "types": "tsc"
   },

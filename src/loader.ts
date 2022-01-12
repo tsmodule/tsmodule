@@ -42,12 +42,12 @@ async function load(): Promise<Config> {
 	return (tsm as TSM).$finalize(env, mod);
 }
 
-const EXTN = /\.\w+(?=\?|$)/;
+const extension = /\.\w+(?=\?|$)/;
 const isTS = /\.[mc]?tsx?(?=\?|$)/;
 const isJS = /\.([mc])?js$/;
 async function toOptions(uri: string): Promise<Options|void> {
 	config = config || await load();
-	let [extn] = EXTN.exec(uri) || [];
+	let [extn] = extension.exec(uri) || [];
 	return config[extn as `.${string}`];
 }
 
@@ -66,7 +66,7 @@ export const resolve: Resolve = async function (ident, context, fallback) {
 	let output = new URL(ident, context.parentURL || root);
 
 	// source ident includes extension
-	if (match = EXTN.exec(output.href)) {
+	if (match = extension.exec(output.href)) {
 		ext = match[0] as Extension;
 		if (!context.parentURL || isTS.test(ext)) {
 			return { url: output.href };
