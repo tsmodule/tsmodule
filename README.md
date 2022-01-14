@@ -19,7 +19,7 @@
 
 <div align="center">
   <h1><code>@tsmodule/tsm</code></h1>
-  <h2>TypeScript Module Loader</h2>
+  <h3>TypeScript Module Loader</h3>
 </div>
 
 ## Features
