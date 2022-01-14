@@ -88,7 +88,7 @@ resolve conditional exports.
 }
 ```
 
-And package.json similar to:
+By default, package.json will be configured like so:
 
 ```json
 {
