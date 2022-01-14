@@ -110,6 +110,8 @@ export const rewriteImports: () => RollupPlugin = () => {
           importToReplace = getRelativePath(baseDir, importedChunk);
         }
 
+        debugLog({ importToReplace });
+
         /**
          * Read the matched import/require statements and replace them.
          */
@@ -129,13 +131,14 @@ export const rewriteImports: () => RollupPlugin = () => {
               },
               async (url) => await import(url),
             );
+            debugLog({ resolvedImport });
             /**
              * Rewrite import identifiers for seamless CJS support. Ignore dynamic
              * imports.
              */
             if (resolvedImport.url) {
               const unixLikePath = resolvedImport.url.replace("file://", "");
-              debugLog({ parentURL, unixLikePath });
+              debugLog({ importedChunk, parentURL, unixLikePath });
               const rewrittenImport = rewriteImport(
                 importStatement,
                 importToReplace,

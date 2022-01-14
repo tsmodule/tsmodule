@@ -1,10 +1,10 @@
 import { existsSync, promises as fs } from "fs";
-import { fileURLToPath, URL } from "url";
+import { fileURLToPath, pathToFileURL, URL } from "url";
 import { transform } from "esbuild";
 
 import type { Config, Options } from "../config/types";
 import type { ModuleFormat, Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
-import { extname, join } from "path";
+import { extname, resolve as resolvePath } from "path";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
@@ -12,6 +12,7 @@ import { extname, join } from "path";
  * internal source (for bootstrap code path).
  */
 import { finalize, initialize } from "../config/index.js";
+import { debugLog } from "../utils/log.js";
 
 let config: Config;
 const isTS = /\.[mc]?tsx?(?=\?|$)/;
@@ -23,7 +24,7 @@ const getConfig = async (): Promise<Config> => {
   } else {
     const env = initialize();
     if (env.file) {
-      const loadedModule = await import("file:///" + env.file);
+      const loadedModule = await import("file://" + env.file);
       return finalize(env, loadedModule.default || loadedModule);
     }
   
@@ -97,14 +98,20 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
    * Ignore "prefix:" and non-relative identifiers.
    */
   if (/^\w+\:?/.test(specifier)) {
+    debugLog("Ignoring prefix identifier", specifier);
     return defaultResolve(specifier, context, defaultResolve);
   }
 
   const root = new URL("file://" + process.cwd());
   const { parentURL } = context;
-  const { href } = new URL(specifier, parentURL || root);
+  
+  const { href: importFileUrl } = new URL(specifier, parentURL || root);
+  // const { href: importFileUrl } = importURL;
+
   const parentExtension = extname(parentURL ?? "").toLowerCase();
-  const specifierExtension = extname(href).toLowerCase();
+  const specifierExtension = extname(importFileUrl).toLowerCase();
+
+  debugLog({ importFileUrl, parentExtension, specifierExtension });
 
   /**
    * Resolve TypeScript's bare import syntax.
@@ -113,32 +120,38 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
     /**
      * Check for valid file extensions first.
      */
-    const url = await checkExtensions(href);
+    const url = await checkExtensions(importFileUrl);
     if (url) {
+      debugLog("Found file", url);
       return { url };
     }
     /**
      * Then, index resolution.
      */
-    const indexUrl = await checkExtensions(join(href, "index"));
+    const indexUrl = await checkExtensions(
+      pathToFileURL(resolvePath(fileURLToPath(importFileUrl), "index")).href
+    );
     if (indexUrl) {
+      debugLog({ indexUrl });
       return { url: indexUrl };
     }
   } else {
-    const unresolvedSpecifier = href.substring(0, href.lastIndexOf(specifierExtension));
+    const unresolvedSpecifier = importFileUrl.substring(0, importFileUrl.lastIndexOf(specifierExtension));
     /**
      * JS being imported by a TS file.
      */
     if (isJS.test(specifierExtension) && isTS.test(parentExtension)) {
       const tsMatch = await checkTsExtensions(unresolvedSpecifier);
       if (tsMatch) {
+        debugLog(`Found JS import in TS. Resolving ${unresolvedSpecifier} -> ${tsMatch}`);
         return { url: tsMatch };
       }
     }
     /**
      * Resolve to the specifier if the file exists or there is no parent URL.
      */
-    if (fileExists(unresolvedSpecifier) || !context.parentURL) {
+    if (fileExists(unresolvedSpecifier)) {
+      debugLog("Found file at unresolved specifier", unresolvedSpecifier);
       return { url: unresolvedSpecifier };
     }
   }
