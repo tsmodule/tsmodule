@@ -7,7 +7,8 @@
 
 * Supports `node <file>` usage
 * Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage<sup>†</sup>
-* Supports [`--require` hook](https://nodejs.org/api/cli.html#cli_r_require_module) usage
+* Supports [`--require`
+  hook](https://nodejs.org/api/cli.html#cli_r_require_module) usage
 
 > <sup>†</sup> The ESM Loader API is still **experimental** and will change in the future.
 
@@ -37,6 +38,9 @@ The `tsmodule` CLI can be used to build projects from TS to ESM:
 ```shell
 tsmodule build
 ```
+
+The output is emitted in `dist/` and will contain only ESM-compliant import
+specifiers.
 
 ### Advanced
 
