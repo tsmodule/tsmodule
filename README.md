@@ -64,6 +64,8 @@ tsmodule build
 ```sh
 # use as `node` replacement
 $ tsm server.ts
+# or, equivalently
+$ tsmodule server.ts
 
 # forwards any `node` ENV or flags
 $ NO_COLOR=1 tsm server.ts --trace-warnings
