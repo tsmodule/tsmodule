@@ -99,8 +99,4 @@ module subpaths.
 
 ## License
 
-MIT
-
-© [C. Lewis](https://ctjlewis.com)
-
-© [Luke Edwards](https://lukeed.com)
+MIT © [C. Lewis](https://ctjlewis.com), [Luke Edwards](https://lukeed.com)
