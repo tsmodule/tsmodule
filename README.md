@@ -23,7 +23,9 @@ yarn add @tsmodule/tsm
 
 ### Executing TypeScript directly
 
-If this file is executable, it can be run directly with `./index.ts`.
+If this file is executable, it can be run directly with `./index.ts`. The
+shebang line tells Node to use the tsm loader to parse the TypeScript source and
+resolve imports.
 
 ```ts
 #!/usr/bin/env tsm
@@ -34,14 +36,14 @@ console.log(test);
 
 ### Building TypeScript modules to ESM
 
-The `tsmodule` CLI can be used to build projects from TS to ESM:
+The `tsmodule` CLI can be used to build projects from TypeScript to ESM:
 
 ```shell
 tsmodule build
 ```
 
 The output is emitted in `dist/` and will contain only ESM-compliant import
-specifiers.
+specifiers as resolved by the tsm loader.
 
 ### Advanced
 
