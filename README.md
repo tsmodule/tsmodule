@@ -49,7 +49,7 @@ const test: string = "hello world"
 console.log(test);
 ```
 
-### Building ES modules from TS
+### Building TypeScript modules to ESM
 
 The `tsmodule` CLI can be used to build projects from TS to ESM:
 
