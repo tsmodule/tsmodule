@@ -1,6 +1,6 @@
 <div align="center">
   <h1><code>@tsmodule/tsm</code></h1>
-  <h3>TypeScript Module Loader</h3>
+  <h3>TypeScript Module Loader and Compiler</h3>
 </div>
 
 ## Features
