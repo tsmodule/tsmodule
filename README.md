@@ -72,19 +72,33 @@ allows ES module resolution to natively import from specifiers like `./thing ->
 ahead-of-time and turn transpiled TypeScript (which often contains incomplete
 specifiers like `./a`) into spec-compliant ESM (`./a -> ./a.js`).
 
-### Module exports
+### Module configuration
 
 All packages built with `tsmodule build` are ES modules. They should have
 `"type": "module"` set in package.json and can use the `exports` field to
-resolve conditional exports.  By default, exports will be set up as follows:
+resolve conditional exports.
+
+By default, tsconfig.json will be set up as follows:
 
 ```json
 {
+  "rootDir": "src/",
+  "outDir": "dist/",
+  // ...
+}
+```
+
+And package.json similar to:
+
+```json
+{
+  "files": ["dist/"],
   "exports": {
     "./package.json": "./package.json",
     "./": "./dist/index.js",
     "./*": "./dist/*/index.js"
-  }
+  },
+  // ...
 }
 ```
 
