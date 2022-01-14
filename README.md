@@ -64,6 +64,16 @@ $ node -r tsm server.tsx
 $ node --loader tsm main.jsx
 ```
 
+## How it works
+
+`tsm` is effectively a proxy for `node --loader tsm [...]`. The tsm loader
+allows ES module resolution to natively import from specifiers like `./thing ->
+./thing.ts`, and uses esbuild to load TypeScript on-the-fly. 
+
+`tsmodule build` uses this same loader to resolve import specifiers statically
+ahead-of-time and turn transpiled TypeScript (which often contains incomplete
+specifiers like `./a`) into spec-compliant ESM (`./a -> ./a.js`).
+
 ## License
 
 MIT
