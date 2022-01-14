@@ -1,6 +1,6 @@
 # Usage
 
-There are a number of ways you can use tsmodule in your project:
+There are a number of ways you can use tsm in your project:
 
 1. As a `node` CLI replacement
 2. As a CommonJS
@@ -14,19 +14,19 @@ There are a number of ways you can use tsmodule in your project:
 
 ```sh
 # run a file
-$tsmodule server.tsx
+$ tsm server.tsx
 
 # run a file w/ Node flags
 # NOTE: flags are forwarded to `node` directly
-$tsmodule main.ts --trace-warnings
+$ tsm main.ts --trace-warnings
 
 # run a file w/ ENV variables
 # NOTE: any ENV is forwarded to `node` directly
-$ NO_COLOR=1 PORT=8080tsmodule main.ts
+$ NO_COLOR=1 PORT=8080 tsm main.ts
 
-# use npx/pnpx with tsmodule
-$ pnpxtsmodule server.tsx
-$ npxtsmodule server.tsx
+# use npx/pnpx with tsm
+$ pnpx tsm server.tsx
+$ npx tsm server.tsx
 ```
 
 ## Require Hook
@@ -42,18 +42,18 @@ support a `-r/--require` flag.
 > discouraged; however, for tools like `tsm`, it's still valuable.
 
 A [configuration file](/docs/configuration.md#config-file) is still auto-loaded
-(if exists) when using `--require tsmodule` or `-r tsmodule`.
+(if exists) when using `--require tsm` or `-r tsm`.
 
 ***Examples***
 
 ```sh
 # node with require hook(s)
-$ node --require tsmodule server.tsx
-$ node -r dotenv/register -rtsmodule server.tsx
+$ node --require tsm server.tsx
+$ node -r dotenv/register -r tsm server.tsx
 
 # external tool with require hook support
-$ uvu -r tsmodule packages tests
-$ uvu --require tsmodule
+$ uvu -r tsm packages tests
+$ uvu --require tsm
 ```
 
 ## Loader Hook
@@ -62,28 +62,27 @@ The `--loader` hook is ESM's version of the `--require` hook. A loader is
 **only** applied to file(s) loaded through `import` or `import()` – anything
 loaded through `require` is ignored by the loader.
 
-> **Important:** ESM loaders are **experimental** and _will be_ redesigned.
-> tsmodule will conform to new design(s) as the feature stabilizes.
+> **Important:** ESM loaders are **experimental** and _will be_ redesigned. tsm
+> will conform to new design(s) as the feature stabilizes.
 
-You may use `--loader tsmodule` or `--experimental-loader tsmodule` anywhere
-that supports ESM loaders. At time of writing, this seems to be limited to
-`node` itself.
+You may use `--loader tsm` or `--experimental-loader tsm` anywhere that supports
+ESM loaders. At time of writing, this seems to be limited to `node` itself.
 
 A [configuration file](/docs/configuration.md#config-file) is still auto-loaded
-(if exists) when using `--loader tsmodule`.
+(if exists) when using `--loader tsm`.
 
 ***Examples***
 
 ```sh
-# run node with tsmodule loader
-$ node --loader tsmodule server.tsx
-$ node --experimental-loader tsmodule main.ts
+# run node with tsm loader
+$ node --loader tsm server.tsx
+$ node --experimental-loader tsm main.ts
 ```
 
 ## Shell / Shebang
 
 If you have `tsm` installed globally on your system, you may write shell scripts
-with tsmodule as the interpreter. Here's an example:
+with tsm as the interpreter. Here's an example:
 
 ```shell
 #!/usr/bin/env tsm
@@ -110,24 +109,23 @@ export function greet(name: string) {
 
 Here, the main `example.ts` file imports/references functionality defined in the
 two other files. Additionally, the first line within `example.ts` contains a
-shebang (`#!`) followed by `/usr/bin/env tsmodule`, which tells the shell to use
-the `tsm` binary within the user's environment to process this file.
-Effectively, this means that the shebang is a shortcut for running this in your
-terminal:
+shebang (`#!`) followed by `/usr/bin/env tsm`, which tells the shell to use the
+`tsm` binary within the user's environment to process this file. Effectively,
+this means that the shebang is a shortcut for running this in your terminal:
 
 ```sh
-tsmodule example.ts
+tsm example.ts
 ```
 
 However, by including the shebang, you are embedding the instructions for _how_
 this file should be executed. This also allows you to include additional CLI
 flags within the shebang, meaning you don't have to redefine or remember them
 later on. For example, you can forward the `--trace-warnings` argument through
-tsmodule, which will always be there whenever the `example.ts` script executes.
+tsm, which will always be there whenever the `example.ts` script executes.
 
 ```diff
 --#!/usr/bin/env tsm
-++#!/usr/bin/envtsmodule --trace-warnings
+++#!/usr/bin/env tsm --trace-warnings
 ```
 
 Now, in order to actually execute the `example.ts` script directly, you have to
