@@ -5,6 +5,7 @@
 
 ## Features
 
+* Fast (6ms to build this tool)
 * Supports `node <file>` usage
 * Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage<sup>†</sup>
 * Supports [`--require`
