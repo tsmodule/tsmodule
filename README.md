@@ -38,7 +38,7 @@ yarn add @tsmodule/tsm
 
 ## Usage
 
-### Executing TS files directly
+### Executing TypeScript directly
 
 If this file is executable, it can be run directly with `./index.ts`.
 
