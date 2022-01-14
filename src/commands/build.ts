@@ -135,6 +135,7 @@ export const rewriteImports: () => RollupPlugin = () => {
              */
             if (resolvedImport.url) {
               const unixLikePath = resolvedImport.url.replace("file://", "");
+              debugLog({ parentURL, unixLikePath });
               const rewrittenImport = rewriteImport(
                 importStatement,
                 importToReplace,

@@ -100,7 +100,7 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
     return defaultResolve(specifier, context, defaultResolve);
   }
 
-  const root = new URL("file:///" + process.cwd());
+  const root = new URL("file://" + process.cwd());
   const { parentURL } = context;
   const { href } = new URL(specifier, parentURL || root);
   const parentExtension = extname(parentURL ?? "").toLowerCase();

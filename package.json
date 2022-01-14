@@ -1,13 +1,13 @@
 {
-  "name": "tsm",
+  "name": "@tsmodule/tsm",
   "type": "module",
-  "version": "3.0.0",
+  "version": "1.0.0",
   "repository": "ctjlewis/tsm",
   "description": "TypeScript Module Loader",
   "license": "MIT",
   "bin": {
     "tsm": "./dist/runtime/bin.js",
-    "tsm-cli": "dist/index.js"
+    "tsmodule": "dist/index.js"
   },
   "types": "dist/types/index.d.ts",
   "contributors": [

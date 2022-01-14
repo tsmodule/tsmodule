@@ -1,4 +1,4 @@
-<div align="center">
+<!-- <div align="center">
   <img src="logo.png" alt="tsm" width="200" />
 </div>
 
@@ -15,30 +15,49 @@
   <a href="https://packagephobia.now.sh/result?p=tsm">
     <img src="https://badgen.net/packagephobia/publish/tsm" alt="publish size" />
   </a>
-</div>
+</div> -->
 
-<div align="center">TypeScript Module Loader</div>
+<div align="center">
+  <h1><code>@tsmodule/tsm</code></h1>
+  <h2>TypeScript Module Loader</h2>
+</div>
 
 ## Features
 
 * Supports `node <file>` usage
 * Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage<sup>†</sup>
 * Supports [`--require` hook](https://nodejs.org/api/cli.html#cli_r_require_module) usage
-* Optional [configuration](/docs/configuration.md) file for per-extension customization
 
 > <sup>†</sup> The ESM Loader API is still **experimental** and will change in the future.
 
 ## Install
 
-```sh
-# install as project dependency
-$ npm install --save-dev tsm
-
-# or install globally
-$ npm install --global tsm
+```shell
+yarn add @tsmodule/tsm
 ```
 
 ## Usage
+
+### Executing TS files directly
+
+If this file is executable, it can be run directly with `./index.ts`.
+
+```ts
+#!/usr/bin/env tsm
+
+const test: string = "hello world"
+console.log(test);
+```
+
+### Building ESM modules from TS
+
+The `tsmodule` CLI can be used to build projects from TS to ESM:
+
+```shell
+tsmodule build
+```
+
+### Advanced
 
 > **Note:** Refer to [`/docs/usage.md`](/docs/usage.md) for more information.
 
@@ -59,4 +78,7 @@ $ node --loader tsm main.jsx
 
 ## License
 
-MIT © [Luke Edwards](https://lukeed.com)
+MIT
+
+© [C. Lewis](https://ctjlewis.com)
+© [Luke Edwards](https://lukeed.com)
