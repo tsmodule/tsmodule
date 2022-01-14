@@ -176,24 +176,34 @@ export const build = async (production = false) => {
     const pkgJsonFile = resolvePath(cwd, "package.json");
     const pkgJson = await readFile(pkgJsonFile, "utf-8");
     const shared: BuildOptions = {
+      outdir: "dist",
+      assetNames: "[name].js",
       logLevel: production ? "info" : "debug",
       charset: "utf8",
       target: "es2021",
       minify: production,
       define: {
         PACKAGE_JSON: pkgJson,
-      }
+      },
     };
 
     const distDir = resolvePath(cwd, "dist");
     await rm(distDir, { force: true, recursive: true });
           
-    const tsFiles = await glob("src/**/*.{ts,tsx}", { cwd });
+    const tsFiles = await glob("src/**/*.ts", { cwd });
     await esbuild({
       ...shared,
       entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
-      outdir: "dist",
-      assetNames: "[name].js",
+    });
+
+    const tsxFiles = await glob("src/**/*.tsx", { cwd });
+    await esbuild({
+      ...shared,
+      entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
+      jsxFactory: "_jsx",
+      banner: {
+        js: "import {jsx as _jsx} from 'react/jsx-runtime.js';\n",
+      },
     });
 
     await postBuild();

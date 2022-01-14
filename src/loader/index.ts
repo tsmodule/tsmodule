@@ -54,11 +54,18 @@ const fileExistsAny = (fileUrls: string[]): string | void => {
   }
 };
 
-const checkTsExtensions = async (specifier: string) => {
-  const config = await getConfig();
+const POSSIBLE_EXTENSIONS = [
+  ".mts",
+  ".jsx",
+  ".tsx",
+  ".cts",
+  ".ts",
+  ".json",
+];
+
+const checkTsExtensions = (specifier: string) => {
   const possibleExtensions = 
-    Object
-      .keys(config)
+    POSSIBLE_EXTENSIONS
       .filter((extension) => extension.includes("ts"))
       .concat([".js"]);
 
@@ -69,11 +76,9 @@ const checkTsExtensions = async (specifier: string) => {
   );
 };
 
-const checkJsExtension = async (specifier: string) => {
-  const config = await getConfig();
+const checkJsExtension = (specifier: string) => {
   const possibleExtensions = 
-    Object
-      .keys(config)
+    POSSIBLE_EXTENSIONS
       .filter((extension) => extension.includes("js"))
       .concat([".js"]);
 
@@ -85,10 +90,10 @@ const checkJsExtension = async (specifier: string) => {
 };
 
 const checkExtensions = async (specifier: string) => {
-  const jsMatch = await checkJsExtension(specifier);
+  const jsMatch = checkJsExtension(specifier);
   if (jsMatch) return jsMatch;
 
-  const tsMatch = await checkTsExtensions(specifier);
+  const tsMatch = checkTsExtensions(specifier);
   if (tsMatch) return tsMatch;
 };
 

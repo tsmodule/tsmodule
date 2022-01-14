@@ -33,10 +33,10 @@ export function initialize(): Defaults {
 
 export const finalize = function (env: Defaults, custom?: ConfigFile): Config {
   const base = env.options;
-  if (custom && custom.common) {
-    Object.assign(base, custom.common);
-    delete custom.common; // loop below
-  }
+  // if (custom && custom.common) {
+  //   Object.assign(base, custom.common);
+  //   delete custom.common; // loop below
+  // }
 
   const config: Config = {
     ".mts": { ...base, loader: "ts" },
@@ -47,21 +47,21 @@ export const finalize = function (env: Defaults, custom?: ConfigFile): Config {
     ".json": { ...base, loader: "json" },
   };
 
-  let extn: Extension;
-  if (custom && custom.loaders) {
-    for (extn in custom.loaders) config[extn] = {
-      ...base,
-      loader: custom.loaders[extn]
-    };
-  } else if (custom) {
-    const conf = (custom.config || custom) as Config;
-    for (extn in conf) {
-      config[extn] = {
-        ...base,
-        ...conf[extn]
-      };
-    }
-  }
+  // let extn: Extension;
+  // if (custom && custom.loaders) {
+  //   for (extn in custom.loaders) config[extn] = {
+  //     ...base,
+  //     loader: custom.loaders[extn]
+  //   };
+  // } else if (custom) {
+  //   const conf = (custom.config || custom) as Config;
+  //   for (extn in conf) {
+  //     config[extn] = {
+  //       ...base,
+  //       ...conf[extn]
+  //     };
+  //   }
+  // }
 
   return config;
 };
