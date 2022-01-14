@@ -1,22 +1,3 @@
-<!-- <div align="center">
-  <img src="logo.png" alt="tsm" width="200" />
-</div>
-
-<div align="center">
-  <a href="https://npmjs.org/package/tsm">
-    <img src="https://badgen.net/npm/v/tsm" alt="version" />
-  </a>
-  <a href="https://github.com/lukeed/tsm/actions">
-    <img src="https://github.com/lukeed/tsm/workflows/CI/badge.svg" alt="CI" />
-  </a>
-  <a href="https://npmjs.org/package/tsm">
-    <img src="https://badgen.net/npm/dm/tsm" alt="downloads" />
-  </a>
-  <a href="https://packagephobia.now.sh/result?p=tsm">
-    <img src="https://badgen.net/packagephobia/publish/tsm" alt="publish size" />
-  </a>
-</div> -->
-
 <div align="center">
   <h1><code>@tsmodule/tsm</code></h1>
   <h3>TypeScript Module Loader</h3>
