@@ -78,7 +78,7 @@ All packages built with `tsmodule build` are ES modules. They should have
 `"type": "module"` set in package.json and can use the `exports` field to
 resolve conditional exports.
 
-By default, tsconfig.json will be set up as follows:
+`tsmodule build` forces the following tsconfig.json values:
 
 ```json
 {
