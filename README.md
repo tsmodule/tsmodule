@@ -7,11 +7,7 @@
 
 * Fast (6ms to build this tool, minified and DCE'd)
 * Supports `node <file>` usage
-* Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage<sup>†</sup>
-* Supports [`--require`
-  hook](https://nodejs.org/api/cli.html#cli_r_require_module) usage
-
-> <sup>†</sup> The ESM Loader API is still **experimental** and will change in the future.
+* Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage
 
 ## Install
 
