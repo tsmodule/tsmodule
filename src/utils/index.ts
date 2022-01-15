@@ -89,7 +89,7 @@ export const checkJsExtension = (specifier: string) => {
   );
 };
 
-export const checkExtensions = async (specifier: string) => {
+export const checkExtensions = (specifier: string) => {
   const jsMatch = checkJsExtension(specifier);
   if (jsMatch) return jsMatch;
 
