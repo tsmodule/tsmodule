@@ -98,7 +98,6 @@ const checkExtensions = async (specifier: string) => {
 };
 
 export const resolve: ModuleResolver = async (specifier, context, defaultResolve) => {
-  // console.log({ specifier, context });
   /**
    * Ignore "prefix:" and non-relative identifiers.
    */
@@ -107,12 +106,10 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
     return defaultResolve(specifier, context, defaultResolve);
   }
 
-  const root = new URL("file://" + process.cwd());
+  const root = pathToFileURL(process.cwd()).href;
   const { parentURL } = context;
   
   const { href: importFileUrl } = new URL(specifier, parentURL || root);
-  // const { href: importFileUrl } = importURL;
-
   const parentExtension = extname(parentURL ?? "").toLowerCase();
   const specifierExtension = extname(importFileUrl).toLowerCase();
 
@@ -168,6 +165,7 @@ export const load: ModuleLoader = async (url, context, defaultLoad) => {
   // note: inline `getFormat`
   const options = await getOptions(url);
   if (!options) {
+    debugLog(`No options found for ${url}, using default loader.`);
     return defaultLoad(url, context, defaultLoad);
   }
 

@@ -1,5 +1,5 @@
 import { Plugin as RollupPlugin, rollup } from "rollup";
-import { dirname, extname, isAbsolute, relative, resolve as resolvePath } from "path";
+import { dirname, extname, isAbsolute, relative, resolve as resolvePath, sep } from "path";
 import { build as esbuild, BuildOptions } from "esbuild";
 import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
@@ -85,10 +85,11 @@ export const rewriteImports: () => RollupPlugin = () => {
          */
         const input = chunk.facadeModuleId;
         if (!input) continue;
+        debugLog({ input });
         /**
          * Just a named module. Skip.
          */
-        if (!importedChunk.includes("/")) {
+        if (!importedChunk.includes(sep)) {
           debugLog(`- Skipping named module: ${importedChunk}`);
           continue;
         }
@@ -179,7 +180,6 @@ export const rewriteImports: () => RollupPlugin = () => {
     },
   };
 };
-
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
  * could mean many things, all of which is handled by the loader which will
@@ -197,6 +197,7 @@ export const build = async (production = false) => {
     const pkgJsonFile = resolvePath(cwd, "package.json");
     const pkgJson = await readFile(pkgJsonFile, "utf-8");
     const shared: BuildOptions = {
+      outbase: "src",
       outdir: "dist",
       assetNames: "[name].js",
       logLevel: production ? "info" : "debug",
