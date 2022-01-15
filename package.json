@@ -3,11 +3,10 @@
   "type": "module",
   "version": "1.1.0",
   "repository": "ctjlewis/tsm",
-  "description": "TypeScript Module Loader",
+  "description": "TypeScript Module loader and compiler",
   "license": "MIT",
   "bin": {
-    "tsm": "./dist/runtime/bin.js",
-    "tsmodule": "dist/index.js"
+    "tsm": "dist/index.js"
   },
   "types": "dist/types/index.d.ts",
   "contributors": [

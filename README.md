@@ -9,19 +9,23 @@
 * Supports `node <file>` usage
 * Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage
 
-## Install
+## Usage
+
+The `tsm` env can be used to make a TypeScript file executable (directly and/or
+with Node), and the `tsm` CLI can be used to build your project to
+fully-resolved ESM.
+
+First, install tsm into your project:
 
 ```shell
 yarn add @tsmodule/tsm
 ```
 
-## Usage
-
 ### Executing TypeScript directly
 
-If this file is executable, it can be run directly with `./index.ts`. The
-shebang line tells Node to use the tsm loader to parse the TypeScript source and
-resolve imports.
+TypeScript files can be executed directly (e.g. `./index.ts`, if executable) or
+run by Node (e.g. `node index.ts`) with the `#!/usr/bin/env tsm` shebang
+present.
 
 ```ts
 #!/usr/bin/env tsm
@@ -30,18 +34,18 @@ const test: string = "hello world"
 console.log(test);
 ```
 
-### Building TypeScript modules to ESM
+### Building TypeScript modules
 
-The `tsmodule` CLI can be used to build projects from TypeScript to ESM:
+You can build the project from `src/` to `dist/` with the `build` CLI command:
 
 ```shell
-tsmodule build
+tsm build
 ```
 
-The output is emitted in `dist/` and will contain only ESM-compliant import
-specifiers as resolved by the tsm loader.
+The output will contain only ESM-compliant import specifiers as resolved by the
+tsm loader and can be executed directly via `node dist/index.js`.
 
-### Advanced
+### Advanced usage
 
 > **Note:** Refer to [`/docs/usage.md`](/docs/usage.md) for more information.
 
@@ -49,7 +53,7 @@ specifiers as resolved by the tsm loader.
 # use as `node` replacement
 $ tsm server.ts
 # or, equivalently
-$ tsmodule server.ts
+$ tsm server.ts
 
 # forwards any `node` ENV or flags
 $ NO_COLOR=1 tsm server.ts --trace-warnings
@@ -68,17 +72,17 @@ $ node --loader tsm main.jsx
 allows ES module resolution to natively import from specifiers like `./thing ->
 ./thing.ts`, and uses esbuild to load TypeScript on-the-fly. 
 
-`tsmodule build` uses this same loader to resolve import specifiers statically
+`tsm build` uses this same loader to resolve import specifiers statically
 ahead-of-time and turn transpiled TypeScript (which often contains incomplete
 specifiers like `./a`) into spec-compliant ESM (`./a -> ./a.js`).
 
 ### Module configuration
 
-All packages built with `tsmodule build` are ES modules. They should have
+All packages built with `tsm build` are ES modules. They should have
 `"type": "module"` set in package.json and can use the `exports` field to
 resolve conditional exports.
 
-`tsmodule build` forces the following tsconfig.json values:
+`tsm build` forces the following tsconfig.json values:
 
 ```json
 {
