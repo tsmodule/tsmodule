@@ -1,9 +1,9 @@
-import { existsSync, promises as fs } from "fs";
 import { fileURLToPath, pathToFileURL, URL } from "url";
+import { promises as fs } from "fs";
 import { transform } from "esbuild";
 
 import type { Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
-import { extname, isAbsolute, normalize, resolve as resolvePath, sep } from "path";
+import { extname, isAbsolute, normalize, resolve as resolvePath } from "path";
 
 import { sep as posixSep } from "path/posix";
 import { sep as winSep } from "path/win32";
@@ -13,97 +13,7 @@ import { sep as winSep } from "path/win32";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { debugLog } from "../utils/log.js";
-
-const isTS = /\.[mc]?tsx?(?=\?|$)/;
-const isJS = /\.([mc])?js$/;
-
-const BASE_CONFIG = {
-  format: "esm",
-  charset: "utf8",
-  sourcemap: "inline",
-  target: "node16",
-  minify: false,
-};
-interface ModuleLoaders {
-  [extension: string]: {
-    [configKey: string]: unknown;
-  };
-}
-
-const MODULE_LOADERS: ModuleLoaders = {
-  ".mts": { ...BASE_CONFIG, loader: "ts" },
-  ".jsx": { ...BASE_CONFIG, loader: "jsx" },
-  ".tsx": { ...BASE_CONFIG, loader: "tsx" },
-  ".cts": { ...BASE_CONFIG, loader: "ts" },
-  ".ts": { ...BASE_CONFIG, loader: "ts" },
-  ".json": { ...BASE_CONFIG, loader: "json" },
-};
-
-/**
- * Force a Unix-like path.
- */
-export const forceUnixPath = (path: string) => {
-  return path.split(sep).join(posixSep);
-};
-
-const fileExists = (fileUrl: string): string | void => {
-  const tmp = fileURLToPath(fileUrl);
-  if (existsSync(tmp)) {
-    return fileUrl;
-  }
-};
-
-const fileExistsAny = (fileUrls: string[]): string | void => {
-  for (const fileUrl of fileUrls) {
-    if (fileExists(fileUrl)) {
-      return fileUrl;
-    }
-  }
-};
-
-const POSSIBLE_EXTENSIONS = [
-  ".mts",
-  ".jsx",
-  ".tsx",
-  ".cts",
-  ".ts",
-  ".json",
-];
-
-const checkTsExtensions = (specifier: string) => {
-  const possibleExtensions =
-    POSSIBLE_EXTENSIONS
-      .filter((extension) => extension.includes("ts"))
-      .concat([".js"]);
-
-  return fileExistsAny(
-    possibleExtensions.map(
-      (extension) => specifier + extension,
-    )
-  );
-};
-
-const checkJsExtension = (specifier: string) => {
-  const possibleExtensions =
-    POSSIBLE_EXTENSIONS
-      .filter((extension) => extension.includes("js"))
-      .concat([".js"]);
-
-  return fileExistsAny(
-    possibleExtensions.map(
-      (extension) => specifier + extension,
-    )
-  );
-};
-
-const checkExtensions = async (specifier: string) => {
-  const jsMatch = checkJsExtension(specifier);
-  if (jsMatch) return jsMatch;
-
-  const tsMatch = checkTsExtensions(specifier);
-  if (tsMatch) return tsMatch;
-};
+import { checkExtensions, checkTsExtensions, debugLog, fileExists, isJS, isTS, MODULE_LOADERS } from "../utils/index.js";
 
 export const resolve: ModuleResolver = async (
   specifier,

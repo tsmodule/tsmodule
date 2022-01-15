@@ -15,8 +15,8 @@ import shebang from "rollup-plugin-preserve-shebang";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { forceUnixPath, resolve } from "../loader/index.js";
-import { debugLog } from "../utils/log.js";
+import { debugLog, forceUnixPath } from "../utils/index.js";
+import { resolve } from "../loader/index.js";
 
 /**
  * Get a Unix-like relative path from a URL.
