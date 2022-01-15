@@ -122,7 +122,6 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
    */
   if (!specifier.startsWith("file://")) {
     if (!isAbsolute(specifier)) {
-      debugger;
       specifier = new URL(specifier, baseURL).href;
     } else {
       specifier = pathToFileURL(resolvePath(normalize(specifier))).href;
