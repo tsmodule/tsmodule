@@ -1,10 +1,11 @@
 import { Plugin as RollupPlugin, rollup } from "rollup";
-import { dirname, extname, isAbsolute, relative, resolve as resolvePath, sep } from "path";
+import { dirname, extname, isAbsolute, relative, resolve as resolvePath } from "path";
 import { build as esbuild, BuildOptions } from "esbuild";
 import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
 import glob from "fast-glob";
-import { fileURLToPath, pathToFileURL, URL } from "url";
+import {  pathToFileURL } from "url";
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore No types available for this plugin.
 import shebang from "rollup-plugin-preserve-shebang";

@@ -29,6 +29,9 @@ jobs:
     - name: Type Checks
       run: yarn types
 
+    - name: Loader Tests
+      run: node --loader ./dist/loader/index.js test/fixtures/loader.ts
+
     - name: Tests <~ ESM
       run: node --loader ./dist/loader/index.js test/index.mjs
 

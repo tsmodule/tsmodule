@@ -1,9 +1,9 @@
 import { existsSync, promises as fs } from "fs";
 import { fileURLToPath, pathToFileURL, URL } from "url";
-import { BuildOptions, transform } from "esbuild";
+import { transform } from "esbuild";
 
 import type { Config, Options } from "../config/types";
-import type { ModuleFormat, Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
+import type { Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
 import { extname, isAbsolute, normalize, resolve as resolvePath, sep } from "path";
 
 import { sep as posixSep } from "path/posix";
@@ -41,12 +41,6 @@ const getConfig = async (): Promise<Config> => {
     config = finalize(env);
     return config;
   }
-};
-
-const getOptions = async (uri: string): Promise<Options | void> => {
-  const config = await getConfig();
-  const extension = extname(uri);
-  return config[extension as `.${string}`];
 };
 
 const fileExists = (fileUrl: string): string | void => {
