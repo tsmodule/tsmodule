@@ -7,9 +7,9 @@ import { resolve } from "../src/loader";
 (async () => {
   console.log(
     await resolve(
-      "../config/index.js",
+      "../commands/build.js",
       {
-        parentURL: "file:/home/christian/PersonalProjects/tsm/src/loader/index.ts",
+        parentURL: "file:///home/christian/PersonalProjects/tsm/src/loader/index.ts",
         conditions: [ "node", "import", "node-addons" ]
       },
       async (url) => await import(url),

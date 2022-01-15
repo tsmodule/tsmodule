@@ -30,16 +30,16 @@ jobs:
       run: yarn types
 
     - name: Loader Tests
-      run: node --loader ./dist/loader/index.js test/fixtures/loader.ts
+      run: node --loader @tsmodule/tsm test/fixtures/loader.ts
 
     - name: Tests <~ ESM
-      run: node --loader ./dist/loader/index.js test/index.mjs
+      run: node --loader @tsmodule/tsm test/index.mjs
 
     - name: Tests <~ ESM <~ TypeScript
-      run: node --loader ./dist/loader/index.js test/config/index.ts
+      run: node --loader @tsmodule/tsm test/config/index.ts
 
     - name: Tests <~ CLI
-      run: ./dist/index.js test/index.mjs
+      run: node --loader @tsmodule/tsm test/index.mjs
 
     - name: Tests <~ CLI <~ TypeScript
-      run: ./dist/index.js test/config/index.ts
+      run: node --loader @tsmodule/tsm test/config/index.ts

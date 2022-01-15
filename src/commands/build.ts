@@ -79,8 +79,9 @@ export const rewriteImports: () => RollupPlugin = () => {
          * If no absolute module ID, bail.
          */
         if (!chunk.facadeModuleId) continue;
-        const entryPoint = pathToFileURL(resolvePath(chunk.facadeModuleId)).href;
-        debugLog({ entryPoint, importedChunk });
+        const resolvedEntryPoint = resolvePath(chunk.facadeModuleId);
+        const entryPointURL = pathToFileURL(resolvedEntryPoint).href;
+        debugLog({ entryPointURL, importedChunk });
         /**
          * Just a named module. Skip.
          */
@@ -106,7 +107,7 @@ export const rewriteImports: () => RollupPlugin = () => {
         /**
          * A URL from which all relative imports in this entry are resolved.
          */
-        const baseURL = dirname(entryPoint);
+        const baseURL = dirname(entryPointURL);
         let importToReplace = importedChunk;
         /**
          * Rewrite remaining absolute specifiers relative to baseURL for
@@ -114,7 +115,10 @@ export const rewriteImports: () => RollupPlugin = () => {
          */
         if (isAbsolute(importedChunk)) {
           const importedFileURL = pathToFileURL(importedChunk).href;
-          debugLog("Rewriting partial specifier", { importedChunk, importedFileURL, baseURL  });
+          debugLog(
+            "Rewriting partial specifier",
+            { importedChunk, importedFileURL, baseURL  }
+          );
           importToReplace = getRelativePath(baseURL, importedFileURL);
         }
         /**
@@ -139,7 +143,7 @@ export const rewriteImports: () => RollupPlugin = () => {
             const resolvedImport = await resolve(
               importedChunk,
               {
-                parentURL: entryPoint,
+                parentURL: entryPointURL,
                 conditions: [ "node", "import", "node-addons" ]
               },
               async (url) => await import(url),
@@ -148,9 +152,11 @@ export const rewriteImports: () => RollupPlugin = () => {
              * Rewrite import identifiers for seamless CJS support. Ignore
              * dynamic imports.
              */
-            if (resolvedImport.url) {
-              // const unixLikePath = fileURLToPath(resolvedImport.url);
-              debugLog({ importedChunk, input: entryPoint, url: resolvedImport.url, baseURL });
+            const resolvedImportURL = resolvedImport.url;
+            if (resolvedImportURL) {
+              debugLog({
+                importedChunk, entryPointURL, resolvedImportURL, baseURL
+              });
               /**
                * The import statement with the unresolved import replaced with
                * its resolved specifier.
@@ -163,7 +169,7 @@ export const rewriteImports: () => RollupPlugin = () => {
               /**
                * Replace the import in the code.
                */
-              debugLog({ input: entryPoint, importStatement, rewrittenImport });
+              debugLog({ entryPointURL, importStatement, rewrittenImport });
               code = code.replace(importStatement, rewrittenImport);
             }
           }

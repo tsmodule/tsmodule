@@ -6,6 +6,8 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
 
+    "max-len": ["error", { "code": 80, "ignorePattern": "^import .*", "ignoreUrls": true  }],
+
     "indent": "off",
     "@typescript-eslint/indent": ["error", 2],
 

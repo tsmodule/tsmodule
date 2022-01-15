@@ -3,9 +3,7 @@ import { build as esbuild } from "esbuild";
 const BOOTSTRAP_FILES = [
   "src/commands/build.ts",
   "src/loader/index.ts",
-  "src/config/index.ts",
-  "src/utils/log.ts",
-  "src/runtime/bootstrap.ts",
+  "src/utils/log.ts"
 ];
 
 await esbuild({
@@ -15,4 +13,5 @@ await esbuild({
   assetNames: "[name].js",
 });
 
-await import("./dist/runtime/bootstrap.js");
+const { build } = await import("./dist/commands/build.js");
+await build();
