@@ -1,10 +1,13 @@
 import { existsSync, promises as fs } from "fs";
 import { fileURLToPath, pathToFileURL, URL } from "url";
-import { transform } from "esbuild";
+import { BuildOptions, transform } from "esbuild";
 
 import type { Config, Options } from "../config/types";
 import type { ModuleFormat, Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
-import { extname, resolve as resolvePath } from "path";
+import { extname, isAbsolute, normalize, resolve as resolvePath, sep } from "path";
+
+import { sep as posixSep } from "path/posix";
+import { sep as winSep } from "path/win32";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
@@ -18,6 +21,13 @@ let config: Config;
 const isTS = /\.[mc]?tsx?(?=\?|$)/;
 const isJS = /\.([mc])?js$/;
 
+/**
+ * Force a Unix-like path.
+ */
+export const forceUnixPath = (path: string) => {
+  return path.split(sep).join(posixSep);
+};
+
 const getConfig = async (): Promise<Config> => {
   if (config) {
     return config;
@@ -27,7 +37,7 @@ const getConfig = async (): Promise<Config> => {
       const loadedModule = await import("file://" + env.file);
       return finalize(env, loadedModule.default || loadedModule);
     }
-  
+
     config = finalize(env);
     return config;
   }
@@ -64,7 +74,7 @@ const POSSIBLE_EXTENSIONS = [
 ];
 
 const checkTsExtensions = (specifier: string) => {
-  const possibleExtensions = 
+  const possibleExtensions =
     POSSIBLE_EXTENSIONS
       .filter((extension) => extension.includes("ts"))
       .concat([".js"]);
@@ -77,7 +87,7 @@ const checkTsExtensions = (specifier: string) => {
 };
 
 const checkJsExtension = (specifier: string) => {
-  const possibleExtensions = 
+  const possibleExtensions =
     POSSIBLE_EXTENSIONS
       .filter((extension) => extension.includes("js"))
       .concat([".js"]);
@@ -98,22 +108,40 @@ const checkExtensions = async (specifier: string) => {
 };
 
 export const resolve: ModuleResolver = async (specifier, context, defaultResolve) => {
+  const { parentURL } = context;
+  debugLog("[Node.js resolve]", { parentURL, specifier });
   /**
-   * Ignore "prefix:" and non-relative identifiers.
+   * Do not resolved named modules like `chalk`.
    */
-  if (/^\w+\:?/.test(specifier)) {
-    debugLog("Ignoring prefix identifier", specifier);
+  if (!specifier.startsWith("." ) && !isAbsolute(specifier)) {
+    debugLog("Use default resolve for named module", { specifier });
     return defaultResolve(specifier, context, defaultResolve);
   }
 
-  const root = pathToFileURL(process.cwd()).href;
-  const { parentURL } = context;
-  
-  const { href: importFileUrl } = new URL(specifier, parentURL || root);
-  const parentExtension = extname(parentURL ?? "").toLowerCase();
-  const specifierExtension = extname(importFileUrl).toLowerCase();
+  const { href: cwdURL } = pathToFileURL(process.cwd());
+  const { href: baseURL } = new URL(parentURL || cwdURL);
 
-  debugLog({ importFileUrl, parentExtension, specifierExtension });
+  debugLog("Before resolution", { specifier, baseURL });
+
+  /**
+   * Resolve specifier from a relative or incomplete specifier to a file URL.
+   */
+  if (!specifier.startsWith("file://")) {
+    if (!isAbsolute(specifier)) {
+      debugger;
+      specifier = new URL(specifier, baseURL).href;
+    } else {
+      specifier = pathToFileURL(resolvePath(normalize(specifier))).href;
+    }
+  }
+
+  debugLog("After resolution", { specifier });
+  
+  const { href: importURL } = new URL(specifier);
+  const parentExtension = extname(parentURL ?? "").toLowerCase();
+  const specifierExtension = extname(importURL).toLowerCase();
+
+  debugLog({ specifier, cwdURL, parentURL, importURL, parentExtension, specifierExtension });
 
   /**
    * Resolve TypeScript's bare import syntax.
@@ -122,23 +150,23 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
     /**
      * Check for valid file extensions first.
      */
-    const url = await checkExtensions(importFileUrl);
+    const url = await checkExtensions(importURL);
     if (url) {
-      debugLog("Found file", url);
+      debugLog("Resolved to file", { url });
       return { url };
     }
     /**
      * Then, index resolution.
      */
     const indexUrl = await checkExtensions(
-      pathToFileURL(resolvePath(fileURLToPath(importFileUrl), "index")).href
+      pathToFileURL(resolvePath(fileURLToPath(importURL), "index")).href
     );
     if (indexUrl) {
-      debugLog({ indexUrl });
+      debugLog("Resolved to index file", { indexUrl });
       return { url: indexUrl };
     }
   } else {
-    const unresolvedSpecifier = importFileUrl.substring(0, importFileUrl.lastIndexOf(specifierExtension));
+    const unresolvedSpecifier = importURL.substring(0, importURL.lastIndexOf(specifierExtension));
     /**
      * JS being imported by a TS file.
      */
@@ -161,16 +189,51 @@ export const resolve: ModuleResolver = async (specifier, context, defaultResolve
   return defaultResolve(specifier, context, defaultResolve);
 };
 
+
+
+const BASE_CONFIG = {
+  format: "esm",
+  charset: "utf8",
+  sourcemap: "inline",
+  target: "node16",
+  minify: false,
+};
+
+interface ModuleLoaderConfig {
+  [configKey: string]: unknown;
+}
+
+interface ModuleLoaders {
+  [extension: string]: ModuleLoaderConfig;
+}
+
+const MODULE_LOADERS: ModuleLoaders = {
+  ".mts": { ...BASE_CONFIG, loader: "ts" },
+  // ".mjs": { ...BASE_CONFIG, loader: "js" },
+  // ".js": { ...BASE_CONFIG, loader: "js" },
+  ".jsx": { ...BASE_CONFIG, loader: "jsx" },
+  ".tsx": { ...BASE_CONFIG, loader: "tsx" },
+  ".cts": { ...BASE_CONFIG, loader: "ts" },
+  ".ts": { ...BASE_CONFIG, loader: "ts" },
+  ".json": { ...BASE_CONFIG, loader: "json" },
+};
+
 export const load: ModuleLoader = async (url, context, defaultLoad) => {
   // note: inline `getFormat`
-  const options = await getOptions(url);
+  debugLog("[Node.js load]", { url });
+  if (!url.includes(winSep) && !url.includes(posixSep)) {
+    debugLog("Using default loader for named module", { url });
+    return defaultLoad(url, context, defaultLoad);
+  }
+
+  const extension = extname(url);
+  const options = MODULE_LOADERS[extension];
   if (!options) {
-    debugLog(`No options found for ${url}, using default loader.`);
+    debugLog(`No loader found for ${url}, using default loader.`);
     return defaultLoad(url, context, defaultLoad);
   }
 
   // TODO: decode SAB/U8 correctly
-  const format: ModuleFormat = options.format === "cjs" ? "commonjs" : "module";
   const path = fileURLToPath(url);
   const source = await fs.readFile(path);
 
@@ -178,35 +241,41 @@ export const load: ModuleLoader = async (url, context, defaultLoad) => {
     source.toString(), {
       ...options,
       sourcefile: path,
-      format: format === "module" ? "esm" : "cjs",
+      format: "esm",
     }
   );
 
-  return { format, source: result.code };
+  return { format: "module", source: result.code };
 };
 
 /**
  * @deprecated As of Node 17.
  */
 export const getFormat: Inspect = async (url, context, defaultGetFormat) => {
-  const options = await getOptions(url);
+  debugLog("[Node.js getFormat]", url);
+  const extension = extname(url);
+  const options = MODULE_LOADERS[extension];
   if (!options) {
+    debugLog(`No loader found for ${url}, using default format.`);
     return defaultGetFormat(url, context, defaultGetFormat);
   }
 
-  return { format: options.format === "cjs" ? "commonjs" : "module" };
+  return { format: "module" };
 };
 
 /**
  * @deprecated As of Node 17.
  */
 export const transformSource: Transform = async (source, context, defaultTransformSource) => {
-  const options = await getOptions(context.url);
+  debugLog("[Node.js transformSource]", context.url);
+  const { url } = context;
+  const extension = extname(url);
+  const options = MODULE_LOADERS[extension];
   if (!options) {
+    debugLog(`No loader found for ${url}, using default transformer.`);
     return defaultTransformSource(source, context, defaultTransformSource);
   }
 
-  // TODO: decode SAB/U8 correctly
   const result = await transform(
     source.toString(), {
       ...options,

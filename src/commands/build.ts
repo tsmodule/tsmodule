@@ -4,7 +4,7 @@ import { build as esbuild, BuildOptions } from "esbuild";
 import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
 import glob from "fast-glob";
-import { pathToFileURL } from "url";
+import { fileURLToPath, pathToFileURL, URL } from "url";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore No types available for this plugin.
 import shebang from "rollup-plugin-preserve-shebang";
@@ -14,22 +14,16 @@ import shebang from "rollup-plugin-preserve-shebang";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
+import { forceUnixPath, resolve } from "../loader/index.js";
 import { debugLog } from "../utils/log.js";
-import { resolve } from "../loader/index.js";
-
-/**
- * Remove `file://` prefix from a path if it exists.
- */
-const forceUnixPath = (path: string) => {
-  return path.replace("file://", "");
-};
 
 /**
  * Get a Unix-like relative path from a URL.
  */
-const getRelativePath = (baseUrl: string, path: string) => {
-  const relativePath = relative(baseUrl, forceUnixPath(path));
-  return (
+const getRelativePath = (fromURL: string, toURL: string) => {
+  const relativePath = relative(fromURL, toURL);
+  debugLog({ fromURL, toURL, relativePath });
+  return forceUnixPath(
     relativePath.startsWith(".")
       ? relativePath
       : `./${relativePath}`
@@ -83,13 +77,13 @@ export const rewriteImports: () => RollupPlugin = () => {
         /**
          * If no absolute module ID, bail.
          */
-        const input = chunk.facadeModuleId;
-        if (!input) continue;
-        debugLog({ input });
+        if (!chunk.facadeModuleId) continue;
+        const entryPoint = pathToFileURL(resolvePath(chunk.facadeModuleId)).href;
+        debugLog({ entryPoint, importedChunk });
         /**
          * Just a named module. Skip.
          */
-        if (!importedChunk.includes(sep)) {
+        if (!importedChunk.startsWith(".") && !isAbsolute(importedChunk)) {
           debugLog(`- Skipping named module: ${importedChunk}`);
           continue;
         }
@@ -109,31 +103,34 @@ export const rewriteImports: () => RollupPlugin = () => {
            */
         }
         /**
-         * The base directory from which all relative imports in this entry
-         * are resolved.
+         * A URL from which all relative imports in this entry are resolved.
          */
-        const baseDir = dirname(input);
+        const baseURL = dirname(entryPoint);
         let importToReplace = importedChunk;
         /**
-         * Rewrite remaining absolute specifiers relative to baseDir for
+         * Rewrite remaining absolute specifiers relative to baseURL for
          * replacement.
          */
         if (isAbsolute(importedChunk)) {
-          debugLog(`Rewriting partial specifier: ${importedChunk}`);
-          importToReplace = getRelativePath(baseDir, importedChunk);
+          const importedFileURL = pathToFileURL(importedChunk).href;
+          debugLog("Rewriting partial specifier", { importedChunk, importedFileURL, baseURL  });
+          importToReplace = getRelativePath(baseURL, importedFileURL);
         }
-        debugLog({ importToReplace });
+        /**
+         * Normalize the import paths (for Windows support).
+         */
+        importToReplace = forceUnixPath(importToReplace);
         /**
          * Read the matched import/require statements and replace them.
          */
         const importMatch = importPattern(importToReplace);
         const importStatements = code.match(importMatch) ?? [];
+        debugLog({ baseURL, importToReplace, importStatements });
         /**
          * Attempt to replace the specifier for each import statement.
          */
         for (const importStatement of importStatements) {
           if (options.file) {
-            const parentURL = pathToFileURL(resolvePath(input)).href;
             /**
              * Resolve the specifier to a module and URL using the internal
              * loader.
@@ -141,19 +138,18 @@ export const rewriteImports: () => RollupPlugin = () => {
             const resolvedImport = await resolve(
               importedChunk,
               {
-                parentURL,
+                parentURL: entryPoint,
                 conditions: [ "node", "import", "node-addons" ]
               },
               async (url) => await import(url),
             );
-            debugLog({ resolvedImport });
             /**
              * Rewrite import identifiers for seamless CJS support. Ignore
              * dynamic imports.
              */
             if (resolvedImport.url) {
-              const unixLikePath = resolvedImport.url.replace("file://", "");
-              debugLog({ importedChunk, parentURL, unixLikePath });
+              // const unixLikePath = fileURLToPath(resolvedImport.url);
+              debugLog({ importedChunk, input: entryPoint, url: resolvedImport.url, baseURL });
               /**
                * The import statement with the unresolved import replaced with
                * its resolved specifier.
@@ -161,12 +157,12 @@ export const rewriteImports: () => RollupPlugin = () => {
               const rewrittenImport = rewriteImport(
                 importStatement,
                 importToReplace,
-                getRelativePath(baseDir, unixLikePath),
+                getRelativePath(baseURL, resolvedImport.url),
               );
               /**
                * Replace the import in the code.
                */
-              debugLog({ input, importStatement, rewrittenImport });
+              debugLog({ input: entryPoint, importStatement, rewrittenImport });
               code = code.replace(importStatement, rewrittenImport);
             }
           }
