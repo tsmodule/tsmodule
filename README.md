@@ -5,17 +5,20 @@
 
 ## Features
 
-* Fast (6ms to build this tool, minified and DCE'd)
+* **Run** TypeScript files directly
+  * Uses Node's experimental module loader
+* **Build** to pure ES Module output
+  * Fast (6ms to build this tool, minified and DCE'd)
+  * Pure, spec-compliant ESM output
 * Supports `node <file>` usage
 * Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage
 
 ## Usage
 
-The `tsm` env can be used to make a TypeScript file executable (directly and/or
-with Node), and the `tsm` CLI can be used to build your project to
-fully-resolved ESM.
+`tsm` can be used to run TypeScript directly, and the CLI can be used to build
+your project to fully-resolved ESM.
 
-First, install tsm into your project:
+Install tsm in your project (or globally) to run or build your module:
 
 ```shell
 yarn add @tsmodule/tsm
@@ -23,9 +26,8 @@ yarn add @tsmodule/tsm
 
 ### Executing TypeScript directly
 
-TypeScript files can be executed directly (e.g. `./index.ts`, if executable) or
-run by Node (e.g. `node index.ts`) with the `#!/usr/bin/env tsm` shebang
-present.
+TypeScript files can be executed directly (`./index.ts`) or run by Node (`node
+index.ts`) with the `#!/usr/bin/env tsm` shebang present:
 
 ```ts
 #!/usr/bin/env tsm
@@ -36,23 +38,21 @@ console.log(test);
 
 ### Building TypeScript modules
 
-You can build the project from `src/` to `dist/` with the `build` CLI command:
+You can build your TypeScript module to ESM with the `build` CLI command:
 
 ```shell
 tsm build
 ```
 
-The output will contain only ESM-compliant import specifiers as resolved by the
-tsm loader and can be executed directly via `node dist/index.js`.
+Source will be compiled from `src/` to `dist/` and will contain only
+ESM-compliant import specifiers as resolved by the tsm loader. This ESM output
+will *not* contain incomplete specifiers like `./path/to/module` (no file
+extension) and can be executed directly via `node dist/index.js`.
 
 ### Advanced usage
 
-> **Note:** Refer to [`/docs/usage.md`](/docs/usage.md) for more information.
-
 ```sh
 # use as `node` replacement
-$ tsm server.ts
-# or, equivalently
 $ tsm server.ts
 
 # forwards any `node` ENV or flags

@@ -8,6 +8,11 @@
   "bin": {
     "tsm": "dist/index.js"
   },
+  "exports": {
+    ".": "./dist/loader/index.js",
+    "./*": "./dist/*/index.js",
+    "./package.json": "./package.json"
+  },
   "types": "dist/types/index.d.ts",
   "contributors": [
     {
@@ -21,11 +26,6 @@
       "url": "https://lukeed.com"
     }
   ],
-  "exports": {
-    ".": "./loader/index.js",
-    "./*": "./dist/*/index.js",
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist/"
   ],

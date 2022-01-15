@@ -2,9 +2,9 @@ import { existsSync, promises as fs } from "fs";
 import { fileURLToPath, pathToFileURL, URL } from "url";
 import { transform } from "esbuild";
 
-import type { Config, Options } from "../config/types";
 import type { Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
 import { extname, isAbsolute, normalize, resolve as resolvePath, sep } from "path";
+import type { Config } from "../config/types";
 
 import { sep as posixSep } from "path/posix";
 import { sep as winSep } from "path/win32";
