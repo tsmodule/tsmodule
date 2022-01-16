@@ -147,7 +147,8 @@ export const resolve: ModuleResolver = async (
    * If none found, try to resolve an index file.
    */
   const resolvedIndexFile = checkExtensions(
-    pathToFileURL(resolvePath(fileURLToPath(importedFileURL), "index")).href
+    new URL("./index", importedFileURL).href,
+    // pathToFileURL(resolvePath(fileURLToPath(importedFileURL), "index")).href
   );
 
   if (resolvedIndexFile) {
