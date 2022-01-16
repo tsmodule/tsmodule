@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import { transform } from "esbuild";
 
 import type { Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
-import { extname, isAbsolute, normalize, resolve as resolvePath } from "path";
+import { extname, isAbsolute, join, normalize, resolve as resolvePath } from "path";
 
 import { sep as posixSep } from "path/posix";
 import { sep as winSep } from "path/win32";
@@ -147,7 +147,7 @@ export const resolve: ModuleResolver = async (
    * If none found, try to resolve an index file.
    */
   const resolvedIndexFile = checkExtensions(
-    new URL("./index", importedFileURL).href,
+    new URL(join(importedFileURL, "index")).href,
     // pathToFileURL(resolvePath(fileURLToPath(importedFileURL), "index")).href
   );
 
