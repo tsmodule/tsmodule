@@ -3,19 +3,30 @@
 import { Command } from "commander";
 import { build } from "./commands/build";
 import { execute } from "./commands/execute";
+import { normalizeImportSpecifiers } from "./commands/normalize";
 
 const program = new Command();
-
-program
-  .command("build")
-  .option("-d, --dev", "Build development version (default: production)")
-  .description("Builds TS in src/ to output in dist/.")
-  .action(async ({ dev }) => await build(!dev));
 
 program
   .command("execute <file>", { isDefault: true })
   .description("Run the given TS program, analogous to `node <file>`.")
   .action(execute);
+
+program
+  .command("build")
+  .option("-d, --dev", "Build development version (default: production)")
+  .description(
+    "Builds TS files to output in dist/. (default: src/**/*.{ts,tsx})"
+  )
+  .action(async ({ dev }) => await build(!dev));
+
+program
+  .command("normalize [files]")
+  .description(
+    "Rewrites import specifiers in files to ESM-compliant paths.\n" +
+    "(default: dist/**/*.js)"
+  )
+  .action(async ({ files }) => await normalizeImportSpecifiers(files));
 
 program
   .command("version")

@@ -33,11 +33,13 @@ export const createDebugLogger = (fn: Function) => {
 
       group() {
         debugConsole.log("\n");
-        debugConsole.group(`[TSM DEBUG] [${name}]`);
+        const debugLabel = chalk.bgWhite.gray("[TSM DEBUG]");
+        const fnLabel = chalk.bgBlueBright.black(`[${name}]`);
+        debugConsole.group(`${debugLabel} ${fnLabel}`);
       },
 
       groupEnd() {
-        debugConsole.log("\n", "-".repeat(80), "\n");
+        debugConsole.log("\n", "-".repeat(20), "\n");
         debugConsole.groupEnd();
       }
     };
@@ -97,7 +99,7 @@ export const POSSIBLE_EXTENSIONS = Object.keys(MODULE_LOADERS);
 /**
  * Force a Unix-like path.
  */
-export const forceUnixPath = (path: string) => {
+export const normalizeSpecifier = (path: string) => {
   return path.split(sep).join(posixSep);
 };
 

@@ -23,13 +23,13 @@ export const resolve: ModuleResolver = async (
   const { parentURL: importedFromURL } = context;
   const DEBUG = createDebugLogger(resolve);
 
-  DEBUG.log("Resolving specifier.", { importedFromURL, specifier });
+  DEBUG.log("Resolving specifier:", { importedFromURL, specifier });
 
   /**
    * Do not resolved named modules like `chalk`.
    */
   if (!specifier.startsWith(".") && !isAbsolute(specifier)) {
-    DEBUG.log("Using defaultResolve for named module.", { specifier });
+    DEBUG.log("Using defaultResolve for named module:", { specifier });
     return defaultResolve(specifier, context, defaultResolve);
   }
 
@@ -51,7 +51,7 @@ export const resolve: ModuleResolver = async (
       importedFileURL = pathToFileURL(resolvePath(normalize(specifier))).href;
     }
 
-    DEBUG.log("Resolved import URL.", { importedFileURL, importedFromURL });
+    DEBUG.log("Resolved import URL:", { importedFileURL, importedFromURL });
   }
   
   const parentExtension = extname(importedFromURL ?? "").toLowerCase();
@@ -74,7 +74,7 @@ export const resolve: ModuleResolver = async (
     if (isJS.test(specifierExtension) && isTS.test(parentExtension)) {
       const resolvedTsSourceFile = checkTsExtensions(unresolvedSpecifier);
       if (resolvedTsSourceFile) {
-        DEBUG.log("Found JS import in TS.", {
+        DEBUG.log("Found JS import in TS:", {
           unresolvedSpecifier, 
           resolvedTsSourceFile 
         });
@@ -97,13 +97,13 @@ export const resolve: ModuleResolver = async (
   /**
    * Resolve TypeScript's bare import syntax.
    */
-  DEBUG.log("Resolving incomplete URL import to file.", { specifier });
+  DEBUG.log("Resolving incomplete URL import to file:", { specifier });
   /**
    * Check for valid file extensions first.
    */
   const resolvedFile = checkExtensions(importedFileURL);
   if (resolvedFile) {
-    DEBUG.log("Resolved import URL to file.", { resolvedFile });
+    DEBUG.log("Resolved import URL to file:", { resolvedFile });
     return { url: resolvedFile };
   }
   /**
@@ -113,7 +113,7 @@ export const resolve: ModuleResolver = async (
   const resolvedIndexFile = checkExtensions(indexFileURL);
 
   if (resolvedIndexFile) {
-    DEBUG.log("Resolved import URL to index file.", { resolvedIndexFile });
+    DEBUG.log("Resolved import URL to index file:", { resolvedIndexFile });
     return { url: resolvedIndexFile };
   }
 
@@ -122,17 +122,17 @@ export const resolve: ModuleResolver = async (
 
 export const load: ModuleLoader = async (url, context, defaultLoad) => {
   const DEBUG = createDebugLogger(load);
-  DEBUG.log("Loading source file.", { url });
+  DEBUG.log("Loading source file:", { url });
 
   if (!url.includes(winSep) && !url.includes(posixSep)) {
-    DEBUG.log("Using defaultLoad for named module.", { url });
+    DEBUG.log("Using defaultLoad for named module:", { url });
     return defaultLoad(url, context, defaultLoad);
   }
 
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
   if (!options) {
-    DEBUG.log("No loader found, using defaultLoad.", { url });
+    DEBUG.log("No loader found, using defaultLoad:", { url });
     return defaultLoad(url, context, defaultLoad);
   }
 
@@ -155,13 +155,13 @@ export const load: ModuleLoader = async (url, context, defaultLoad) => {
  */
 export const getFormat: Inspect = async (url, context, defaultGetFormat) => {
   const DEBUG = createDebugLogger(getFormat);
-  DEBUG.log("Getting format for source file.", { url });
+  DEBUG.log("Getting format for source file:", { url });
 
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
 
   if (!options) {
-    DEBUG.log("No loader found, using default format.", { url });
+    DEBUG.log("No loader found, using default format:", { url });
     return defaultGetFormat(url, context, defaultGetFormat);
   }
 
@@ -177,14 +177,14 @@ export const transformSource: Transform = async (
   defaultTransformSource
 ) => {
   const DEBUG = createDebugLogger(transformSource);
-  DEBUG.log("Transforming source from context.", { context });
+  DEBUG.log("Transforming source from context:", { context });
 
   const { url } = context;
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
 
   if (!options) {
-    DEBUG.log("No loader found, using default transformer.", { url });
+    DEBUG.log("No loader found, using default transformer:", { url });
     return defaultTransformSource(source, context, defaultTransformSource);
   }
 
