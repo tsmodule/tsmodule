@@ -20,48 +20,77 @@ export const resolve: ModuleResolver = async (
   context,
   defaultResolve
 ) => {
-  const { parentURL } = context;
-  debugLog("[Node.js resolve]", { parentURL, specifier });
+  const { parentURL: importedFromURL } = context;
+
+  debugLog(
+    "[tsm: resolve]",
+    "Resolving specifier.",
+    { importedFromURL, specifier }
+  );
 
   /**
    * Do not resolved named modules like `chalk`.
    */
   if (!specifier.startsWith(".") && !isAbsolute(specifier)) {
-    debugLog("Using defaultResolve for named module.", { specifier });
+    debugLog(
+      "[tsm: resolve]", 
+      "Using defaultResolve for named module.",
+      { specifier }
+    );
+
     return defaultResolve(specifier, context, defaultResolve);
   }
 
   const { href: cwdURL } = pathToFileURL(process.cwd());
-  const { href: baseURL } = new URL(parentURL || cwdURL);
+  const { href: baseURL } = new URL(importedFromURL || cwdURL);
 
-  debugLog("Finding import URL for", { specifier, baseURL });
+  debugLog(
+    "[tsm: resolve]", 
+    "Finding import URL for", 
+    { specifier, baseURL }
+  );
 
   /**
    * Resolve specifier from a relative or incomplete specifier to a file URL.
    */
-  let importURL = specifier;
+  let importedFileURL = specifier;
   if (!specifier.startsWith("file://")) {
     if (!isAbsolute(specifier)) {
-      debugLog("Setting import URL relative to baseURL.");
-      importURL = new URL(specifier, baseURL).href;
+      debugLog(
+        "[tsm: resolve]",
+        "Setting import URL relative to baseURL."
+      );
+
+      importedFileURL = new URL(specifier, baseURL).href;
     } else {
-      debugLog("Setting import URL to absolute specifier.");
-      importURL = pathToFileURL(resolvePath(normalize(specifier))).href;
+      debugLog(
+        "[tsm: resolve]", 
+        "Setting import URL to absolute specifier."
+      );
+
+      importedFileURL = pathToFileURL(resolvePath(normalize(specifier))).href;
     }
-    debugLog("Resolved import URL.", { importURL });
+    debugLog(
+      "[tsm: resolve]", 
+      "Resolved import URL.", 
+      { importURL: importedFileURL }
+    );
   }
   
-  const parentExtension = extname(parentURL ?? "").toLowerCase();
-  const specifierExtension = extname(importURL).toLowerCase();
+  const parentExtension = extname(importedFromURL ?? "").toLowerCase();
+  const specifierExtension = extname(importedFileURL).toLowerCase();
 
   debugLog({
-    cwdURL, parentURL, importURL, 
+    cwdURL, importedFromURL, importURL: importedFileURL, 
     parentExtension, specifierExtension
   });
 
   if (specifierExtension) {
     const unresolvedSpecifier = 
-      importURL.substring(0, importURL.lastIndexOf(specifierExtension));
+      importedFileURL.substring(
+        0, importedFileURL.lastIndexOf(specifierExtension)
+      );
+
     /**
      * JS being imported by a TS file.
      */
@@ -69,6 +98,7 @@ export const resolve: ModuleResolver = async (
       const resolvedTsSourceFile = checkTsExtensions(unresolvedSpecifier);
       if (resolvedTsSourceFile) {
         debugLog(
+          "[tsm: resolve]",
           "Found JS import in TS.", 
           { unresolvedSpecifier, resolvedTsSourceFile }
         );
@@ -79,7 +109,11 @@ export const resolve: ModuleResolver = async (
      * Resolve to the specifier if the file exists or there is no parent URL.
      */
     if (fileExists(unresolvedSpecifier)) {
-      debugLog("Found file at unresolved specifier", { unresolvedSpecifier });
+      debugLog(
+        "[tsm: resolve]",
+        "Found file at unresolved specifier", 
+        { unresolvedSpecifier }
+      );
       return { url: unresolvedSpecifier };
     }
     /**
@@ -91,20 +125,29 @@ export const resolve: ModuleResolver = async (
   /**
    * Resolve TypeScript's bare import syntax.
    */
-  debugLog("Resolving incomplete URL import to file.", { specifier });
+  debugLog(
+    "[tsm: resolve]", 
+    "Resolving incomplete URL import to file.", 
+    { specifier }
+  );
   /**
    * Check for valid file extensions first.
    */
-  const resolvedFile = checkExtensions(importURL);
+  const resolvedFile = checkExtensions(importedFileURL);
   if (resolvedFile) {
-    debugLog("Resolved import URL to file.", { resolvedFile });
+    debugLog(
+      "[tsm: resolve]",
+      "Resolved import URL to file.", 
+      { resolvedFile }
+    );
+
     return { url: resolvedFile };
   }
   /**
    * If none found, try to resolve an index file.
    */
   const resolvedIndexFile = checkExtensions(
-    pathToFileURL(resolvePath(fileURLToPath(importURL), "index")).href
+    pathToFileURL(resolvePath(fileURLToPath(importedFileURL), "index")).href
   );
 
   if (resolvedIndexFile) {
@@ -174,7 +217,7 @@ export const transformSource: Transform = async (
   const { url } = context;
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
-  
+
   if (!options) {
     debugLog("No loader found, using default transformer.", { url });
     return defaultTransformSource(source, context, defaultTransformSource);

@@ -1,16 +1,34 @@
+import chalk from "chalk";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { sep as posixSep } from "path/posix";
 import { sep } from "path";
 
+const formatLog = (...msgs: unknown[]) => {
+  if (!msgs.length) return;
+  const header = chalk.gray(msgs[0]);
+  const logMsgs = msgs.slice(1);
+
+  console.log(header);
+  console.group();
+  console.log(...logMsgs);
+  console.groupEnd();
+
+  // console.log(
+  //   header,
+  //   ...logMsgs,
+  //   "\n\n",
+  // );
+};
+
 export const debugLog = (...msgs: unknown[]) => {
   if (process.env.NODE_ENV === "development") {
-    console.log("\n", ...msgs);
+    formatLog(...msgs);
   }
 };
 
 export const log = (...msgs: unknown[]) => {
-  console.log("\n", ...msgs);
+  formatLog(...msgs);
 };
 
 export const isTS = /\.[mc]?tsx?(?=\?|$)/;
