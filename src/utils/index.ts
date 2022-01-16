@@ -8,7 +8,7 @@ import { sep } from "path";
 const debugConsole = new Console({
   stdout: process.stdout,
   stderr: process.stderr,
-  groupIndentation: 8,
+  groupIndentation: 4,
 });
 
 export const DEVELOPMENT_MODE = process.env.NODE_ENV === "development";
@@ -28,7 +28,7 @@ export const createDebugLogger = (fn: Function) => {
     const { name } = fn;
     return {
       log (...logs: unknown[]) {
-        debugLog(`[${name}]`, ...logs);
+        formatLog(`[${name}]\n`, ...logs);
       },
 
       group() {
