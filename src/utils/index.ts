@@ -1,28 +1,63 @@
+import { Console } from "console";
 import chalk from "chalk";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { sep as posixSep } from "path/posix";
 import { sep } from "path";
 
-const formatLog = (...msgs: unknown[]) => {
+const debugConsole = new Console({
+  stdout: process.stdout,
+  stderr: process.stderr,
+  groupIndentation: 8,
+});
+
+export const DEVELOPMENT_MODE = process.env.NODE_ENV === "development";
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const createDebugLogger = (fn: Function) => {
+  if (process.env.NODE_ENV !== "development") {
+    /**
+     * Dead path, should get removed after AST compilation.
+     */
+    return {
+      log() { void 0; },
+      group() { void 0; },
+      groupEnd() { void 0; },
+    };
+  } else {
+    const { name } = fn;
+    return {
+      log (...logs: unknown[]) {
+        debugLog(`[${name}]`, ...logs);
+      },
+
+      group() {
+        debugConsole.log("\n");
+        debugConsole.group(`[TSM DEBUG] [${name}]`);
+      },
+
+      groupEnd() {
+        debugConsole.log("\n", "-".repeat(80), "\n");
+        debugConsole.groupEnd();
+      }
+    };
+  }
+};
+
+export const formatLog = (...msgs: unknown[]) => {
   if (!msgs.length) return;
+
+  const thisConsole = DEVELOPMENT_MODE ? debugConsole : console;
   const header = chalk.gray(msgs[0]);
   const logMsgs = msgs.slice(1);
 
-  console.log(header);
-  console.group();
-  console.log(...logMsgs);
-  console.groupEnd();
-
-  // console.log(
-  //   header,
-  //   ...logMsgs,
-  //   "\n\n",
-  // );
+  thisConsole.log("\n");
+  thisConsole.log(header);
+  thisConsole.log(...logMsgs);
 };
 
 export const debugLog = (...msgs: unknown[]) => {
-  if (process.env.NODE_ENV === "development") {
+  if (DEVELOPMENT_MODE) {
     formatLog(...msgs);
   }
 };

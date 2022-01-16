@@ -13,7 +13,7 @@ import { sep as winSep } from "path/win32";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { checkExtensions, checkTsExtensions, debugLog, fileExists, isJS, isTS, MODULE_LOADERS } from "../utils/index.js";
+import { checkExtensions, checkTsExtensions, createDebugLogger, fileExists, isJS, isTS, MODULE_LOADERS } from "../utils/index.js";
 
 export const resolve: ModuleResolver = async (
   specifier,
@@ -21,34 +21,22 @@ export const resolve: ModuleResolver = async (
   defaultResolve
 ) => {
   const { parentURL: importedFromURL } = context;
+  const DEBUG = createDebugLogger(resolve);
 
-  debugLog(
-    "[tsm: resolve]",
-    "Resolving specifier.",
-    { importedFromURL, specifier }
-  );
+  DEBUG.log("Resolving specifier.", { importedFromURL, specifier });
 
   /**
    * Do not resolved named modules like `chalk`.
    */
   if (!specifier.startsWith(".") && !isAbsolute(specifier)) {
-    debugLog(
-      "[tsm: resolve]", 
-      "Using defaultResolve for named module.",
-      { specifier }
-    );
-
+    DEBUG.log("Using defaultResolve for named module.", { specifier });
     return defaultResolve(specifier, context, defaultResolve);
   }
 
   const { href: cwdURL } = pathToFileURL(process.cwd());
   const { href: baseURL } = new URL(importedFromURL || cwdURL);
 
-  debugLog(
-    "[tsm: resolve]", 
-    "Finding import URL for", 
-    { specifier, baseURL }
-  );
+  DEBUG.log("Finding import URL for", { specifier, baseURL });
 
   /**
    * Resolve specifier from a relative or incomplete specifier to a file URL.
@@ -56,33 +44,22 @@ export const resolve: ModuleResolver = async (
   let importedFileURL = specifier;
   if (!specifier.startsWith("file://")) {
     if (!isAbsolute(specifier)) {
-      debugLog(
-        "[tsm: resolve]",
-        "Setting import URL relative to baseURL."
-      );
-
+      DEBUG.log("Setting import URL relative to baseURL.");
       importedFileURL = new URL(specifier, baseURL).href;
     } else {
-      debugLog(
-        "[tsm: resolve]", 
-        "Setting import URL to absolute specifier."
-      );
-
+      DEBUG.log("Setting import URL to absolute specifier.");
       importedFileURL = pathToFileURL(resolvePath(normalize(specifier))).href;
     }
-    debugLog(
-      "[tsm: resolve]", 
-      "Resolved import URL.", 
-      { importURL: importedFileURL }
-    );
+
+    DEBUG.log("Resolved import URL.", { importedFileURL, importedFromURL });
   }
   
   const parentExtension = extname(importedFromURL ?? "").toLowerCase();
   const specifierExtension = extname(importedFileURL).toLowerCase();
 
-  debugLog({
-    cwdURL, importedFromURL, importURL: importedFileURL, 
-    parentExtension, specifierExtension
+  DEBUG.log("Rewriting file extension", {
+    parentExtension, 
+    specifierExtension
   });
 
   if (specifierExtension) {
@@ -97,11 +74,10 @@ export const resolve: ModuleResolver = async (
     if (isJS.test(specifierExtension) && isTS.test(parentExtension)) {
       const resolvedTsSourceFile = checkTsExtensions(unresolvedSpecifier);
       if (resolvedTsSourceFile) {
-        debugLog(
-          "[tsm: resolve]",
-          "Found JS import in TS.", 
-          { unresolvedSpecifier, resolvedTsSourceFile }
-        );
+        DEBUG.log("Found JS import in TS.", {
+          unresolvedSpecifier, 
+          resolvedTsSourceFile 
+        });
         return { url: resolvedTsSourceFile };
       }
     }
@@ -109,11 +85,7 @@ export const resolve: ModuleResolver = async (
      * Resolve to the specifier if the file exists or there is no parent URL.
      */
     if (fileExists(unresolvedSpecifier)) {
-      debugLog(
-        "[tsm: resolve]",
-        "Found file at unresolved specifier", 
-        { unresolvedSpecifier }
-      );
+      DEBUG.log("Found file at unresolved specifier", { unresolvedSpecifier });
       return { url: unresolvedSpecifier };
     }
     /**
@@ -125,34 +97,23 @@ export const resolve: ModuleResolver = async (
   /**
    * Resolve TypeScript's bare import syntax.
    */
-  debugLog(
-    "[tsm: resolve]", 
-    "Resolving incomplete URL import to file.", 
-    { specifier }
-  );
+  DEBUG.log("Resolving incomplete URL import to file.", { specifier });
   /**
    * Check for valid file extensions first.
    */
   const resolvedFile = checkExtensions(importedFileURL);
   if (resolvedFile) {
-    debugLog(
-      "[tsm: resolve]",
-      "Resolved import URL to file.", 
-      { resolvedFile }
-    );
-
+    DEBUG.log("Resolved import URL to file.", { resolvedFile });
     return { url: resolvedFile };
   }
   /**
    * If none found, try to resolve an index file.
    */
-  const resolvedIndexFile = checkExtensions(
-    new URL(join(importedFileURL, "index")).href,
-    // pathToFileURL(resolvePath(fileURLToPath(importedFileURL), "index")).href
-  );
+  const indexFileURL = new URL(join(importedFileURL, "index")).href;
+  const resolvedIndexFile = checkExtensions(indexFileURL);
 
   if (resolvedIndexFile) {
-    debugLog("Resolved import URL to index file.", { resolvedIndexFile });
+    DEBUG.log("Resolved import URL to index file.", { resolvedIndexFile });
     return { url: resolvedIndexFile };
   }
 
@@ -160,17 +121,18 @@ export const resolve: ModuleResolver = async (
 };
 
 export const load: ModuleLoader = async (url, context, defaultLoad) => {
-  debugLog("[Node.js load]", { url });
+  const DEBUG = createDebugLogger(load);
+  DEBUG.log("Loading source file.", { url });
 
   if (!url.includes(winSep) && !url.includes(posixSep)) {
-    debugLog("Using defaultLoad for named module.", { url });
+    DEBUG.log("Using defaultLoad for named module.", { url });
     return defaultLoad(url, context, defaultLoad);
   }
 
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
   if (!options) {
-    debugLog("No loader found, using defaultLoad.", { url });
+    DEBUG.log("No loader found, using defaultLoad.", { url });
     return defaultLoad(url, context, defaultLoad);
   }
 
@@ -192,13 +154,14 @@ export const load: ModuleLoader = async (url, context, defaultLoad) => {
  * @deprecated As of Node 17.
  */
 export const getFormat: Inspect = async (url, context, defaultGetFormat) => {
-  debugLog("[Node.js getFormat]", { url });
+  const DEBUG = createDebugLogger(getFormat);
+  DEBUG.log("Getting format for source file.", { url });
 
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
 
   if (!options) {
-    debugLog("No loader found, using default format.", { url });
+    DEBUG.log("No loader found, using default format.", { url });
     return defaultGetFormat(url, context, defaultGetFormat);
   }
 
@@ -213,14 +176,15 @@ export const transformSource: Transform = async (
   context, 
   defaultTransformSource
 ) => {
-  debugLog("[Node.js transformSource]", { context });
+  const DEBUG = createDebugLogger(transformSource);
+  DEBUG.log("Transforming source from context.", { context });
 
   const { url } = context;
   const extension = extname(url);
   const options = MODULE_LOADERS[extension];
 
   if (!options) {
-    debugLog("No loader found, using default transformer.", { url });
+    DEBUG.log("No loader found, using default transformer.", { url });
     return defaultTransformSource(source, context, defaultTransformSource);
   }
 

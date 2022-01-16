@@ -15,7 +15,7 @@ import shebang from "rollup-plugin-preserve-shebang";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { debugLog, forceUnixPath } from "../utils/index.js";
+import { createDebugLogger, forceUnixPath, log } from "../utils/index.js";
 import { resolve } from "../loader/index.js";
 
 /**
@@ -23,7 +23,6 @@ import { resolve } from "../loader/index.js";
  */
 const getRelativePath = (fromURL: string, toURL: string) => {
   const relativePath = relative(fromURL, toURL);
-  debugLog({ fromURL, toURL, relativePath });
   return forceUnixPath(
     relativePath.startsWith(".")
       ? relativePath
@@ -57,7 +56,11 @@ export const rewriteImport = (
   importToReplace: string,
   importReplacement: string,
 ) => {
-  debugLog({ importStatement, importToReplace, importReplacement });
+  const DEBUG = createDebugLogger(rewriteImport);
+  DEBUG.log("Rewriting import", {
+    importStatement, importToReplace, importReplacement
+  });
+
   const [, sourcePart] = importStatement.split(/from|\(/);
   const rewrittenSource = sourcePart
     .replace(importToReplace, importReplacement)
@@ -71,9 +74,13 @@ export const rewriteImport = (
  * resolved by the TSM loader.
  */
 export const rewriteImports: () => RollupPlugin = () => {
+  const DEBUG = createDebugLogger(rewriteImports);
+  DEBUG.log("Rewriting imports in emitted JS.");
+
   return {
     name: "Rewrite imports",
     renderChunk: async (code: string, chunk, options) => {
+      DEBUG.group();
       for (const importedChunk of chunk.imports) {
         /**
          * If no absolute module ID, bail.
@@ -81,12 +88,15 @@ export const rewriteImports: () => RollupPlugin = () => {
         if (!chunk.facadeModuleId) continue;
         const resolvedEntryPoint = resolvePath(chunk.facadeModuleId);
         const entryPointURL = pathToFileURL(resolvedEntryPoint).href;
-        debugLog({ entryPointURL, importedChunk });
+        DEBUG.log(
+          "Resolving specifier from entry point.",
+          { entryPointURL, importedChunk }
+        );
         /**
          * Just a named module. Skip.
          */
         if (!importedChunk.startsWith(".") && !isAbsolute(importedChunk)) {
-          debugLog(`- Skipping named module: ${importedChunk}`);
+          DEBUG.log("Skipping named module.", { importedChunk });
           continue;
         }
 
@@ -96,7 +106,7 @@ export const rewriteImports: () => RollupPlugin = () => {
            * never rewritten.
            */
           if (isAbsolute(importedChunk)) {
-            debugLog(`Ignoring absolute specifier: ${importedChunk}`);
+            DEBUG.log("Skipping absolute specifier.", { importedChunk });
             continue;
           }
           /**
@@ -115,7 +125,7 @@ export const rewriteImports: () => RollupPlugin = () => {
          */
         if (isAbsolute(importedChunk)) {
           const importedFileURL = pathToFileURL(importedChunk).href;
-          debugLog(
+          DEBUG.log(
             "Rewriting partial specifier",
             { importedChunk, importedFileURL, baseURL  }
           );
@@ -130,11 +140,15 @@ export const rewriteImports: () => RollupPlugin = () => {
          */
         const importMatch = importPattern(importToReplace);
         const importStatements = code.match(importMatch) ?? [];
-        debugLog({ baseURL, importToReplace, importStatements });
+        DEBUG.log(
+          "Replacing import statements.",
+          { baseURL, importToReplace, importStatements }
+        );
         /**
          * Attempt to replace the specifier for each import statement.
          */
         for (const importStatement of importStatements) {
+          DEBUG.group();
           if (options.file) {
             /**
              * Resolve the specifier to a module and URL using the internal
@@ -148,15 +162,19 @@ export const rewriteImports: () => RollupPlugin = () => {
               },
               async (url) => await import(url),
             );
+            DEBUG.log(
+              "Resolved import with TSM resolve().",
+              { resolvedImport }
+            );
             /**
-             * Rewrite import identifiers for seamless CJS support. Ignore
-             * dynamic imports.
+             * Rewrite the specifier to the resolved URL.
              */
             const resolvedImportURL = resolvedImport.url;
             if (resolvedImportURL) {
-              debugLog({
-                importedChunk, entryPointURL, resolvedImportURL, baseURL
-              });
+              DEBUG.log(
+                "Rewriting import statement.",
+                { importedChunk, entryPointURL, resolvedImportURL, baseURL }
+              );
               /**
                * The import statement with the unresolved import replaced with
                * its resolved specifier.
@@ -169,13 +187,18 @@ export const rewriteImports: () => RollupPlugin = () => {
               /**
                * Replace the import in the code.
                */
-              debugLog({ entryPointURL, importStatement, rewrittenImport });
+              DEBUG.log(
+                "Performing specifier rewrite.",
+                { entryPointURL, importStatement, rewrittenImport }
+              );
               code = code.replace(importStatement, rewrittenImport);
             }
           }
+          DEBUG.groupEnd();
         }
       }
-      
+      DEBUG.groupEnd();
+
       return {
         code,
         sourcemap: false,
@@ -189,9 +212,10 @@ export const rewriteImports: () => RollupPlugin = () => {
  * resolve them for us.
  */
 export const build = async (production = false) => {
+  const DEBUG = createDebugLogger(build);
   try {
     if (production) {
-      debugLog(chalk.grey("Building for production..."));
+      log(chalk.grey("Building for production..."));
     }
     /**
      * Initialize build options, and inject PACKAGE_JSON for library builds.
@@ -215,11 +239,13 @@ export const build = async (production = false) => {
      * Clean old output.
      */
     const distDir = resolvePath(cwd, "dist");
+    DEBUG.log("Cleaning old output.", { distDir });
     await rm(distDir, { force: true, recursive: true });
     /**
      * TS files to compile.
      */
     const tsFiles = await glob("src/**/*.ts", { cwd });
+    DEBUG.log("Compiling TS files.", { tsFiles });
     await esbuild({
       ...shared,
       entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
@@ -228,6 +254,7 @@ export const build = async (production = false) => {
      * TSX files to compile.
      */
     const tsxFiles = await glob("src/**/*.tsx", { cwd });
+    DEBUG.log("Compiling TSX files.", { tsxFiles });
     await esbuild({
       ...shared,
       entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
@@ -250,11 +277,16 @@ export const build = async (production = false) => {
  * Finally, rewrite imports in the emitted JS to ESM-compliant paths.
  */
 export const postBuild = async () => {
+  const DEBUG = createDebugLogger(postBuild);
   const filesToOptimize = await glob("dist/**/*.js");
+
+  DEBUG.log("Optimizing emitted JS.", { filesToOptimize });
+
   await Promise.all(
     filesToOptimize.map(
       async (file) => {
-        debugLog("Optimizing", file);
+        DEBUG.log("Optimizing file.", { file });
+
         const build = await rollup({
           input: file,
           /**
