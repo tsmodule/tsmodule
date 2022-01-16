@@ -63,12 +63,12 @@ $ node --require tsm server.tsx
 $ node -r tsm server.tsx
 
 # use as `--loader` hook
-$ node --loader tsm main.jsx
+$ node --loader @tsmodule/tsm main.jsx
 ```
 
 ## How it works
 
-`tsm` is effectively a proxy for `node --loader tsm [...]`. The tsm loader
+`tsm` is effectively a proxy for `node --loader @tsmodule/tsm [...]`. The tsm loader
 allows ES module resolution to natively import from specifiers like `./thing ->
 ./thing.ts`, and uses esbuild to load TypeScript on-the-fly. 
 
