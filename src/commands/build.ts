@@ -279,44 +279,39 @@ export const build = async (production = false) => {
 export const postBuild = async () => {
   const DEBUG = createDebugLogger(postBuild);
   const filesToOptimize = await glob("dist/**/*.js");
-
   DEBUG.log("Optimizing emitted JS.", { filesToOptimize });
 
-  await Promise.all(
-    filesToOptimize.map(
-      async (file) => {
-        DEBUG.log("Optimizing file.", { file });
+  for (const file of filesToOptimize) {
+    DEBUG.log("Optimizing file.", { file });
 
-        const build = await rollup({
-          input: file,
-          /**
-           * Mark all imports other than this entry point as external (do not
-           * bundle).
-           */
-          external: (id: string) => id !== file,
-          plugins: [
-            /**
-             * Leave #!/usr/bin/env shebangs.
-             */
-            shebang(),
-            /**
-             * Rewrite import specifiers using the internal loader.
-             */
-            rewriteImports()
-          ],
-          /**
-           * Suppress warnings about empty modules.
-           */
-          onwarn: () => void 0,
-        });
+    const build = await rollup({
+      input: file,
+      /**
+       * Mark all imports other than this entry point as external (do not
+       * bundle).
+       */
+      external: (id: string) => id !== file,
+      plugins: [
         /**
-         * Write the spec-compliant ES module output.
+         * Leave #!/usr/bin/env shebangs.
          */
-        await build.write({
-          file,
-          format: "esm",
-        });
-      }
-    )
-  );
+        shebang(),
+        /**
+         * Rewrite import specifiers using the internal loader.
+         */
+        rewriteImports()
+      ],
+      /**
+       * Suppress warnings about empty modules.
+       */
+      onwarn: () => void 0,
+    });
+    /**
+     * Write the spec-compliant ES module output.
+     */
+    await build.write({
+      file,
+      format: "esm",
+    });
+  }
 };
