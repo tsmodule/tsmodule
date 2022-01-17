@@ -2,34 +2,34 @@ export type Promisable<T> = Promise<T> | T;
 export type ModuleSource = string | SharedArrayBuffer | Uint8Array;
 export type ModuleFormat = "builtin" | "commonjs" | "json" | "module" | "wasm";
 
-export type ModuleResolver = (
+export type ResolveHook = (
   specifier: string,
   context: {
     conditions: string[];
     parentURL?: string;
   },
-  fallback: ModuleResolver
+  fallback: ResolveHook
 ) => Promisable<{
   url: string;
   format?: ModuleFormat;
 }>;
 
-export type Inspect = (
+export type GetFormatHook = (
   url: string,
   context: object,
-  fallback: Inspect
+  fallback: GetFormatHook
 ) => Promisable<{ format: ModuleFormat }>;
 
-export type Transform = (
+export type TransformHook = (
   source: ModuleSource,
   context: Record<"url" | "format", string>,
-  fallback: Transform
+  fallback: TransformHook
 ) => Promisable<{ source: ModuleSource }>;
 
-export type ModuleLoader = (
+export type LoadHook = (
   url: string,
   context: { format?: ModuleFormat },
-  fallback: ModuleLoader
+  fallback: LoadHook
 ) => Promisable<{
   format: ModuleFormat;
   source: ModuleSource;

@@ -1,9 +1,9 @@
+import type { GetFormatHook as ModuleGetFormatHook, LoadHook as ModuleLoadHook, ResolveHook as ModuleResolveHook, TransformHook as ModuleTransformSourceHook } from "./types";
+
+import { extname, isAbsolute, join, normalize, resolve as resolvePath } from "path";
 import { fileURLToPath, pathToFileURL, URL } from "url";
 import { promises as fs } from "fs";
 import { transform } from "esbuild";
-
-import type { Inspect, ModuleLoader, ModuleResolver, Transform } from "./types";
-import { extname, isAbsolute, join, normalize, resolve as resolvePath } from "path";
 
 import { sep as posixSep } from "path/posix";
 import { sep as winSep } from "path/win32";
@@ -15,7 +15,7 @@ import { sep as winSep } from "path/win32";
  */
 import { checkExtensions, checkTsExtensions, createDebugLogger, fileExists, isJS, isTS, MODULE_LOADERS } from "../utils/index.js";
 
-export const resolve: ModuleResolver = async (
+export const resolve: ModuleResolveHook = async (
   specifier,
   context,
   defaultResolve
@@ -126,7 +126,7 @@ export const resolve: ModuleResolver = async (
   return defaultResolve(specifier, context, defaultResolve);
 };
 
-export const load: ModuleLoader = async (url, context, defaultLoad) => {
+export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
   const DEBUG = createDebugLogger(load);
   DEBUG.log("Loading source file:", { url });
 
@@ -159,7 +159,11 @@ export const load: ModuleLoader = async (url, context, defaultLoad) => {
 /**
  * @deprecated As of Node 17.
  */
-export const getFormat: Inspect = async (url, context, defaultGetFormat) => {
+export const getFormat: ModuleGetFormatHook = async (
+  url, 
+  context, 
+  defaultGetFormat
+) => {
   const DEBUG = createDebugLogger(getFormat);
   DEBUG.log("Getting format for source file:", { url });
 
@@ -177,7 +181,7 @@ export const getFormat: Inspect = async (url, context, defaultGetFormat) => {
 /**
  * @deprecated As of Node 17.
  */
-export const transformSource: Transform = async (
+export const transformSource: ModuleTransformSourceHook = async (
   source, 
   context, 
   defaultTransformSource
