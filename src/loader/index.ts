@@ -57,16 +57,23 @@ export const resolve: ModuleResolver = async (
   const parentExtension = extname(importedFromURL ?? "").toLowerCase();
   const specifierExtension = extname(importedFileURL).toLowerCase();
 
-  DEBUG.log("Rewriting file extension", {
+  DEBUG.log("Rewriting file extension:", {
     parentExtension, 
     specifierExtension
   });
 
   if (specifierExtension) {
+    /**
+     * The imported file URL with the file extension removed, to be resolved
+     * back to its original source (e.g., TS) with the loader.
+     */
     const unresolvedSpecifier = 
       importedFileURL.substring(
-        0, importedFileURL.lastIndexOf(specifierExtension)
+        0,
+        importedFileURL.lastIndexOf(specifierExtension)
       );
+
+    DEBUG.log("Re-resolving specifier:", { unresolvedSpecifier });
 
     /**
      * JS being imported by a TS file.
@@ -78,6 +85,7 @@ export const resolve: ModuleResolver = async (
           unresolvedSpecifier, 
           resolvedTsSourceFile 
         });
+  
         return { url: resolvedTsSourceFile };
       }
     }
@@ -85,7 +93,7 @@ export const resolve: ModuleResolver = async (
      * Resolve to the specifier if the file exists or there is no parent URL.
      */
     if (fileExists(unresolvedSpecifier)) {
-      DEBUG.log("Found file at unresolved specifier", { unresolvedSpecifier });
+      DEBUG.log("Found file at unresolved specifier:", { unresolvedSpecifier });
       return { url: unresolvedSpecifier };
     }
     /**
