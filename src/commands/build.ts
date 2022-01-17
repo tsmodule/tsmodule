@@ -59,13 +59,13 @@ export const rewriteImportStatement = (
     { importStatement, specifierToReplace, specifierReplacement }
   );
 
-  const [, sourcePart] = importStatement.split(/from|\(/);
+  const [, specifier] = importStatement.split(/from|\(/);
   const rewrittenSource = 
-    sourcePart
+    specifier
       .replace(specifierToReplace, specifierReplacement)
       .trim();
 
-  return importStatement.replace(sourcePart, rewrittenSource);
+  return importStatement.replace(specifier, rewrittenSource);
 };
 
 /**
