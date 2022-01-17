@@ -57,10 +57,10 @@ export const resolve: ModuleResolver = async (
   const parentExtension = extname(importedFromURL ?? "").toLowerCase();
   const specifierExtension = extname(importedFileURL).toLowerCase();
 
-  DEBUG.log("Rewriting file extension:", {
-    parentExtension, 
-    specifierExtension
-  });
+  DEBUG.log(
+    "Rewriting file extension:",
+    { parentExtension, specifierExtension }
+  );
 
   if (specifierExtension) {
     /**
@@ -69,8 +69,7 @@ export const resolve: ModuleResolver = async (
      */
     const unresolvedSpecifier = 
       importedFileURL.substring(
-        0,
-        importedFileURL.lastIndexOf(specifierExtension)
+        0, importedFileURL.lastIndexOf(specifierExtension)
       );
 
     DEBUG.log("Re-resolving specifier:", { unresolvedSpecifier });
@@ -102,10 +101,9 @@ export const resolve: ModuleResolver = async (
      */
     return defaultResolve(specifier, context, defaultResolve);
   }
-  /**
-   * Resolve TypeScript's bare import syntax.
-   */
+
   DEBUG.log("Resolving incomplete URL import to file:", { specifier });
+
   /**
    * Check for valid file extensions first.
    */

@@ -54,9 +54,10 @@ export const rewriteImportStatement = (
   specifierReplacement: string,
 ) => {
   const DEBUG = createDebugLogger(rewriteImportStatement);
-  DEBUG.log("Rewriting import", {
-    importStatement, specifierToReplace, specifierReplacement
-  });
+  DEBUG.log(
+    "Rewriting import",
+    { importStatement, specifierToReplace, specifierReplacement }
+  );
 
   const [, sourcePart] = importStatement.split(/from|\(/);
   const rewrittenSource = 
