@@ -13,6 +13,10 @@
 * Supports `node <file>` usage
 * Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage
 
+## Requirements
+
+Because TSM packages are pure ESM environments, only  **Node 16+** is supported.
+
 ## Usage
 
 `tsm` can be used to run TypeScript directly, and the CLI can be used to build
@@ -59,8 +63,8 @@ $ tsm server.ts
 $ NO_COLOR=1 tsm server.ts --trace-warnings
 
 # use as `--require` hook
-$ node --require tsm server.tsx
-$ node -r tsm server.tsx
+$ node --require @tsmodule/tsm server.tsx
+$ node -r @tsmodule/tsm server.tsx
 
 # use as `--loader` hook
 $ node --loader @tsmodule/tsm main.jsx
@@ -88,7 +92,6 @@ resolve conditional exports.
 {
   "rootDir": "src/",
   "outDir": "dist/",
-  // ...
 }
 ```
 
@@ -102,14 +105,20 @@ By default, package.json will be configured like so:
     "./": "./dist/index.js",
     "./*": "./dist/*/index.js"
   },
-  // ...
 }
 ```
 
 Such that "index modules" at e.g. `src/test/index.ts` will be available at
 `my-package/test`.  This has no restriction on internal imports between files,
 only the default configuration for how downstream consumers can import from
-module subpaths. 
+module subpaths.
+
+## Footnotes
+
+For ESM compatibility, CJS `const x = require(...)` statements in imported
+modules will be transformed to backwards-compatible `const { default: x } =
+await import(...)` statements by the loader. This has no runtime effect, and is
+simply a way to support legacy modules.
 
 ## License
 
