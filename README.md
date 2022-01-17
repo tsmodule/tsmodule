@@ -115,10 +115,12 @@ module subpaths.
 
 ## Footnotes
 
-For ESM compatibility, CJS `const x = require(...)` statements in imported
-modules will be transformed to backwards-compatible `const { default: x } =
-await import(...)` statements by the loader. This has no runtime effect, and is
-simply a way to support legacy modules.
+- `const x = require(...)` statements in imported modules will be
+  forward-polyfilled to backwards-compatible `const { default: x } = await
+  import(...)` statements by the loader.
+
+  This has no runtime effect, and is simply a way to support legacy CJS
+  `require` statements by transforming them into equivalent dynamic ESM imports.
 
 ## License
 
