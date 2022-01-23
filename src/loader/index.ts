@@ -201,6 +201,9 @@ export const transformSource: ModuleTransformSourceHook = async (
   const result = await transform(
     source.toString(), {
       ...options,
+      logLevel: process.env.NODE_ENV === "development" ? "debug" : "info",
+      charset: "utf8",
+      target: "esnext",
       sourcefile: context.url,
       format: context.format === "module" ? "esm" : "cjs",
     }
