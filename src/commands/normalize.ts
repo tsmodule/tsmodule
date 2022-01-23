@@ -8,7 +8,6 @@ import glob from "fast-glob";
 import shebang from "rollup-plugin-preserve-shebang";
 
 import { pathToFileURL } from "url";
-import { readFile } from "fs/promises";
 import { resolve } from "../loader/index.js";
 
 /**
@@ -39,26 +38,6 @@ export const generateImportPattern = (importSource: string) => {
     `(${importFrom}|${dynamicImport}|${exportFrom})${padded}`,
     "g",
   );
-};
-
-/**
- * An import pattern that matches every import/require/export statement
- * regardless of specifier.
- */
-const ALL_IMPORTS_REGEX = generateImportPattern("[^\n\r;]+?");
-
-const replaceImportsInFile = async (file: string) => {
-  /**
-   * Read the source of the file we will build from.
-   */
-  const code = await readFile(file, "utf8");
-  /**
-   * All import, export, and require statements in the code.
-   */
-  const imports = code.match(ALL_IMPORTS_REGEX);
-  /**
-   * Replace imports.
-   */
 };
 
 /**
@@ -226,8 +205,8 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
   const filesToNormalize = await glob(files);
   DEBUG.log("Normalizing import/require specifiers:", { filesToNormalize });
 
-  for (const file of filesToNormalize) {
-    DEBUG.log("Normalizing specifiers:", { file });
+  for (let file of filesToNormalize) {
+    file = resolvePath(file);
 
     const build = await rollup({
       input: file,
@@ -236,6 +215,10 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
          * Leave #!/usr/bin/env shebangs.
          */
         shebang(),
+        /**
+         * Used primarily for index.js resolution.
+         */
+        // nodeResolve(),
         /**
          * Rewrite import specifiers using the internal loader.
          */
