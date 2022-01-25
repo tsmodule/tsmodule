@@ -72,9 +72,9 @@ export const build = async (production = true) => {
     await esbuild({
       ...shared,
       entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
-      jsxFactory: "_jsx",
+      jsxFactory: "createElement",
       banner: {
-        js: "import {jsx as _jsx} from 'react/jsx-runtime.js';\n",
+        js: "import { createElement } from 'react';\n",
       },
     });
     /**
