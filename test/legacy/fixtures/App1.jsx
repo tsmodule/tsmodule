@@ -1,4 +1,4 @@
-import * as React from './mock';
+import * as React from "./mock";
 
 /**
  * @typedef Props
@@ -9,5 +9,5 @@ import * as React from './mock';
  * @param {Props} props
  */
 export default function App(props) {
-	return <div className={props.foo}>hello world</div>;
+  return <div className={props.foo}>hello world</div>;
 }

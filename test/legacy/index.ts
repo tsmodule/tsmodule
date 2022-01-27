@@ -3,7 +3,7 @@
 const a = "hello world";
 console.log({ a });
 
-import { resolve } from "../src/loader";
+import { resolve } from "../../src/loader";
 (async () => {
   console.log(
     await resolve(
