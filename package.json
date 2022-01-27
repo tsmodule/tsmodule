@@ -71,6 +71,7 @@
 			"ts": "module"
 		},
 		"nodeArguments": [
+      "--no-warnings",
 			"--loader=@tsmodule/tsm"
 		]
 	}

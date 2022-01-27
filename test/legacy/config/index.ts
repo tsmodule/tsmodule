@@ -28,6 +28,4 @@ assert.equal(typeof esm, "object", "ESM.js :: typeof");
 assert.equal(typeof esm.hello, "function", "ESM.js :: typeof :: hello");
 assert.equal(esm.hello("you"), "hello, you", "ESM.js :: value :: hello");
 
-console.log("DONE~!");
-
-test("Should not fail", (t) => t.pass());
+test("imports should have expected shape", (t) => t.pass());
