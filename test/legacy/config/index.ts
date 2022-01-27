@@ -1,3 +1,5 @@
+import test from "ava";
+
 import * as assert from "assert";
 
 // NOTE: doesn't actually exist yet
@@ -27,3 +29,5 @@ assert.equal(typeof esm.hello, "function", "ESM.js :: typeof :: hello");
 assert.equal(esm.hello("you"), "hello, you", "ESM.js :: value :: hello");
 
 console.log("DONE~!");
+
+test("Should not fail", (t) => t.pass());

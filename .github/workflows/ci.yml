@@ -29,17 +29,5 @@ jobs:
     - name: Type Checks
       run: yarn types
 
-    - name: Loader Tests
-      run: node --loader @tsmodule/tsm test/legacy/fixtures/loader.ts
-
-    - name: Tests <~ ESM
-      run: node --loader @tsmodule/tsm test/legacy/index.mjs
-
-    - name: Tests <~ ESM <~ TypeScript
-      run: node --loader @tsmodule/tsm test/legacy/config/index.ts
-
-    - name: Tests <~ CLI
-      run: node --loader @tsmodule/tsm test/legacy/index.mjs
-
-    - name: Tests <~ CLI <~ TypeScript
-      run: node --loader @tsmodule/tsm test/legacy/config/index.ts
+    - name: Test
+      run: yarn test
