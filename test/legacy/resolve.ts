@@ -1,9 +1,9 @@
 #!/usr/bin/env tsm
 
+import { resolve } from "../../src/loader";
 import test from "ava";
 
-import { resolve } from "../../src/loader";
-(async () => {
+test("should resolve to TS files for JS imports in loader mode", async (t) => {
   const { url } = await resolve(
     "../commands/build.js",
     {
@@ -13,9 +13,7 @@ import { resolve } from "../../src/loader";
     async (url) => await import(url),
   );
 
-  test("should resolve TS back to JS", (t) => {
-    if (url.endsWith(".ts")) {
-      t.pass();
-    }
-  });
-})();
+  if (url.endsWith(".ts")) {
+    t.pass();
+  }
+});

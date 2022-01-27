@@ -67,4 +67,4 @@ assert.equal(typeof esm2, "object", "ESM.mjs :: typeof");
 assert.equal(typeof esm2.hello, "function", "ESM.mjs :: typeof :: hello");
 assert.equal(esm2.hello("you"), "hello, you", "ESM.mjs :: value :: hello");
 
-test("ESM tests should pass", (t) => t.pass());
+test("ESM imports should have expected shape", (t) => t.pass());

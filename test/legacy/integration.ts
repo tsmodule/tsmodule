@@ -3,12 +3,12 @@ import test from "ava";
 import * as assert from "assert";
 
 // NOTE: doesn't actually exist yet
-import * as esm from "../fixtures/module";
-import * as js from "../fixtures/math";
-import * as mjs from "../fixtures/utils.mjs";
+import * as esm from "./fixtures/module";
+import * as js from "./fixtures/math";
+import * as mjs from "./fixtures/utils.mjs";
 
 // NOTE: avoid need for syntheticDefault + analysis
-import * as data from "../fixtures/data.json";
+import * as data from "./fixtures/data.json";
 assert.equal(typeof data, "object");
 
 // NOTE: raw JS missing
@@ -28,4 +28,4 @@ assert.equal(typeof esm, "object", "ESM.js :: typeof");
 assert.equal(typeof esm.hello, "function", "ESM.js :: typeof :: hello");
 assert.equal(esm.hello("you"), "hello, you", "ESM.js :: value :: hello");
 
-test("imports should have expected shape", (t) => t.pass());
+test("fixture imports should have expected shape", (t) => t.pass());
