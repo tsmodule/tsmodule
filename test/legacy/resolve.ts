@@ -5,7 +5,7 @@ import test from "ava";
 
 test("should resolve to TS files for JS imports in loader mode", async (t) => {
   const { url } = await resolve(
-    "../commands/build.js",
+    "../../src/commands/build.js",
     {
       parentURL: "file:///home/christian/PersonalProjects/tsm/src/loader/index.ts",
       conditions: [ "node", "import", "node-addons" ]
