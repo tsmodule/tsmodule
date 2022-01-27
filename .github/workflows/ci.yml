@@ -24,7 +24,7 @@ jobs:
         node-version: ${{ matrix.nodejs }}
 
     - name: Install and link
-      run: yarn install --frozen-lockfile && yarn link
+      run: yarn install --frozen-lockfile && yarn build --dev && yarn link
 
     - name: Type Checks
       run: yarn types
