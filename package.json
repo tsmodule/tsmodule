@@ -50,6 +50,7 @@
     "rollup-plugin-preserve-shebang": "^1.0.1"
   },
   "devDependencies": {
+    "@ctjlewis/await-shell": "^2.4.5",
     "@types/node": "17.0.8",
     "@types/react": "17.0.38",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
@@ -67,12 +68,15 @@
     "experimental-loader"
   ],
   "ava": {
-		"extensions": {
-			"ts": "module"
-		},
-		"nodeArguments": [
+    "files": [
+      "test/**/*.test.ts"
+    ],
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
       "--no-warnings",
-			"--loader=@tsmodule/tsm"
-		]
-	}
+      "--loader=@tsmodule/tsm"
+    ]
+  }
 }
