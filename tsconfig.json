@@ -22,6 +22,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "jsx": "preserve",
+    "incremental": false
   },
   "include": [
     "src/**/*"

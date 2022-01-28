@@ -53,7 +53,7 @@ export const resolve: ModuleResolveHook = async (
 
     DEBUG.log("Resolved import URL:", { importedFileURL, importedFromURL });
   }
-  
+
   const parentExtension = extname(importedFromURL ?? "").toLowerCase();
   const specifierExtension = extname(importedFileURL).toLowerCase();
 
@@ -67,7 +67,7 @@ export const resolve: ModuleResolveHook = async (
      * The imported file URL with the file extension removed, to be resolved
      * back to its original source (e.g., TS) with the loader.
      */
-    const unresolvedSpecifier = 
+    const unresolvedSpecifier =
       importedFileURL.substring(
         0, importedFileURL.lastIndexOf(specifierExtension)
       );
@@ -81,10 +81,10 @@ export const resolve: ModuleResolveHook = async (
       const resolvedTsSourceFile = checkTsExtensions(unresolvedSpecifier);
       if (resolvedTsSourceFile) {
         DEBUG.log("Found JS import in TS:", {
-          unresolvedSpecifier, 
-          resolvedTsSourceFile 
+          unresolvedSpecifier,
+          resolvedTsSourceFile
         });
-  
+
         return { url: resolvedTsSourceFile };
       }
     }
@@ -160,8 +160,8 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
  * @deprecated As of Node 17.
  */
 export const getFormat: ModuleGetFormatHook = async (
-  url, 
-  context, 
+  url,
+  context,
   defaultGetFormat
 ) => {
   const DEBUG = createDebugLogger(getFormat);
@@ -182,8 +182,8 @@ export const getFormat: ModuleGetFormatHook = async (
  * @deprecated As of Node 17.
  */
 export const transformSource: ModuleTransformSourceHook = async (
-  source, 
-  context, 
+  source,
+  context,
   defaultTransformSource
 ) => {
   const DEBUG = createDebugLogger(transformSource);

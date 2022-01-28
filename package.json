@@ -38,7 +38,7 @@
     "build": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build",
     "types": "tsc",
     "prepare": "yarn build && yarn types",
-    "test": "ava"
+    "test": "ava --no-worker-threads"
   },
   "dependencies": {
     "chalk": "^5.0.0",

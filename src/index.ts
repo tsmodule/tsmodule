@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 import { Command } from "commander";
-import { build } from "./commands/build";
-import { execute } from "./commands/execute";
-import { normalizeImportSpecifiers } from "./commands/normalize";
+import { build } from "./commands/build.js";
+import { execute } from "./commands/execute.js";
+import { normalizeImportSpecifiers } from "./commands/normalize.js";
 
 const program = new Command();
 
@@ -26,7 +27,9 @@ program
     "Rewrites import specifiers in files to ESM-compliant paths.\n" +
     "(default: dist/**/*.js)"
   )
-  .action(async ({ files }) => await normalizeImportSpecifiers(files));
+  .action(async ({ files }) => {
+    await normalizeImportSpecifiers(files);
+  });
 
 program
   .command("version")

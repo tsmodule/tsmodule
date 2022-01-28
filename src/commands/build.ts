@@ -19,72 +19,70 @@ import { normalizeImportSpecifiers } from "./normalize.js";
  */
 export const build = async (production = true) => {
   const DEBUG = createDebugLogger(build);
-  try {
-    if (production) {
-      log(chalk.grey("Building for production..."));
-    }
-    /**
-     * Initialize build options, and inject PACKAGE_JSON for library builds.
-     */
-    const cwd = process.cwd();
-    const pkgJsonFile = resolvePath(cwd, "package.json");
-    const pkgJson = await readFile(pkgJsonFile, "utf-8");
-    const shared: BuildOptions = {
-      outbase: "src",
-      outdir: "dist",
-      assetNames: "[name].js",
-      logLevel: production ? "info" : "debug",
-      charset: "utf8",
-      format: "esm",
-      target: "esnext",
-      minify: production,
-      define: {
-        PACKAGE_JSON: pkgJson,
-      },
-    };
+
+  if (production) {
+    log(chalk.grey("Building for production..."));
+  }
+  /**
+   * Initialize build options, and inject PACKAGE_JSON for library builds.
+   */
+  const cwd = process.cwd();
+  const pkgJsonFile = resolvePath(cwd, "package.json");
+  const pkgJson = await readFile(pkgJsonFile, "utf-8");
+  const shared: BuildOptions = {
+    absWorkingDir: cwd,
+    outbase: "src",
+    outdir: "dist",
+    assetNames: "[name].js",
+    logLevel: production ? "info" : "debug",
+    charset: "utf8",
+    format: "esm",
+    target: "esnext",
+    minify: production,
+    define: {
+      PACKAGE_JSON: pkgJson,
+    },
+  };
     /**
      * Clean old output.
      */
-    const distDir = resolvePath(cwd, "dist");
-    DEBUG.log("Cleaning old output:", { distDir });
-    await rm(distDir, { force: true, recursive: true });
-    /**
+  const distDir = resolvePath(cwd, "dist");
+  DEBUG.log("Cleaning old output:", { distDir });
+  await rm(distDir, { force: true, recursive: true });
+  /**
      * All TS files for the build. Ignore .d.ts files.
      */
-    const allTs =
+  const allTs =
       glob
         .sync("src/**/*.{ts,tsx}", { cwd })
-        .filter((file) => extname(file) !== ".d.ts");
+        .filter((file) => extname(file) !== ".d.ts")
+        .map((file) => resolvePath(file));
     /**
      * Compile TS files.
      */
-    const tsFiles = allTs.filter((file) => extname(file) === ".ts");
-    DEBUG.log("Compiling TS files:", { tsFiles });
-    await esbuild({
-      ...shared,
-      entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
-    });
-    /**
+  const tsFiles = allTs.filter((file) => extname(file) === ".ts");
+  DEBUG.log("Compiling TS files:", { tsFiles });
+  await esbuild({
+    ...shared,
+    entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
+  });
+  /**
      * TSX files to compile.
      */
-    const tsxFiles = allTs.filter((file) => extname(file) === ".tsx");
-    DEBUG.log("Compiling TSX files:", { tsxFiles });
-    await esbuild({
-      ...shared,
-      entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
-      jsxFactory: "createElement",
-      banner: {
-        js: "import { createElement } from 'react';\n",
-      },
-    });
-    /**
-     * Run the post-build process and resolve import specifiers in output.
-     */
-    if (!process.env.NO_REWRITES) {
-      await normalizeImportSpecifiers();
-    }
-  } catch (err) {
-    // console.error(err);
-    process.exitCode = 1;
+  const tsxFiles = allTs.filter((file) => extname(file) === ".tsx");
+  DEBUG.log("Compiling TSX files:", { tsxFiles });
+  await esbuild({
+    ...shared,
+    entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
+    jsxFactory: "createElement",
+    banner: {
+      js: "import { createElement } from 'react';\n",
+    },
+  });
+  /**
+   * Run the post-build process and resolve import specifiers in output.
+   */
+  if (!process.env.NO_REWRITES) {
+    await normalizeImportSpecifiers();
   }
 };
