@@ -2,7 +2,7 @@ import { shell } from "@ctjlewis/await-shell";
 import test from "ava";
 
 test.before("building resolution test with tsm", async () => {
-  await shell("cd ./test/integration/resolve && tsm build");
+  await shell("cd ./test/integration/resolve && tsm build --dev");
 });
 
 test("test module should load correctly", async (t) => {

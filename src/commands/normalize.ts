@@ -14,7 +14,11 @@ import { resolve } from "../loader/index.js";
  * Get a Unix-like relative path from a URL.
  */
 const toRelativeSpecifier = (fromURL: string, toURL: string) => {
+  const DEBUG = createDebugLogger(toRelativeSpecifier);
   const relativePath = relative(fromURL, toURL);
+
+  DEBUG.log("To relative specifier:", { fromURL, toURL, relativePath });
+
   return normalizeSpecifier(
     relativePath.startsWith(".")
       ? relativePath
