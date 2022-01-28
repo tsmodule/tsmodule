@@ -36,8 +36,7 @@
     "bootstrap": "node bootstrap.js",
     "prebuild": "yarn bootstrap",
     "build": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build",
-    "types": "tsc",
-    "prepare": "yarn build && yarn types",
+    "prepare": "yarn build",
     "test": "ava --no-worker-threads"
   },
   "dependencies": {
