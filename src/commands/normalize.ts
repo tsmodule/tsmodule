@@ -10,6 +10,8 @@ import shebang from "rollup-plugin-preserve-shebang";
 import { pathToFileURL } from "url";
 import { resolve } from "../loader/index.js";
 
+import { getRewrittenSpecifiers } from "../typescriptApi.js";
+
 /**
  * Get a Unix-like relative path from a URL.
  */
@@ -59,7 +61,7 @@ export const rewriteImportStatement = (
   );
 
   const [, specifier] = importStatement.split(/from|\(/);
-  const rewrittenSource = 
+  const rewrittenSource =
     specifier
       .replace(specifierToReplace, specifierReplacement)
       .trim();
@@ -78,14 +80,22 @@ export const rewriteImportSpecifiersPlugin: () => Plugin = () => {
   return {
     name: "Rewrite imports",
     renderChunk: async (code, chunk, options) => {
+    /**
+     * If no absolute module ID, bail.
+     */
+      if (!chunk.facadeModuleId) return null;
+      const resolvedEntryPoint = resolvePath(chunk.facadeModuleId);
+      const entryPointURL = pathToFileURL(resolvedEntryPoint).href;
+
+      const rewrites = getRewrittenSpecifiers(resolvedEntryPoint);
+      if (!rewrites) return null;
+
+      for (const { specifierToReplace, specifierReplacement } of rewrites) {
+        const importPattern = generateImportPattern(specifierToReplace);
+      }
+
       DEBUG.group();
       for (const moduleSpecifier of chunk.imports) {
-        /**
-         * If no absolute module ID, bail.
-         */
-        if (!chunk.facadeModuleId) continue;
-        const resolvedEntryPoint = resolvePath(chunk.facadeModuleId);
-        const entryPointURL = pathToFileURL(resolvedEntryPoint).href;
         DEBUG.log(
           "Resolving specifier from entry point:",
           { entryPointURL, moduleSpecifier }
@@ -120,6 +130,8 @@ export const rewriteImportSpecifiersPlugin: () => Plugin = () => {
         /**
          * Rewrite remaining absolute specifiers relative to baseURL for
          * replacement.
+         *
+         * TODO: Use TypeScript Compiler API to rewrite specifiers.
          */
         if (isAbsolute(moduleSpecifier)) {
           const moduleURL = pathToFileURL(moduleSpecifier).href;
@@ -133,6 +145,7 @@ export const rewriteImportSpecifiersPlugin: () => Plugin = () => {
          * Normalize the import paths (for Windows support).
          */
         specifierToReplace = normalizeSpecifier(specifierToReplace);
+
         /**
          * Read the matched import/require statements and replace them.
          */

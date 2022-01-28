@@ -1,0 +1,25 @@
+{
+  specifier: 'esbuild',
+  resolvedFileName: '/home/christian/PersonalProjects/tsm/node_modules/esbuild/lib/main.d.ts',
+  extension: '.d.ts'
+}
+{
+  specifier: 'chalk',
+  resolvedFileName: '/home/christian/PersonalProjects/tsm/node_modules/chalk/source/index.d.ts',
+  extension: '.d.ts'
+}
+{
+  specifier: 'fast-glob',
+  resolvedFileName: '/home/christian/PersonalProjects/tsm/node_modules/fast-glob/out/index.d.ts',
+  extension: '.d.ts'
+}
+{
+  specifier: '../utils/index.js',
+  resolvedFileName: '/home/christian/PersonalProjects/tsm/dist/utils/index.js',
+  extension: '.js'
+}
+{
+  specifier: './normalize.js',
+  resolvedFileName: '/home/christian/PersonalProjects/tsm/dist/commands/normalize.js',
+  extension: '.js'
+}

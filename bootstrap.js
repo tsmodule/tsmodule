@@ -5,6 +5,7 @@ const BOOTSTRAP_FILES = [
   "src/commands/normalize.ts",
   "src/loader/index.ts",
   "src/utils/index.ts",
+  "src/typescriptApi.ts",
 ];
 
 await esbuild({

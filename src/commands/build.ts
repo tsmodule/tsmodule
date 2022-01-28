@@ -51,7 +51,7 @@ export const build = async (production = true) => {
     /**
      * All TS files for the build. Ignore .d.ts files.
      */
-    const allTs = 
+    const allTs =
       glob
         .sync("src/**/*.{ts,tsx}", { cwd })
         .filter((file) => extname(file) !== ".d.ts");
@@ -84,7 +84,7 @@ export const build = async (production = true) => {
       await normalizeImportSpecifiers();
     }
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     process.exitCode = 1;
   }
 };

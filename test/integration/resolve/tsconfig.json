@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "checkJs": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "strictBindCallApply": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictFunctionTypes": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "jsx": "preserve"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
