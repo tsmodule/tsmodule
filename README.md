@@ -28,18 +28,6 @@ Install tsm in your project (or globally) to run or build your module:
 yarn add @tsmodule/tsm
 ```
 
-### Executing TypeScript directly
-
-TypeScript files can be executed directly (`./index.ts`) or run by Node (`node
-index.ts`) with the `#!/usr/bin/env tsm` shebang present:
-
-```ts
-#!/usr/bin/env tsm
-
-const test: string = "hello world"
-console.log(test);
-```
-
 ### Building TypeScript modules
 
 You can build your TypeScript module to ESM with the `build` CLI command:
@@ -52,6 +40,27 @@ Source will be compiled from `src/` to `dist/` and will contain only
 ESM-compliant import specifiers as resolved by the tsm loader. This ESM output
 will *not* contain incomplete specifiers like `./path/to/module` (no file
 extension) and can be executed directly via `node dist/index.js`.
+
+### Executing TypeScript directly
+
+Provided they're executable (via `chmod +x file.ts`), TypeScript files can be
+executed directly (via `./index.ts`) with the `#!/usr/bin/env tsm` shebang
+present:
+
+```ts
+#!/usr/bin/env tsm
+
+const test: string = "hello world"
+console.log(test);
+```
+
+Shell:
+
+```shell
+$ ./file.ts
+
+# hello world
+```
 
 ### Advanced usage
 
