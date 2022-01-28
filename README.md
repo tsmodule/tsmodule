@@ -85,9 +85,9 @@ $ node --loader @tsmodule/tsm main.jsx
 allows ES module resolution to natively import from specifiers like `./thing ->
 ./thing.ts`, and uses esbuild to load TypeScript on-the-fly. 
 
-`tsm build` uses this same loader to resolve import specifiers statically
-ahead-of-time and turn transpiled TypeScript (which often contains incomplete
-specifiers like `./a`) into spec-compliant ESM (`./a -> ./a.js`).
+For module builds, the TypeScript Compiler API is used to resolve incomplete
+specifiers in emitted esbuild output and transform them into complete
+ESM-compliant specifiers (i.e. `./path/to/file.js`).
 
 ### Module configuration
 
