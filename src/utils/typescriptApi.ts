@@ -2,20 +2,24 @@ import { dirname, extname, relative } from "path/posix";
 import { createDebugLogger } from "./index.js";
 import ts from "typescript";
 
-const compilerHost = ts.createCompilerHost({
+export const TS_CONFIG: ts.CompilerOptions = {
+  moduleResolution: ts.ModuleResolutionKind.NodeJs,
   module: ts.ModuleKind.ESNext,
+  target: ts.ScriptTarget.ESNext,
+  esModuleInterop: true,
   incremental: false,
+  noEmit: true,
   rootDir: "src",
   outDir: "dist",
-});
+};
+
+export const compilerHost = ts.createCompilerHost(TS_CONFIG);
 
 const typescriptResolve = (specifier: string, entryPoint = process.cwd()) => {
   const { resolvedModule } = ts.resolveModuleName(
     specifier,
     entryPoint,
-    {
-      moduleResolution: ts.ModuleResolutionKind.NodeNext,
-    },
+    TS_CONFIG,
     compilerHost
   );
 
@@ -86,7 +90,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
             specifier,
             entryPoint,
             {
-              moduleResolution: ts.ModuleResolutionKind.NodeNext,
+              ...TS_CONFIG,
               allowJs: true,
               checkJs: true,
             },

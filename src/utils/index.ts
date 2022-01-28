@@ -68,8 +68,15 @@ export const log = (...msgs: unknown[]) => {
   formatLog(...msgs);
 };
 
-export const isTS = /\.[mc]?tsx?(?=\?|$)/;
-export const isJS = /\.([mc])?js$/;
+export const bannerLog = (msg: string) => {
+  formatLog(
+    chalk.bgBlue(chalk.white(`  ${msg}  `))
+  );
+};
+
+export const isTs = /\.[mc]?tsx?(?=\?|$)/;
+export const isJs = /\.([mc])?js$/;
+export const isTsxOrJsx = /\.([mc])?[tj]sx$/;
 
 export const BASE_CONFIG = {
   format: "esm",

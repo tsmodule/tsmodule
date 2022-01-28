@@ -13,7 +13,7 @@ import { sep as winSep } from "path/win32";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { checkExtensions, checkTsExtensions, createDebugLogger, fileExists, isJS, isTS, MODULE_LOADERS } from "../utils/index.js";
+import { checkExtensions, checkTsExtensions, createDebugLogger, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/index.js";
 
 export const resolve: ModuleResolveHook = async (
   specifier,
@@ -77,7 +77,7 @@ export const resolve: ModuleResolveHook = async (
     /**
      * JS being imported by a TS file.
      */
-    if (isJS.test(specifierExtension) && isTS.test(parentExtension)) {
+    if (isJs.test(specifierExtension) && isTs.test(parentExtension)) {
       const resolvedTsSourceFile = checkTsExtensions(unresolvedSpecifier);
       if (resolvedTsSourceFile) {
         DEBUG.log("Found JS import in TS:", {
