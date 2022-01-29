@@ -102,6 +102,7 @@ export const build = async (production = true) => {
    * Emit TypeScript declarations.
    */
   bannerLog("Generating TypeScript declarations.");
+  log("This might take a moment.");
   const program = ts.createProgram(
     allFiles,
     {
