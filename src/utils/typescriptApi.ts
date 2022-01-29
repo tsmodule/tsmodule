@@ -42,6 +42,10 @@ interface SpecifierReplacement {
   specifierReplacement: string;
 }
 
+/**
+ * Get the rewritten specifiers for a given module. Import/export specifiers
+ * will be resolved ahead-of-time by the TypeScript compiler and returned.
+ */
 export const getRewrittenSpecifiers = (modulePath: string) => {
   const DEBUG = createDebugLogger(getRewrittenSpecifiers);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
@@ -59,17 +63,35 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
   const { statements, fileName: entryPoint } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
 
+  /**
+   * Traverse the statements in this sourcefile.
+   */
   statements.forEach(
     (statement) => {
+      /**
+       * Whether this is an export statement.
+       */
       const isEsmExport = ts.isExportDeclaration(statement);
+
+      /**
+       * Whether this is a non-type-only import statement.
+       */
       const isEsmImport =
         ts.isImportDeclaration(statement) &&
         !statement?.importClause?.isTypeOnly;
 
+      /**
+       * Skip non-import/export statements completely.
+       */
       if (!isEsmImport && !isEsmExport) {
         return;
       }
 
+      /**
+       * Skip export statements without a module specifier, throw if we somehow
+       * encounter an import statement without a module specifier (would be a
+       * SyntaxError).
+       */
       const { moduleSpecifier } = statement;
       if (!moduleSpecifier) {
         if (isEsmExport) {
@@ -82,42 +104,45 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
       if (ts.isStringLiteral(moduleSpecifier)) {
         const { text: specifier } = moduleSpecifier;
         /**
-         * Only resolve non-external specifiers without file extensions.
+         * If this is a non-relative specifier, or it has a file extension, do
+         * try to resolve it.
          */
-        if (specifier.startsWith(".") && !extname(specifier)) {
-          DEBUG.log("Using TypeScript API to resolve", { specifier });
-          const { resolvedModule } = ts.resolveModuleName(
-            specifier,
-            entryPoint,
-            {
-              ...TS_CONFIG,
-              allowJs: true,
-              checkJs: true,
-            },
-            compilerHost
-          );
-
-          if (!resolvedModule) {
-            throw new Error(`Could not resolve module: ${specifier}`);
-          }
-
-          /**
-           * Convert the resolved module filepath to a relative specifier
-           * (relative to the entry-point).
-           *
-           * This is an ESM specifier, so force POSIX path separators.
-           */
-          const { resolvedFileName } = resolvedModule;
-          const relativeSpecifier = getEsmRelativeSpecifier(
-            entryPoint,
-            resolvedFileName
-          );
-
-          rewrittenSpecifiers.push({
-            specifierToReplace: specifier,
-            specifierReplacement: relativeSpecifier,
-          });
+        if (!specifier.startsWith(".") || extname(specifier)) {
+          return;
         }
+
+        DEBUG.log("Using TypeScript API to resolve specifier", { specifier });
+        const { resolvedModule } = ts.resolveModuleName(
+          specifier,
+          entryPoint,
+          {
+            ...TS_CONFIG,
+            allowJs: true,
+            checkJs: true,
+          },
+          compilerHost
+        );
+
+        if (!resolvedModule) {
+          throw new Error(`Could not resolve module: ${specifier}`);
+        }
+
+        /**
+         * Convert the resolved module filepath to a relative specifier
+         * (relative to the entry-point).
+         *
+         * This is an ESM specifier, so force POSIX path separators.
+         */
+        const { resolvedFileName } = resolvedModule;
+        const relativeSpecifier = getEsmRelativeSpecifier(
+          entryPoint,
+          resolvedFileName
+        );
+
+        rewrittenSpecifiers.push({
+          specifierToReplace: specifier,
+          specifierReplacement: relativeSpecifier,
+        });
       }
     }
   );
