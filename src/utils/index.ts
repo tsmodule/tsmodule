@@ -53,7 +53,7 @@ export const formatLog = (...msgs: unknown[]) => {
   const header = chalk.gray(msgs[0]);
   const logMsgs = msgs.slice(1);
 
-  thisConsole.log("");
+  thisConsole.log();
   thisConsole.log(header);
   thisConsole.log(...logMsgs);
 };
