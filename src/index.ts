@@ -1,4 +1,3 @@
-#!/usr/bin/env tsm
 /* eslint-disable no-console */
 
 import { Command } from "commander";
