@@ -3,7 +3,6 @@ import { extname, resolve as resolvePath } from "path";
 import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
 import glob from "fast-glob";
-import ora from "ora";
 
 import ts from "typescript";
 
@@ -13,7 +12,7 @@ import ts from "typescript";
  * internal source (for bootstrap code path).
  */
 import { bannerLog, createDebugLogger, isTs, isTsxOrJsx, log } from "../utils/index.js";
-import { compilerHost, TS_CONFIG } from "../utils/typescriptApi.js";
+import { TS_CONFIG } from "../utils/typescriptApi.js";
 import { normalizeImportSpecifiers } from "./normalize.js";
 
 /**
