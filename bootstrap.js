@@ -1,12 +1,10 @@
+/* eslint-disable no-console */
 import { build as esbuild } from "esbuild";
+import glob from "fast-glob";
 
-const BOOTSTRAP_FILES = [
-  "src/commands/build.ts",
-  "src/commands/normalize.ts",
-  "src/loader/index.ts",
-  "src/utils/index.ts",
-  "src/utils/typescriptApi.ts",
-];
+const BOOTSTRAP_FILES = glob.sync("src/**/*.ts");
+
+console.log("BOOTSTRAP: Building with esbuild...");
 
 await esbuild({
   format: "esm",
@@ -15,5 +13,9 @@ await esbuild({
   assetNames: "[name].js",
 });
 
-const { build } = await import("./dist/commands/build.js");
-await build();
+console.log("BOOTSTRAP: Normalizing import specifiers...");
+
+const { normalizeImportSpecifiers } = await import("./dist/commands/normalize/index.js");
+await normalizeImportSpecifiers();
+
+console.log("BOOTSTRAP: Done.");

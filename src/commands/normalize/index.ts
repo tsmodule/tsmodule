@@ -1,10 +1,17 @@
+/**
+ * @fileoverview
+ * This module contains the logic for normalizing import specifiers. It must use
+ * fully-specified filepaths here, since the bootstrap script will compile it
+ * with esbuild and then use it to normalize emitted output.
+ */
+
 import { readFile, writeFile } from "fs/promises";
 import glob from "fast-glob";
 import { pathToFileURL } from "url";
 import { resolve as resolvePath } from "path";
 
-import { createDebugLogger } from "../utils/index.js";
-import { getRewrittenSpecifiers } from "../utils/typescriptApi.js";
+import { createDebugLogger } from "../../utils/index.js";
+import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
 
 /**
  * Matches a complete import statement, including the import keyword, as well as

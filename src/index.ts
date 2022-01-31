@@ -2,9 +2,9 @@
 /* eslint-disable no-console */
 
 import { Command } from "commander";
-import { build } from "./commands/build.js";
-import { execute } from "./commands/execute.js";
-import { normalizeImportSpecifiers } from "./commands/normalize.js";
+import { build } from "./commands/build";
+import { execute } from "./commands/execute";
+import { normalizeImportSpecifiers } from "./commands/normalize";
 
 const program = new Command();
 

@@ -4,16 +4,14 @@ import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
 import glob from "fast-glob";
 
-import ts from "typescript";
-
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { bannerLog, createDebugLogger, isTs, isTsxOrJsx, log } from "../utils/index.js";
-import { TS_CONFIG } from "../utils/typescriptApi.js";
-import { normalizeImportSpecifiers } from "./normalize.js";
+import { bannerLog, createDebugLogger, isTs, isTsxOrJsx, log } from "../../utils";
+import { emitTsDeclarations } from "./lib/emitTsDeclarations";
+import { normalizeImportSpecifiers } from "../normalize";
 
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
@@ -103,34 +101,8 @@ export const build = async (production = true) => {
    */
   bannerLog("Generating TypeScript declarations.");
   log("This might take a moment.");
-  const program = ts.createProgram(
-    allFiles,
-    {
-      ...TS_CONFIG,
-      declaration: true,
-      noEmit: false,
-      emitDeclarationOnly: true,
-    },
-  );
 
-  const emitResult = program.emit();
-
-  const allDiagnostics = ts
-    .getPreEmitDiagnostics(program)
-    .concat(emitResult.diagnostics);
-
-  allDiagnostics.forEach(diagnostic => {
-    if (diagnostic.file) {
-      const { line, character } = ts.getLineAndCharacterOfPosition(
-        diagnostic.file,
-        diagnostic.start ?? 0
-      );
-      const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
-      DEBUG.log(chalk.red(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`));
-    } else {
-      DEBUG.log(chalk.red(ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")));
-    }
-  });
+  emitTsDeclarations(allFiles);
 
   log(`Generated delcarations for ${allFiles.length} files.`);
   log(chalk.green("✓ Build complete."));

@@ -1,5 +1,5 @@
 import { dirname, extname, relative } from "path/posix";
-import { createDebugLogger } from "./index.js";
+import { createDebugLogger } from "../../../utils/index.js";
 import ts from "typescript";
 
 export const TS_CONFIG: ts.CompilerOptions = {
