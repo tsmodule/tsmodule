@@ -38,7 +38,7 @@ export const build = async (production = true) => {
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
-    logLevel: production ? "info" : "debug",
+    logLevel: production ? "error" : "debug",
     charset: "utf8",
     format: "esm",
     target: "esnext",
@@ -75,6 +75,8 @@ export const build = async (production = true) => {
     entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
   });
 
+  ora("Built TS files.").succeed();
+
   /**
    * TSX files to compile.
    */
@@ -92,18 +94,21 @@ export const build = async (production = true) => {
     },
   });
 
+  ora("Built TSX files.").succeed();
+
   /**
    * Run the post-build process and resolve import specifiers in output.
    */
   if (!process.env.NO_REWRITES) {
     await normalizeImportSpecifiers();
+    ora("Normalized import specifiers.").succeed();
   }
 
   /**
    * Emit TypeScript declarations.
    */
-  bannerLog("Generating TypeScript declarations.");
-  log("This might take a moment.");
+  bannerLog("Running post-build setup.");
+  log("Generating type declarations.\nThis might take a moment.");
 
   emitTsDeclarations(allFiles);
 
