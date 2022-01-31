@@ -1,4 +1,5 @@
 import { build as esbuild, BuildOptions } from "esbuild";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { extname, resolve as resolvePath } from "path";
 import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
@@ -24,6 +25,7 @@ export const build = async (production = true) => {
   if (production) {
     bannerLog("Building for production.");
   }
+
   /**
    * Initialize build options, and inject PACKAGE_JSON for library builds.
    */
@@ -44,9 +46,9 @@ export const build = async (production = true) => {
       PACKAGE_JSON: pkgJson,
     },
   };
-    /**
-     * Clean old output.
-     */
+  /**
+   * Clean old output.
+   */
   const distDir = resolvePath(cwd, "dist");
   DEBUG.log("Cleaning old output:", { distDir });
   await rm(distDir, { force: true, recursive: true });
@@ -105,5 +107,17 @@ export const build = async (production = true) => {
   emitTsDeclarations(allFiles);
 
   log(`Generated delcarations for ${allFiles.length} files.`);
+  log("Forcing \"type\": \"module\" in output.");
+
+  let distPkgJson;
+  if (existsSync("dist/package.json")) {
+    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
+  } else {
+    distPkgJson = {};
+  }
+
+  distPkgJson.type = "module";
+  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
+
   log(chalk.green("✓ Build complete."));
 };
