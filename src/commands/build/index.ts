@@ -47,12 +47,14 @@ export const build = async (production = true) => {
       PACKAGE_JSON: pkgJson,
     },
   };
+
   /**
    * Clean old output.
    */
   const distDir = resolvePath(cwd, "dist");
   DEBUG.log("Cleaning old output:", { distDir });
   await rm(distDir, { force: true, recursive: true });
+
   /**
    * All files for the build. Ignore .d.ts files.
    */
@@ -61,6 +63,7 @@ export const build = async (production = true) => {
         .sync("src/**/*", { cwd })
         .filter((file) => extname(file) !== ".d.ts")
         .map((file) => resolvePath(file));
+
   /**
    * Compile TS files.
    */
@@ -104,14 +107,10 @@ export const build = async (production = true) => {
     ora("Normalized import specifiers.").succeed();
   }
 
-  /**
-   * Emit TypeScript declarations.
-   */
   bannerLog("Running post-build setup.");
+
   log("Generating type declarations.\nThis might take a moment.");
-
   emitTsDeclarations(allFiles);
-
   ora(`Generated delcarations for ${allFiles.length} files.`).succeed();
 
   let distPkgJson;
@@ -123,7 +122,7 @@ export const build = async (production = true) => {
 
   distPkgJson.type = "module";
   writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
-  ora("Forced \"type\": \"module\" in output.").succeed();
 
+  ora("Forced \"type\": \"module\" in output.").succeed();
   log(chalk.green("Build complete."));
 };
