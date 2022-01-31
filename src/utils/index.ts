@@ -15,7 +15,7 @@ export const DEVELOPMENT_MODE = process.env.NODE_ENV === "development";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const createDebugLogger = (fn: Function) => {
-  if (process.env.NODE_ENV !== "development") {
+  if (!DEVELOPMENT_MODE) {
     /**
      * Dead path, should get removed after AST compilation.
      */
