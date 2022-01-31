@@ -88,7 +88,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
           specifierToReplace,
           specifierReplacement,
           importStatements,
-          code
+          // code
         }
       );
       /**
@@ -116,7 +116,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
         code = code.replace(importStatement, rewrittenImportStatement);
         await writeFile(resolvedEntryPoint, code);
 
-        DEBUG.log("Wrote output file.", { code });
+        DEBUG.log("Wrote output file.", { resolvedEntryPoint });
         DEBUG.groupEnd();
       }
     }
