@@ -13,6 +13,7 @@ import glob from "fast-glob";
 import { bannerLog, createDebugLogger, isTs, isTsxOrJsx, log } from "../../utils";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { normalizeImportSpecifiers } from "../normalize";
+import ora from "ora";
 
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
@@ -106,8 +107,7 @@ export const build = async (production = true) => {
 
   emitTsDeclarations(allFiles);
 
-  log(`Generated delcarations for ${allFiles.length} files.`);
-  log("Forcing \"type\": \"module\" in output.");
+  ora(`Generated delcarations for ${allFiles.length} files.`).succeed();
 
   let distPkgJson;
   if (existsSync("dist/package.json")) {
@@ -118,6 +118,7 @@ export const build = async (production = true) => {
 
   distPkgJson.type = "module";
   writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
+  ora("Forced \"type\": \"module\" in output.").succeed();
 
-  log(chalk.green("✓ Build complete."));
+  log(chalk.green("Build complete."));
 };
