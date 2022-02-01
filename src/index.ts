@@ -3,6 +3,7 @@
 
 import { Command } from "commander";
 import { build } from "./commands/build";
+import { create } from "./commands/create";
 import { execute } from "./commands/execute";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
@@ -21,6 +22,11 @@ program
     "Builds TS files to output in dist/. (default: src/**/*.{ts,tsx})"
   )
   .action(async ({ dev }) => await build(!dev));
+
+program
+  .command("create <name>")
+  .description("Create a new project.")
+  .action(create);
 
 program
   .command("normalize [files]")

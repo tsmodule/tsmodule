@@ -1,0 +1,32 @@
+{
+  "name": "template",
+  "type": "module",
+  "version": "0.0.1",
+  "license": "MIT",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./dist/index.js",
+    "./*": "./dist/*/index.js"
+  },
+  "scripts": {
+    "build": "tsm build",
+    "test": "ava",
+    "lint": "eslint src --fix"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.ts"
+    ],
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--no-warnings",
+      "--loader=@tsmodule/tsm"
+    ]
+  }
+}

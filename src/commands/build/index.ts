@@ -99,12 +99,19 @@ export const build = async (production = true) => {
 
   ora("Built TSX files.").succeed();
 
-  /**
-   * Run the post-build process and resolve import specifiers in output.
-   */
-  if (!process.env.NO_REWRITES) {
-    await normalizeImportSpecifiers();
-    ora("Normalized import specifiers.").succeed();
+  if (process.env.NO_REWRITES) {
+    return;
+  }
+
+  await normalizeImportSpecifiers();
+  ora("Normalized import specifiers.").succeed();
+
+  if (!production) {
+    return;
+  }
+
+  if (process.env.NO_DECLARATIONS) {
+    return;
   }
 
   bannerLog("Running post-build setup.");

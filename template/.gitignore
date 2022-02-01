@@ -1,0 +1,10 @@
+node_modules
+
+# Potential Firebase / GCP credentials.
+service-account.json
+
+# Emitted output.
+dist/
+
+# Incremental TS build info.
+*.tsbuildinfo
