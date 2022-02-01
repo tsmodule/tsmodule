@@ -2,17 +2,6 @@
 # yarn lockfile v1
 
 
-"@ctjlewis/await-shell@^2.4.5":
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/@ctjlewis/await-shell/-/await-shell-2.4.5.tgz#64bf37f4ffb7fa3251ff7bf0fd37bd384628893a"
-  integrity sha512-qH+ahs9ZpsiuQZ3+2NDUm5ziunYUOu3zJ/7B2LFdDBKzB59iFUIdLZOv0N4ZzUWs2Q55X3NDZCoL/x7vvhoJkQ==
-  dependencies:
-    "@tsmodule/tsm" "^3.2.0"
-    "@types/node" "^17.0.13"
-    "@types/ora" "^3.2.0"
-    chalk "^5.0.0"
-    cross-spawn "^7.0.3"
-
 "@eslint/eslintrc@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.0.5.tgz#33f1b838dbf1f923bfa517e008362b78ddbbf318"
@@ -62,19 +51,6 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
-
-"@tsmodule/tsm@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@tsmodule/tsm/-/tsm-3.2.0.tgz#86af1e4e09cee83e8eeab6471839d653b1d21c33"
-  integrity sha512-Ct+qyx7zrflvfmZEx1E3ClhN9+PlT5/eAGqZYobk0s/e2XEVxxFASq+IDqdG7XTQZsapXY7fwSWlOMjEoCCS5A==
-  dependencies:
-    chalk "^5.0.0"
-    commander "^8.3.0"
-    esbuild "^0.14.0"
-    fast-glob "^3.2.10"
-    react "^17.0.2"
-    rollup "^2.63.0"
-    rollup-plugin-preserve-shebang "^1.0.1"
 
 "@tsmodule/tsm@^4.0.0":
   version "4.0.0"

@@ -1,5 +1,5 @@
 import { build } from "../../src/commands/build";
-import { shell } from "@ctjlewis/await-shell";
+import { shell } from "await-shell";
 import test from "ava";
 
 process.chdir("test/integration/resolve");
