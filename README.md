@@ -1,101 +1,110 @@
 <div align="center">
-  <h1><code>@tsmodule/tsm</code></h1>
-  <h3>TypeScript Module Loader and Compiler</h3>
+  <h1><code>tsmodule</code></h1>
+  <h3>TypeScript Module Toolkit</h3>
 </div>
 
 ## Features
 
-* **Run** TypeScript files directly
-  * Uses Node's experimental module loader
-* **Build** to pure ES Module output
-  * Fast (6ms to build this tool, minified and DCE'd)
-  * Pure, spec-compliant ESM output
-* Supports `node <file>` usage
-* Supports [ESM `--loader`](https://nodejs.org/api/esm.html#esm_loaders) usage
+### Quickly create TypeScript projects with **`tsmodule create`**
+
+Supports React via TSX/JSX. Ready with zero config:
+
+  - package.json scripts: `yarn build`, `yarn test`, `yarn lint`
+  - ESLint, `typescript-eslint`, TypeScript configs
+  - CI/CD with GitHub Actions
+
+### Build TypeScript to pure ESM with **`tsmodule build`**
+
+  - No more polyfilling to CJS or older featuresets
+  - Use latest syntax in source, leave backporting to downstream consumers
+
+### Run TypeScript directly with **`tsmodule <file>`**
+
+  - Uses Node module loader to resolve TS at runtime
+  - Executable TypeScript files with `#!/usr/bin/env tsmodule`
+
+## Use Cases
+
+Below are some example use cases of TS modules in practice.
+
+### Generic TypeScript library
+
+The most common type of library will be a TS module with generic TypeScript
+exports in `src/**/index.ts`, e.g.
+[`await-shell`](https://github.com/ctjlewis/await-shell), a Promise wrapper
+around `child_process.spawn` that's used in tsmodule itself.
+
+This library contains only one export at `src/index.ts`, a function called
+`shell`. It has one test at `test/errors.test.ts`.
+
+### Next.js component library
+
+It's often necessary to compile libraries of TSX components to valid JS that can
+be consumed by a bundler downstream.  This is handled by tsmodule out of the
+box.
+
+The following configuration can be used to export a library of TSX components in
+`src/components/**/index.tsx` that is also consumed in a Next.js demo from pages
+in `src/pages`:
+
+- In `next.config.js`, allow for ESM externals (our exported components will be
+  ESM):
+
+    ```js
+    { 
+      experiments: { 
+        esmExternals: true 
+      } 
+    }
+    ```
+
+- In package.json, configure the package to export from `dist/components`:
+
+    ```json
+    {
+      "exports": {
+        ".": "./dist/index.js",
+        "./*": "./dist/components/*/index.js",
+        "./styles": "./dist/styles/index.css",
+        "./styles/*": "./dist/styles/*/index.css",
+        "./package.json": "./package.json"
+      },
+    }
+    ```
 
 ## Requirements
 
-Because TSM packages are pure ESM environments, only  **Node 16+** is supported.
+Because tsmodule packages are pure ESM environments, only **Node 16+** is
+supported.
 
-## Usage
+## Installation
 
-`tsm` can be used to run TypeScript directly, and the CLI can be used to build
-your project to fully-resolved ESM.
-
-Install tsm in your project (or globally) to run or build your module:
+Install tsmodule in your project (or globally) to run or build your module:
 
 ```shell
-yarn add @tsmodule/tsm
+yarn add @tsmodule/tsmodule
 ```
 
-### Building TypeScript modules
 
 You can build your TypeScript module to ESM with the `build` CLI command:
 
 ```shell
-tsm build
+tsmodule build
 ```
 
 Source will be compiled from `src/` to `dist/` and will contain only
-ESM-compliant import specifiers as resolved by the tsm loader. This ESM output
-will *not* contain incomplete specifiers like `./path/to/module` (no file
-extension) and can be executed directly via `node dist/index.js`.
+ESM-compliant import specifiers as resolved by the tsmodule loader. It can then
+be executed with Node, e.g. `node dist/index.js`.
 
-### Executing TypeScript directly
-
-Provided they're executable (via `chmod +x file.ts`), TypeScript files can be
-executed directly (via `./index.ts`) with the `#!/usr/bin/env tsm` shebang
-present:
-
-```ts
-#!/usr/bin/env tsm
-
-const test: string = "hello world"
-console.log(test);
-```
-
-Shell:
-
-```shell
-$ ./file.ts
-
-# hello world
-```
-
-### Advanced usage
-
-```sh
-# use as `node` replacement
-$ tsm server.ts
-
-# forwards any `node` ENV or flags
-$ NO_COLOR=1 tsm server.ts --trace-warnings
-
-# use as `--require` hook
-$ node --require @tsmodule/tsm server.tsx
-$ node -r @tsmodule/tsm server.tsx
-
-# use as `--loader` hook
-$ node --loader @tsmodule/tsm main.jsx
-```
-
-## How it works
-
-`tsm` is effectively a proxy for `node --loader @tsmodule/tsm [...]`. The tsm loader
-allows ES module resolution to natively import from specifiers like `./thing ->
-./thing.ts`, and uses esbuild to load TypeScript on-the-fly. 
-
-For module builds, the TypeScript Compiler API is used to resolve incomplete
-specifiers in emitted esbuild output and transform them into complete
-ESM-compliant specifiers (i.e. `./path/to/file.js`).
+## Footnotes
 
 ### Module configuration
 
-All packages built with `tsm build` are ES modules. They should have
-`"type": "module"` set in package.json and can use the `exports` field to
-resolve conditional exports.
+All packages built with `tsmodule build` are ES modules. `{ "type": "module" }`
+is forced to minimize ambiguity.
 
-`tsm build` forces the following tsconfig.json values:
+`tsmodule build` also forces the following tsconfig.json values during the
+type-check and declaration emit:
 
 ```json
 {
@@ -104,7 +113,9 @@ resolve conditional exports.
 }
 ```
 
-By default, package.json will be configured like so:
+And conditional exports in package.json will be configured like so, such that
+"index modules" at e.g. `src/test/index.ts` will be available at
+`my-package/test`:
 
 ```json
 {
@@ -117,20 +128,9 @@ By default, package.json will be configured like so:
 }
 ```
 
-Such that "index modules" at e.g. `src/test/index.ts` will be available at
-`my-package/test`.  This has no restriction on internal imports between files,
-only the default configuration for how downstream consumers can import from
-module subpaths.
-
-## Footnotes
-
-- `const x = require(...)` statements in imported modules will be
-  forward-polyfilled to backwards-compatible `const { default: x } = await
-  import(...)` statements by the loader.
-
-  This has no runtime effect, and is simply a way to support legacy CJS
-  `require` statements by transforming them into equivalent dynamic ESM imports.
+This has no restriction on internal imports between files, only the default
+configuration for how downstream consumers can import from module subpaths.
 
 ## License
 
-MIT © [C. Lewis](https://ctjlewis.com), [Luke Edwards](https://lukeed.com)
+MIT © [C. Lewis](https://ctjlewis.com)

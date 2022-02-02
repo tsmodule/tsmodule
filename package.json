@@ -1,12 +1,12 @@
 {
-  "name": "@tsmodule/tsm",
+  "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "8.1.0",
-  "repository": "ctjlewis/tsm",
+  "version": "8.1.1",
+  "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
   "bin": {
-    "tsm": "dist/index.js"
+    "tsmodule": "dist/index.js"
   },
   "exports": {
     ".": "./dist/loader/index.js",
@@ -19,11 +19,6 @@
       "name": "C. Lewis",
       "email": "ctj.lewis@icloud.com",
       "url": "https://ctjlewis.com"
-    },
-    {
-      "name": "Luke Edwards",
-      "email": "luke.edwards05@gmail.com",
-      "url": "https://lukeed.com"
     }
   ],
   "files": [
@@ -79,7 +74,7 @@
     },
     "nodeArguments": [
       "--no-warnings",
-      "--loader=@tsmodule/tsm"
+      "--loader=@tsmodule/tsmodule"
     ]
   }
 }

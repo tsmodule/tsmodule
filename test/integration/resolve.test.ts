@@ -5,7 +5,7 @@ import test from "ava";
 process.chdir("test/integration/resolve");
 
 test.serial("loader should load test module", async (t) => {
-  await shell("tsm src/index.ts");
+  await shell("tsmodule src/index.ts");
   t.pass();
 });
 

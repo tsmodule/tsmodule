@@ -32,7 +32,7 @@ export const create = async (name: string) => {
   process.chdir(name);
 
   const dependencies = [
-    "@tsmodule/tsm",
+    "@tsmodule/tsmodule",
     "typescript",
     "ava",
     "eslint",

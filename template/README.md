@@ -1,4 +1,4 @@
-This is a TS module. Build it with TSM via:
+This is a TS module. Build it with tsmodule via:
 
 ```shell
 yarn build
