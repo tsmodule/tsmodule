@@ -8,14 +8,14 @@ process.chdir(tmpdir());
 await shell("yarn link @tsmodule/tsm");
 
 test.serial("`create` should generate TS module package", async (t) => {
-  t.timeout(20000);
+  t.timeout(60000);
 
   await shell("tsm create test-module");
   t.pass();
 });
 
 test.serial("created module package should build", async (t) => {
-  t.timeout(20000);
+  t.timeout(60000);
   process.chdir(resolve(tmpdir(), "test-module"));
 
   await shell("tsm build");
