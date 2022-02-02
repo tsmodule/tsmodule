@@ -1,7 +1,7 @@
 import { TS_CONFIG } from "../../normalize/lib/typescriptApi";
-import { createDebugLogger } from "../../../utils";
 
 import chalk from "chalk";
+import { createDebugLogger } from "create-debug-logger";
 import ts from "typescript";
 
 export const emitTsDeclarations = (files: string[]) => {

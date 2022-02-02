@@ -57,34 +57,6 @@
   resolved "https://registry.yarnpkg.com/@socket.io/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz#568d9beae00b0d835f4f8c53fd55714986492e61"
   integrity sha512-dOlCBKnDw4iShaIsH/bxujKTM18+2TOAsYz+KSc11Am38H4q5Xw8Bbz97ZYdrVNM+um3p7w86Bvvmcn9q+5+eQ==
 
-"@tsmodule/tsm@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@tsmodule/tsm/-/tsm-4.0.0.tgz#d04c4817255b6e5e9e047a527e7bc3f20e347f49"
-  integrity sha512-a2g3LqkvTZKc2+E8SqyjDfKsCP+OuMIKFf943//iC484KcUK0PmbhuEUKEwmJLl3E0snmXaXzVcXg4AHtd/4HQ==
-  dependencies:
-    chalk "^5.0.0"
-    commander "^8.3.0"
-    esbuild "^0.14.0"
-    fast-glob "^3.2.10"
-    react "^17.0.2"
-    rollup "^2.63.0"
-    rollup-plugin-preserve-shebang "^1.0.1"
-
-"@tsmodule/tsm@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@tsmodule/tsm/-/tsm-7.0.0.tgz#fb7aea5dd05526f95a904255e52fae12da6f2c61"
-  integrity sha512-CN6guBE2W+tnRu/w0acLtMlp7xgC6yusjIU1P+6Z8Svs3vgBqgvbCjjbRbeHEhaf2pZTZD89wVdEi4/swhPiVA==
-  dependencies:
-    await-shell "^2.4.9"
-    chalk "^5.0.0"
-    commander "^8.3.0"
-    esbuild "^0.14.0"
-    fast-glob "^3.2.10"
-    ora "^6.0.1"
-    react "^17.0.2"
-    rollup "^2.63.0"
-    rollup-plugin-preserve-shebang "^1.0.1"
-
 "@types/component-emitter@^1.2.10":
   version "1.2.11"
   resolved "https://registry.yarnpkg.com/@types/component-emitter/-/component-emitter-1.2.11.tgz#50d47d42b347253817a39709fef03ce66a108506"
@@ -114,18 +86,6 @@
   version "17.0.14"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.14.tgz#33b9b94f789a8fedd30a68efdbca4dbb06b61f20"
   integrity sha512-SbjLmERksKOGzWzPNuW7fJM7fk3YXVTFiZWB/Hs99gwhk+/dnrQRPBQjPW9aO+fi1tAffi9PrwFvsmOKmDTyng==
-
-"@types/node@^17.0.13":
-  version "17.0.13"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.13.tgz#5ed7ed7c662948335fcad6c412bb42d99ea754e3"
-  integrity sha512-Y86MAxASe25hNzlDbsviXl8jQHb0RDvKt4c40ZJQ1Don0AAL0STLZSs4N+6gLEO55pedy7r2cLwS+ZDxPm/2Bw==
-
-"@types/ora@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@types/ora/-/ora-3.2.0.tgz#b2f65d1283a8f36d8b0f9ee767e0732a2f429362"
-  integrity sha512-jll99xUKpiFbIFZSQcxm4numfsLaOWBzWNaRk3PvTSE7BPqTzzOCFmS0mQ7m8qkTfmYhuYbehTGsxkvRLPC++w==
-  dependencies:
-    ora "*"
 
 "@types/prop-types@*":
   version "15.7.4"
@@ -403,23 +363,11 @@ ava@^4.0.1:
     write-file-atomic "^3.0.3"
     yargs "^17.3.1"
 
-await-shell@^2.4.9:
-  version "2.4.9"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-2.4.9.tgz#c4a604304faeb3a0e99ac9a4ca09f6d22116faaf"
-  integrity sha512-7iY00J5wROi6Az5Q//dnu9bJjMHgb8HDaTMqUDAzhQOsGvN/tnbBiCjtUDFnmAKYpilLV4p5qmDdWkdbiCxfHg==
+await-shell@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-2.7.0.tgz#c7b4ae438428abad7076088f33c54cafce611df9"
+  integrity sha512-6pcw9qmTRRLR0VXMmiPiFylfcHKpUCO/6yy6g2isY+8jwKdGbkUam6Wdpc4f4ZOoPAOT1ZwinEPuEEbJyC64bg==
   dependencies:
-    "@tsmodule/tsm" "^4.0.0"
-    "@types/node" "^17.0.13"
-    "@types/ora" "^3.2.0"
-    chalk "^5.0.0"
-    cross-spawn "^7.0.3"
-
-await-shell@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-2.5.0.tgz#0d71f071bde2e2b5d4a9ea42edf5b7155c9f6208"
-  integrity sha512-Y94OCE68Q6gp7bcQ7Koth9lBx+wnpkkTGs+MiCLMtNPeFlhOFeF1wxcBMgg1eIfYg+9m/XNDDrAYWpE4tfpdPw==
-  dependencies:
-    "@tsmodule/tsm" "^7.0.0"
     "@types/node" "^17.0.14"
     chalk "^5.0.0"
     cross-spawn "^7.0.3"
@@ -668,10 +616,10 @@ cors@~2.8.5:
     object-assign "^4"
     vary "^1"
 
-create-debug-logger@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/create-debug-logger/-/create-debug-logger-1.2.0.tgz#fd432483b055284b45fc2c6748dda05f600e0509"
-  integrity sha512-CA60EvpCmkuOeavshFiZ21Te9My1G8HCKe/rssrB9RfO16Y9fjSHdjbFdGI2Z91fVcwwaJLWLq+JhMTY4HRDWA==
+create-debug-logger@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/create-debug-logger/-/create-debug-logger-1.10.1.tgz#e2b8c500e019d2d6bba0efa5ef0aa4d785b5e153"
+  integrity sha512-OLFCXy49KnV3NzEmaR6cQPlmLd3JoyOtDb8XIgFLkuBSV8gfuGc77zAfV7XzdkgUTozv5evt6p90jCjyzLksAQ==
   dependencies:
     chalk "^5.0.0"
     console "^0.7.2"
@@ -1636,7 +1584,7 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.3"
 
-ora@*, ora@^6.0.1:
+ora@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/ora/-/ora-6.0.1.tgz#68caa9fd6c485a40d6f46c50a3940fa3df99c7f3"
   integrity sha512-TDdKkKHdWE6jo/6pIa5U5AWcSVfpNRFJ8sdRJpioGNVPLAzZzHs/N+QhUfF7ZbyoC+rnDuNTKzeDJUbAza9g4g==
@@ -2084,10 +2032,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@4.5.4:
-  version "4.5.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
-  integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
+typescript@^4.5.5:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
+  integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
 
 uri-js@^4.2.2:
   version "4.4.1"

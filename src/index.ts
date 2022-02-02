@@ -21,7 +21,7 @@ program
   .description(
     "Builds TS files to output in dist/. (default: src/**/*.{ts,tsx})"
   )
-  .action(async ({ dev }) => await build(!dev));
+  .action(async ({ dev }) => await build(dev));
 
 program
   .command("create <name>")

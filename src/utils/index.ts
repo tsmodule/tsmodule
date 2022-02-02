@@ -1,78 +1,9 @@
-import { Console } from "console";
-import chalk from "chalk";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { sep as posixSep } from "path/posix";
 import { sep } from "path";
 
-const debugConsole = new Console({
-  stdout: process.stdout,
-  stderr: process.stderr,
-  groupIndentation: 4,
-});
-
 export const DEVELOPMENT_MODE = process.env.NODE_ENV === "development";
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const createDebugLogger = (fn: Function) => {
-  if (!DEVELOPMENT_MODE) {
-    /**
-     * Dead path, should get removed after AST compilation.
-     */
-    return {
-      log() { void 0; },
-      group() { void 0; },
-      groupEnd() { void 0; },
-    };
-  } else {
-    const { name } = fn;
-    return {
-      log (...logs: unknown[]) {
-        formatLog(`[${name}]\n`, ...logs);
-      },
-
-      group() {
-        debugConsole.log("\n");
-        const debugLabel = chalk.bgWhite.gray("[TSM DEBUG]");
-        const fnLabel = chalk.bgBlueBright.black(`[${name}]`);
-        debugConsole.group(`${debugLabel} ${fnLabel}`);
-      },
-
-      groupEnd() {
-        debugConsole.log("\n", "-".repeat(20), "\n");
-        debugConsole.groupEnd();
-      }
-    };
-  }
-};
-
-export const formatLog = (...msgs: unknown[]) => {
-  if (!msgs.length) return;
-
-  const thisConsole = DEVELOPMENT_MODE ? debugConsole : console;
-  const header = chalk.gray(msgs[0]);
-  const logMsgs = msgs.slice(1);
-
-  thisConsole.log();
-  thisConsole.log(header);
-  thisConsole.log(...logMsgs);
-};
-
-export const debugLog = (...msgs: unknown[]) => {
-  if (DEVELOPMENT_MODE) {
-    formatLog(...msgs);
-  }
-};
-
-export const log = (...msgs: unknown[]) => {
-  formatLog(...msgs);
-};
-
-export const bannerLog = (msg: string) => {
-  formatLog(
-    chalk.bgBlue(chalk.white(`  ${msg}  `))
-  );
-};
 
 export const isTs = /\.[mc]?tsx?(?=\?|$)/;
 export const isJs = /\.([mc])?js$/;

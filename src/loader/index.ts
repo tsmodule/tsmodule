@@ -13,7 +13,8 @@ import { sep as winSep } from "path/win32";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { checkExtensions, checkTsExtensions, createDebugLogger, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/index.js";
+import { checkExtensions, checkTsExtensions, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/index.js";
+import { createDebugLogger } from "create-debug-logger";
 
 export const resolve: ModuleResolveHook = async (
   specifier,

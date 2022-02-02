@@ -10,8 +10,8 @@ import glob from "fast-glob";
 import { pathToFileURL } from "url";
 import { resolve as resolvePath } from "path";
 
-import { createDebugLogger } from "../../utils/index.js";
 import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
+import { createDebugLogger } from "create-debug-logger";
 
 /**
  * Matches a complete import statement, including the import keyword, as well as

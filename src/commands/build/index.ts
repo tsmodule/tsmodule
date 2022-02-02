@@ -10,20 +10,30 @@ import glob from "fast-glob";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { bannerLog, createDebugLogger, isTs, isTsxOrJsx, log } from "../../utils";
+import { createDebugLogger, log } from "create-debug-logger";
+import { isTs, isTsxOrJsx } from "../../utils";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { normalizeImportSpecifiers } from "../normalize";
 import ora from "ora";
+
+export const bannerLog = (msg: string) => {
+  log(
+    chalk.bgBlue(chalk.white(`  ${msg}  `))
+  );
+};
 
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
  * could mean many things, all of which is handled by the loader which will
  * resolve them for us.
  */
-export const build = async (production = true) => {
+export const build = async (dev = false) => {
+  if (dev) {
+    // process.env.NODE_ENV = "development";
+  }
   const DEBUG = createDebugLogger(build);
 
-  if (production) {
+  if (!dev) {
     bannerLog("Building for production.");
   }
 
@@ -38,11 +48,11 @@ export const build = async (production = true) => {
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
-    logLevel: production ? "error" : "debug",
+    logLevel: dev ? "debug" : "error",
     charset: "utf8",
     format: "esm",
     target: "esnext",
-    minify: production,
+    minify: !dev,
     define: {
       PACKAGE_JSON: pkgJson,
     },
@@ -106,7 +116,7 @@ export const build = async (production = true) => {
   await normalizeImportSpecifiers();
   ora("Normalized import specifiers.").succeed();
 
-  if (!production) {
+  if (dev) {
     return;
   }
 
