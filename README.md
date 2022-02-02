@@ -74,19 +74,17 @@ in `src/pages`:
 
 ## Requirements
 
-Because tsmodule packages are pure ESM environments, only **Node 16+** is
-supported.
+Because TS modules are pure ESM environments, **Node 16+** is required.
 
 ## Installation
 
-Install tsmodule in your project (or globally) to run or build your module:
+Install `tsmodule` in your project (or globally) to run or build your module:
 
 ```shell
 yarn add @tsmodule/tsmodule
 ```
 
-
-You can build your TypeScript module to ESM with the `build` CLI command:
+You can build your TS module to ESM with the `build` CLI command:
 
 ```shell
 tsmodule build

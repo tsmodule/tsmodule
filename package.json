@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "8.1.2",
+  "version": "8.2.0",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
@@ -44,6 +44,7 @@
     "esbuild": "^0.14.0",
     "fast-glob": "^3.2.10",
     "ora": "^6.0.1",
+    "path": "^0.12.7",
     "react": "^17.0.2",
     "rollup": "^2.63.0",
     "rollup-plugin-preserve-shebang": "^1.0.1",
