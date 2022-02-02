@@ -2,8 +2,9 @@
 import { build as esbuild } from "esbuild";
 import glob from "fast-glob";
 
-const BOOTSTRAP_FILES = glob.sync("src/**/*.ts");
+process.env.NODE_ENV = "production";
 
+const BOOTSTRAP_FILES = glob.sync("src/**/*.ts");
 console.log("BOOTSTRAP: Building with esbuild...");
 
 await esbuild({

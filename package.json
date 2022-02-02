@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsm",
   "type": "module",
-  "version": "7.1.0",
+  "version": "8.0.0",
   "repository": "ctjlewis/tsm",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
@@ -45,12 +45,14 @@
     "await-shell": "^2.5.0",
     "chalk": "^5.0.0",
     "commander": "^8.3.0",
+    "create-debug-logger": "^1.7.4",
     "esbuild": "^0.14.0",
     "fast-glob": "^3.2.10",
     "ora": "^6.0.1",
     "react": "^17.0.2",
     "rollup": "^2.63.0",
-    "rollup-plugin-preserve-shebang": "^1.0.1"
+    "rollup-plugin-preserve-shebang": "^1.0.1",
+    "typescript": "^4.5.5"
   },
   "devDependencies": {
     "@types/node": "17.0.8",
@@ -58,8 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "ava": "^4.0.1",
-    "eslint": "^8.6.0",
-    "typescript": "4.5.4"
+    "eslint": "^8.6.0"
   },
   "keywords": [
     "esm",

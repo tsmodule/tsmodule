@@ -10,7 +10,7 @@ import { normalizeImportSpecifiers } from "./commands/normalize";
 const program = new Command();
 
 program
-  .command("<file>", { isDefault: true })
+  .command("execute <file>", { isDefault: true })
   .option("--d, --dev", "Enable development mode")
   .description("Run the given TS program, analogous to `node <file>`.")
   .action(execute);
