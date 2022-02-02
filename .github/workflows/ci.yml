@@ -24,7 +24,7 @@ jobs:
         node-version: ${{ matrix.nodejs }}
 
     - name: Install and link
-      run: yarn cache clean && yarn install --frozen-lockfile && yarn build && yarn link -f
+      run: yarn install --frozen-lockfile
 
     - name: Test
       run: yarn test
