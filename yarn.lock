@@ -370,13 +370,10 @@ ava@^4.0.1:
     write-file-atomic "^3.0.3"
     yargs "^17.3.1"
 
-await-shell@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-4.0.2.tgz#bc29f0a477af630b0ce9bb6fe34317d4c52cb4b3"
-  integrity sha512-T+9HXCbAfjX4BSlKjdrOwocMNyfgiAjzY1O+GBvEDFzQ+jqRdA0g8gZXt3CspSuX/kSYnIOWN88wKbSUDGswoQ==
-  dependencies:
-    "@types/cross-spawn" "^6.0.2"
-    cross-spawn "^7.0.3"
+await-shell@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-4.1.0.tgz#ca7f2e20f85bdd20105a773b5f2248fa9148d7db"
+  integrity sha512-UcunlZ8i+itc3r4YjQRvpCFjhe4wKuAC0qTwOj/vWCXfJ7+oTeOghN+TFgFf52Wpwvs24xDb9uAtiOJMscAwVg==
 
 balanced-match@^1.0.0:
   version "1.0.2"
