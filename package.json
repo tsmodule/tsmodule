@@ -42,7 +42,7 @@
     "test": "ava --no-worker-threads"
   },
   "dependencies": {
-    "await-shell": "^2.4.9",
+    "await-shell": "^2.5.0",
     "chalk": "^5.0.0",
     "commander": "^8.3.0",
     "esbuild": "^0.14.0",
