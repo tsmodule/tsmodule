@@ -32,6 +32,7 @@ export const create = async (name: string) => {
   process.chdir(name);
 
   const dependencies = [
+    "@tsmodule/tsm",
     "typescript",
     "ava",
     "eslint",
@@ -45,7 +46,6 @@ export const create = async (name: string) => {
   };
 
   await shell(`yarn add -D ${dependencies.join(" ")}`);
-  await shell("yarn add -P @tsmodule/tsm");
 
   spinner.succeed("Dependencies installed.");
   spinner.start("Initializing git.");
