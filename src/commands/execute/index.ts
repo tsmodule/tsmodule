@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { spawn } from "child_process";
+import { spawn } from "cross-spawn";
 
 export const execute = () => {
   /**

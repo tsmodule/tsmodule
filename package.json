@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "9.0.6",
+  "version": "9.3.1",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
@@ -38,26 +38,23 @@
     "test": "ava --no-worker-threads"
   },
   "dependencies": {
-    "await-shell": "^2.7.0",
-    "chalk": "^5.0.0",
-    "commander": "^8.3.0",
-    "create-debug-logger": "^1.10.1",
-    "esbuild": "^0.14.0",
-    "fast-glob": "^3.2.10",
-    "ora": "^6.0.1",
-    "path": "^0.12.7",
-    "react": "^17.0.2",
-    "rollup": "^2.63.0",
-    "rollup-plugin-preserve-shebang": "^1.0.1",
-    "typescript": "^4.5.5"
-  },
-  "devDependencies": {
+    "@types/cross-spawn": "^6.0.2",
     "@types/node": "17.0.8",
     "@types/react": "17.0.38",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "ava": "^4.0.1",
-    "eslint": "^8.6.0"
+    "await-shell": "^4.0.2",
+    "chalk": "^5.0.0",
+    "commander": "^8.3.0",
+    "create-debug-logger": "^1.10.1",
+    "cross-spawn": "^7.0.3",
+    "esbuild": "^0.14.0",
+    "eslint": "^8.6.0",
+    "fast-glob": "^3.2.10",
+    "ora": "^6.0.1",
+    "react": "^17.0.2",
+    "typescript": "^4.5.5"
   },
   "keywords": [
     "esm",

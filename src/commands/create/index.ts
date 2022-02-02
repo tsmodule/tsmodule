@@ -31,14 +31,7 @@ export const create = async (name: string) => {
    */
   process.chdir(name);
 
-  const dependencies = [
-    "@tsmodule/tsmodule",
-    "typescript",
-    "ava",
-    "eslint",
-    "@typescript-eslint/eslint-plugin",
-    "@typescript-eslint/parser",
-  ];
+  const dependencies = ["@tsmodule/tsmodule"];
 
   // @ts-ignore - Need to add initializeShell() to await-shell.
   globalThis.SHELL_OPTIONS = {
