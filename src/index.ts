@@ -1,16 +1,25 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
+import chalk from "chalk";
+
 import { Command } from "commander";
 import { build } from "./commands/build";
 import { create } from "./commands/create";
 import { execute } from "./commands/execute";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
+const { version } = PACKAGE_JSON;
 const program = new Command();
 
 program
-  .command("execute <file>", { isDefault: true })
+  .name(chalk.bold(chalk.blueBright("tsmodule")))
+  .description(chalk.blueBright("A tool for building TypeScript modules."))
+  .version(String(version));
+
+program
+  .command("run", { isDefault: true })
+  .argument("<file>", "The file to run.")
   .option("--d, --dev", "Enable development mode")
   .description("Run the given TS program, analogous to `node <file>`.")
   .action(execute);
@@ -18,10 +27,11 @@ program
 program
   .command("build")
   .option("-d, --dev", "Build development version (default: production)")
+  .option("-f, --fast", "Do not emit type declarations, only transform to JS.")
   .description(
-    "Builds TS files to output in dist/. (default: src/**/*.{ts,tsx})"
+    "Builds TS files to output in dist/."
   )
-  .action(async ({ dev }) => await build(dev));
+  .action(build);
 
 program
   .command("create <name>")
@@ -36,17 +46,6 @@ program
   )
   .action(async ({ files }) => {
     await normalizeImportSpecifiers(files);
-  });
-
-program
-  .command("version")
-  .description("Print the current version.")
-  .action(() => {
-    if (typeof PACKAGE_JSON === "undefined") {
-      console.log("Cannot read version in development mode.");
-    } else {
-      console.log(`v${PACKAGE_JSON.version}`);
-    }
   });
 
 program.parse(process.argv);

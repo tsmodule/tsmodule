@@ -10,7 +10,7 @@ test.serial("loader should load test module", async (t) => {
 });
 
 test.serial("build should compile test module", async (t) => {
-  await build(true);
+  await build({ dev: true });
   t.pass();
 });
 

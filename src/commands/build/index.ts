@@ -1,9 +1,11 @@
 import { build as esbuild, BuildOptions } from "esbuild";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { extname, resolve as resolvePath } from "path";
-import { readFile, rm } from "fs/promises";
 import chalk from "chalk";
+import { env } from "process";
 import glob from "fast-glob";
+import ora from "ora";
+import { rm } from "fs/promises";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
@@ -13,8 +15,8 @@ import glob from "fast-glob";
 import { createDebugLogger, log } from "create-debug-logger";
 import { isTs, isTsxOrJsx } from "../../utils";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
+import { getPackageJsonFile } from "../../utils/pkgJson";
 import { normalizeImportSpecifiers } from "../normalize";
-import ora from "ora";
 
 export const bannerLog = (msg: string) => {
   log(
@@ -27,10 +29,11 @@ export const bannerLog = (msg: string) => {
  * could mean many things, all of which is handled by the loader which will
  * resolve them for us.
  */
-export const build = async (dev = false) => {
+export const build = async ({ dev = false, fast = false }) => {
   if (dev) {
-    // process.env.NODE_ENV = "development";
+    env.NODE_ENV = "development";
   }
+
   const DEBUG = createDebugLogger(build);
 
   if (!dev) {
@@ -41,8 +44,7 @@ export const build = async (dev = false) => {
    * Initialize build options, and inject PACKAGE_JSON for library builds.
    */
   const cwd = process.cwd();
-  const pkgJsonFile = resolvePath(cwd, "package.json");
-  const pkgJson = await readFile(pkgJsonFile, "utf-8");
+  const pkgJsonFile = await getPackageJsonFile();
   const shared: BuildOptions = {
     absWorkingDir: cwd,
     outbase: "src",
@@ -54,7 +56,7 @@ export const build = async (dev = false) => {
     target: "esnext",
     minify: !dev,
     define: {
-      PACKAGE_JSON: pkgJson,
+      PACKAGE_JSON: pkgJsonFile,
     },
   };
 
@@ -64,6 +66,9 @@ export const build = async (dev = false) => {
   const distDir = resolvePath(cwd, "dist");
   DEBUG.log("Cleaning old output:", { distDir });
   await rm(distDir, { force: true, recursive: true });
+
+  // eslint-disable-next-line no-console
+  console.log();
 
   /**
    * All files for the build. Ignore .d.ts files.
@@ -115,12 +120,10 @@ export const build = async (dev = false) => {
 
   await normalizeImportSpecifiers();
   ora("Normalized import specifiers.").succeed();
+  // eslint-disable-next-line no-console
+  console.log();
 
-  if (dev) {
-    return;
-  }
-
-  if (process.env.NO_DECLARATIONS) {
+  if (dev || fast) {
     return;
   }
 

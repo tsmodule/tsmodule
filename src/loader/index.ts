@@ -14,7 +14,11 @@ import { sep as winSep } from "path/win32";
  * internal source (for bootstrap code path).
  */
 import { checkExtensions, checkTsExtensions, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/index.js";
+import { getPackageJsonFile } from "../utils/pkgJson.js";
+
 import { createDebugLogger } from "create-debug-logger";
+
+const packageJsonFile = await getPackageJsonFile();
 
 export const resolve: ModuleResolveHook = async (
   specifier,
@@ -207,6 +211,9 @@ export const transformSource: ModuleTransformSourceHook = async (
       target: "esnext",
       sourcefile: context.url,
       format: context.format === "module" ? "esm" : "cjs",
+      define: {
+        PACKAGE_JSON: packageJsonFile,
+      },
     }
   );
 
