@@ -3,17 +3,17 @@
   <h3>TypeScript Module Toolkit</h3>
 </div>
 
-## Features
+### Features
 
-### Quickly create TypeScript projects with **`tsmodule create`**
+#### Quickly create TypeScript projects with **`tsmodule create`**
 
 Supports React via TSX/JSX. Ready with zero config:
 
-  - package.json scripts: `yarn build`, `yarn test`, `yarn lint`
-  - ESLint, `typescript-eslint`, TypeScript configs
+  - package.json scripts
+  - ESLint + TypeScript configs
   - CI/CD with GitHub Actions
 
-### Build TypeScript to pure ESM with **`tsmodule build`**
+#### Build TypeScript to pure ESM with **`tsmodule build`**
 
   - No more polyfilling to CJS or older featuresets
   - Use latest syntax in source, leave backporting to downstream consumers
