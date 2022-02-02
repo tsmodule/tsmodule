@@ -108,7 +108,7 @@ export const build = async ({ dev = false, fast = false }) => {
     entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
     jsxFactory: "createElement",
     banner: {
-      js: "import { createElement } from 'react';\n",
+      js: "import { createElement } from \"react\";\n",
     },
   });
 
