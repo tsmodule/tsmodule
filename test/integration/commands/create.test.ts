@@ -11,6 +11,12 @@ test.serial("`create` should generate TS module package", async (t) => {
   t.timeout(120_000);
 
   await shell("tsmodule create test-module");
+
+  /**
+   * `tsmodule create` adds a `@tsmodule/tsmodule` dependency, so re-link it in
+   * the test module.
+   */
+  await shell("yarn --cwd test-module link @tsmodule/tsmodule");
   t.pass();
 });
 
