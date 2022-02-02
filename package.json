@@ -33,7 +33,8 @@
     "prebuild": "yarn bootstrap",
     "build": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build",
     "lint": "eslint --fix src",
-    "prepare": "yarn build --fast",
+    "prepublish": "yarn build",
+    "pretest": "yarn build -f",
     "test": "ava --no-worker-threads"
   },
   "dependencies": {
