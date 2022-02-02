@@ -9,7 +9,7 @@ process.chdir(tmpdir());
 test.serial("`create` should generate TS module package", async (t) => {
   t.timeout(20000);
 
-  await shell("tsm --help");
+  await shell("tsm version && tsm --help");
   t.pass();
 });
 
