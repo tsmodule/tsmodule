@@ -155,6 +155,9 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
       ...options,
       sourcefile: path,
       format: "esm",
+      define: {
+        PACKAGE_JSON: packageJsonFile,
+      },
     }
   );
 
