@@ -10,7 +10,7 @@ await shell("yarn link @tsmodule/tsm");
 test.serial("`create` should generate TS module package", async (t) => {
   t.timeout(20000);
 
-  await shell("tsm version && tsm --help");
+  await shell("tsm create test-module");
   t.pass();
 });
 
