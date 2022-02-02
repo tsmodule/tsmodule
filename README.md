@@ -3,6 +3,8 @@
   <h4>TypeScript Module Toolkit</h4>
 </div>
 
+---
+
 ### Quickly create TypeScript projects with **`tsmodule create`**
 
 Supports React via TSX/JSX. Ready with zero config:
