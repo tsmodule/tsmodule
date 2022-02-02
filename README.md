@@ -1,9 +1,7 @@
 <div align="center">
   <img src="assets/tsmodule.png">
-  <h3>TypeScript Module Toolkit</h3>
+  <h4>TypeScript Module Toolkit</h4>
 </div>
-
-## Features
 
 ### Quickly create TypeScript projects with **`tsmodule create`**
 
