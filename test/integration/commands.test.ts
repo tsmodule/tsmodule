@@ -27,7 +27,7 @@ test.serial("[create] created module package should build", async (t) => {
   t.timeout(240_000);
 
   process.chdir(testModuleDir);
-  await shell(`cd ${testModuleDir} && tsmodule build`);
+  await shell(`cd ${testModuleDir} && tsmodule build && node dist/index.js`);
   t.pass();
 });
 
