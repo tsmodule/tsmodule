@@ -38,7 +38,7 @@ export const build = async ({
 
   const DEBUG = createDebugLogger(build);
   DEBUG.log("Building", { files, dev, fast });
-  bannerLog(`TS Module [${env.NODE_ENV}]`);
+  bannerLog(`${chalk.bold("TS Module")} [${env.NODE_ENV}]`);
 
   /**
    * Initialize build options, and inject PACKAGE_JSON for library builds.
