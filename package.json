@@ -69,6 +69,7 @@
     "experimental-loader"
   ],
   "ava": {
+    "timeout": "10 minutes",
     "files": [
       "test/**/*.test.ts"
     ],

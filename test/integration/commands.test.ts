@@ -11,8 +11,6 @@ await shell("yarn link @tsmodule/tsmodule");
 await fs.rm(testModuleDir, { recursive: true, force: true });
 
 test.serial("[create] should generate TS module package", async (t) => {
-  t.timeout(240_000);
-
   process.chdir(tmpdir());
   await shell(`cd ${tmpdir()} && tsmodule create test-module`);
 
@@ -24,8 +22,6 @@ test.serial("[create] should generate TS module package", async (t) => {
 });
 
 test.serial("[create] created module package should build", async (t) => {
-  t.timeout(240_000);
-
   process.chdir(testModuleDir);
   await shell(`cd ${testModuleDir} && tsmodule build && node dist/index.js`);
   t.pass();
