@@ -74,7 +74,7 @@ in `src/pages`:
 
 ## Requirements
 
-Because TS modules are pure ESM environments, **Node 16+** is required.
+Because TS modules are pure ESM environments, **Node 14+** is required.
 
 ## Installation
 
