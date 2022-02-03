@@ -5,8 +5,8 @@ import { fileURLToPath, pathToFileURL, URL } from "url";
 import { promises as fs } from "fs";
 import { transform } from "esbuild";
 
-import { sep as posixSep } from "path/posix";
-import { sep as winSep } from "path/win32";
+import { posix as posixPath } from "path";
+import { win32 as winPath } from "path";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
@@ -135,7 +135,7 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
   const DEBUG = createDebugLogger(load);
   DEBUG.log("Loading source file:", { url });
 
-  if (!url.includes(winSep) && !url.includes(posixSep)) {
+  if (!url.includes(winPath.sep) && !url.includes(posixPath.sep)) {
     DEBUG.log("Using defaultLoad for named module:", { url });
     return defaultLoad(url, context, defaultLoad);
   }

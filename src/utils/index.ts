@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
-import { sep as posixSep } from "path/posix";
+import { posix as path } from "path";
 import { sep } from "path";
 
 export const DEVELOPMENT_MODE = process.env.NODE_ENV === "development";
@@ -37,8 +37,8 @@ export const POSSIBLE_EXTENSIONS = Object.keys(MODULE_LOADERS);
 /**
  * Force a Unix-like path.
  */
-export const normalizeSpecifier = (path: string) => {
-  return path.split(sep).join(posixSep);
+export const normalizeSpecifier = (specifier: string) => {
+  return specifier.split(sep).join(path.sep);
 };
 
 export const fileExists = (fileUrl: string): string | void => {

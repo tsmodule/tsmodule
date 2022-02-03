@@ -1,5 +1,5 @@
-import { dirname, extname, relative } from "path/posix";
 import { createDebugLogger } from "create-debug-logger";
+import { posix as path } from "path";
 import ts from "typescript";
 
 export const TS_CONFIG: ts.CompilerOptions = {
@@ -32,7 +32,7 @@ const typescriptResolve = (specifier: string, entryPoint = process.cwd()) => {
 };
 
 const getEsmRelativeSpecifier = (from: string, to: string) => {
-  const relativePath = relative(dirname(from), to);
+  const relativePath = path.relative(path.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
   return specifier;
 };
@@ -107,7 +107,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
          * If this is a non-relative specifier, or it has a file extension, do
          * try to resolve it.
          */
-        if (!specifier.startsWith(".") || extname(specifier)) {
+        if (!specifier.startsWith(".") || path.extname(specifier)) {
           return;
         }
 
