@@ -2,7 +2,7 @@ import test from "ava";
 
 import { promises as fs } from "fs";
 import { resolve } from "path";
-import { killShell, shell } from "await-shell";
+import { shell } from "await-shell";
 import { tmpdir } from "os";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
