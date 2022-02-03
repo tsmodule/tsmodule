@@ -2,6 +2,7 @@ import type { GetFormatHook as ModuleGetFormatHook, LoadHook as ModuleLoadHook, 
 
 import { extname, isAbsolute, join, normalize, resolve as resolvePath } from "path";
 import { fileURLToPath, pathToFileURL, URL } from "url";
+import { createDebugLogger } from "create-debug-logger";
 import { promises as fs } from "fs";
 import { transform } from "esbuild";
 
@@ -15,8 +16,6 @@ import { win32 as winPath } from "path";
  */
 import { checkExtensions, checkTsExtensions, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/index.js";
 import { getPackageJsonFile } from "../utils/pkgJson.js";
-
-import { createDebugLogger } from "create-debug-logger";
 
 const packageJsonFile = await getPackageJsonFile();
 
