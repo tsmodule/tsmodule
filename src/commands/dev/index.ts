@@ -13,7 +13,7 @@ const clear = () => {
 const timestamp = (files: string) => {
   log(
     "\n",
-    chalk.gray(`Built ${files}.`),
+    chalk.gray(`Built ${chalk.bold(files)}.`),
     "\n",
     chalk.blue(new Date().toLocaleString())
   );
