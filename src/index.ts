@@ -6,6 +6,7 @@ import chalk from "chalk";
 import { Command } from "commander";
 import { build } from "./commands/build";
 import { create } from "./commands/create";
+import { dev } from "./commands/dev";
 import { execute } from "./commands/execute";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
@@ -25,9 +26,15 @@ program
   .action(execute);
 
 program
+  .command("dev")
+  .description("Build and watch for changes.")
+  .action(dev);
+
+program
   .command("build")
-  .option("-d, --dev", "Build development version (default: production)")
-  .option("-f, --fast", "Do not emit type declarations, only transform to JS.")
+  .option("--files <files>", "The files to build (default: all)")
+  .option("-d, --dev", "Build development version")
+  .option("-f, --fast", "Do not emit type declarations, only transform to JS")
   .description(
     "Builds TS files to output in dist/."
   )

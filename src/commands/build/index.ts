@@ -1,6 +1,6 @@
 import { build as esbuild, BuildOptions } from "esbuild";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { extname, resolve as resolvePath } from "path";
+import { extname, isAbsolute, relative, resolve as resolvePath } from "path";
 import chalk from "chalk";
 import { env } from "process";
 import fs from "fs/promises";
@@ -29,12 +29,17 @@ export const bannerLog = (msg: string) => {
  * could mean many things, all of which is handled by the loader which will
  * resolve them for us.
  */
-export const build = async ({ dev = false, fast = false }) => {
+export const build = async ({
+  files = "src/**/*",
+  dev = false,
+  fast = false
+}) => {
   if (dev) {
     env.NODE_ENV = "development";
   }
 
   const DEBUG = createDebugLogger(build);
+  DEBUG.log("Building", { files, dev, fast });
 
   if (!dev) {
     bannerLog("Building for production.");
@@ -43,14 +48,14 @@ export const build = async ({ dev = false, fast = false }) => {
   /**
    * Initialize build options, and inject PACKAGE_JSON for library builds.
    */
-  const cwd = process.cwd();
   const pkgJsonFile = await getPackageJsonFile();
+  const cwd = process.cwd();
   const shared: BuildOptions = {
     absWorkingDir: cwd,
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
-    logLevel: dev ? "debug" : "error",
+    logLevel: dev ? "warning" : "error",
     charset: "utf8",
     format: "esm",
     target: "esnext",
@@ -63,9 +68,21 @@ export const build = async ({ dev = false, fast = false }) => {
   /**
    * Clean old output.
    */
-  const distDir = resolvePath(cwd, "dist");
-  DEBUG.log("Cleaning old output:", { distDir });
-  await fs.rm(distDir, { force: true, recursive: true });
+  const srcDir = resolvePath(cwd, "src");
+  const outDir = resolvePath(cwd, "dist");
+
+  DEBUG.log("Cleaning old output:", { outDir });
+  if (dev && isAbsolute(files)) {
+    const outfile =
+      files
+        .replace(srcDir, outDir)
+        .replace(isTs, ".js")
+        .replace(isTsxOrJsx, ".js");
+
+    await fs.rm(outfile, { force: true });
+  } else {
+    await fs.rm(outDir, { force: true, recursive: true });
+  }
 
   // eslint-disable-next-line no-console
   console.log();
@@ -75,7 +92,7 @@ export const build = async ({ dev = false, fast = false }) => {
    */
   const allFiles =
       glob
-        .sync("src/**/*", { cwd })
+        .sync(files, { cwd })
         .filter((file) => extname(file) !== ".d.ts")
         .map((file) => resolvePath(file));
 
@@ -118,7 +135,24 @@ export const build = async ({ dev = false, fast = false }) => {
     return;
   }
 
-  await normalizeImportSpecifiers();
+  /**
+   * Resolve file specifiers given to build() that might refer to src/ files to
+   * files in dist/.
+   */
+
+  const emitted =
+    files
+      .replace(srcDir, outDir)
+      .replace(/^src\//, "dist/")
+      .replace(isTs, ".js")
+      .replace(isTsxOrJsx, ".js");
+
+  if (files) {
+    await normalizeImportSpecifiers(emitted);
+  } else {
+    await normalizeImportSpecifiers();
+  }
+
   ora("Normalized import specifiers.").succeed();
   // eslint-disable-next-line no-console
   console.log();

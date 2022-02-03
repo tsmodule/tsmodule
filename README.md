@@ -18,6 +18,10 @@ Supports React via TSX/JSX. Ready with zero config:
   - No more polyfilling to CJS or older featuresets
   - Use latest syntax in source, leave backporting to downstream consumers
 
+### Dev mode with **`tsmodule dev`**
+
+  - Build and watch for changes
+
 ### Run TypeScript directly with **`tsmodule <file>`**
 
   - Uses Node module loader to resolve TS at runtime
