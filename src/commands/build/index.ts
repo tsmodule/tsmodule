@@ -138,15 +138,11 @@ export const build = async ({
   const emitted =
     files
       .replace(srcDir, outDir)
-      .replace(/^src\//, "dist/")
+      .replace(/^(\.\/)?src\//, "dist/")
       .replace(isTs, ".js")
       .replace(isTsxOrJsx, ".js");
 
-  if (files) {
-    await normalizeImportSpecifiers(emitted);
-  } else {
-    await normalizeImportSpecifiers();
-  }
+  await normalizeImportSpecifiers(emitted);
 
   ora("Normalized import specifiers.").succeed();
   // eslint-disable-next-line no-console
