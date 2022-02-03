@@ -10,7 +10,8 @@ export const dev = async () => {
   await build({ dev: true });
 
   watch(
-    resolve(cwd, "src")
+    resolve(cwd, "src"),
+    { persistent: true }
   ).on(
     "change",
     async (filePath: string) => {
