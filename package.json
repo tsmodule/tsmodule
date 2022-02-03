@@ -30,8 +30,10 @@
   },
   "scripts": {
     "bootstrap": "node bootstrap.js",
-    "prebuild": "yarn bootstrap",
-    "build": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build",
+    "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -f",
+    "prebuild": "yarn bootstrap && yarn bootload && yarn link -f",
+    "build": "tsmodule build",
+    "dev": "tsmodule dev",
     "lint": "eslint --fix src",
     "prepare": "yarn build -f",
     "prepublishOnly": "yarn build && yarn test",
