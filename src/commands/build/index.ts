@@ -1,6 +1,6 @@
 import { build as esbuild, BuildOptions } from "esbuild";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { extname, isAbsolute, relative, resolve as resolvePath } from "path";
+import { extname, isAbsolute, resolve as resolvePath } from "path";
 import chalk from "chalk";
 import { env } from "process";
 import fs from "fs/promises";

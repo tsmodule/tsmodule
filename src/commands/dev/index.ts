@@ -1,8 +1,8 @@
+import { relative, resolve } from "path";
 import { build } from "../build";
 import chalk from "chalk";
 import { log } from "create-debug-logger";
 import ora from "ora";
-import { relative, resolve } from "path";
 import { watch } from "chokidar";
 
 export const dev = async () => {
