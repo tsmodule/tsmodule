@@ -5,7 +5,7 @@ import chalk from "chalk";
 import { env } from "process";
 import glob from "fast-glob";
 import ora from "ora";
-import { rm } from "fs/promises";
+import { promises as fs } from "fs";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
@@ -65,7 +65,7 @@ export const build = async ({ dev = false, fast = false }) => {
    */
   const distDir = resolvePath(cwd, "dist");
   DEBUG.log("Cleaning old output:", { distDir });
-  await rm(distDir, { force: true, recursive: true });
+  await fs.rm(distDir, { force: true, recursive: true });
 
   // eslint-disable-next-line no-console
   console.log();

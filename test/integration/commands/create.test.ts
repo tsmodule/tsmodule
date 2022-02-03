@@ -1,14 +1,14 @@
 import test from "ava";
 
+import { promises as fs } from "fs";
 import { resolve } from "path";
-import { rm } from "fs/promises";
 import { shell } from "await-shell";
 import { tmpdir } from "os";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
 
 await shell("yarn link @tsmodule/tsmodule");
-await rm(testModuleDir, { recursive: true, force: true });
+await fs.rm(testModuleDir, { recursive: true, force: true });
 
 test.serial("`create` should generate TS module package", async (t) => {
   t.timeout(240_000);

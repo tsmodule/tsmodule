@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { cp, readFile, writeFile } from "fs/promises";
 import { fileURLToPath, URL } from "url";
 import chalk from "chalk";
+import { promises as fs } from "fs";
 import ora from "ora";
 import { resolve } from "path";
 import { shell } from "await-shell";
@@ -11,17 +11,21 @@ export const create = async (name: string) => {
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
 
   const templateURL = new URL("../../../template", import.meta.url);
-  await cp(fileURLToPath(templateURL), resolve(cwd, name), { recursive: true });
+  await fs.cp(
+    fileURLToPath(templateURL),
+    resolve(cwd, name),
+    { recursive: true }
+  );
 
   /**
    * Replace package name in package.json.
    */
   const packageJsonPath = resolve(cwd, name, "package.json");
-  const packageJsonFile = await readFile(packageJsonPath, "utf-8");
+  const packageJsonFile = await fs.readFile(packageJsonPath, "utf-8");
   const packageJson = JSON.parse(packageJsonFile);
 
   packageJson.name = name;
-  await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   spinner.succeed("Project created.");
   spinner.start("Installing dependencies.");
