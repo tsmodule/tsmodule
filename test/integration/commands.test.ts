@@ -1,8 +1,8 @@
 import test from "ava";
 
+import { shell, killShell } from "await-shell";
 import { promises as fs } from "fs";
 import { resolve } from "path";
-import { shell } from "await-shell";
 import { tmpdir } from "os";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
@@ -36,13 +36,15 @@ test.serial("[create] created module package should build", async (t) => {
 
 //   process.chdir(testModuleDir);
 
-//   await Promise.race([
+//   console.log("testing hard thing");
+//   await Promise.allSettled([
 //     shell(`cd ${testModuleDir} && tsmodule dev`),
 //     new Promise((resolve) => setTimeout(() => {
-//       console.log("RESULT", killShell(2));
+//       console.log("RESULT", killShell());
 //       resolve(true);
-//     }, 1_000))
+//     }, 2500))
 //   ]);
 
 //   t.pass();
+//   return;
 // });
