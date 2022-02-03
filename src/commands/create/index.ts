@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { fileURLToPath, URL } from "url";
 import chalk from "chalk";
-import { promises as fs } from "fs";
+import fs from "fs/promises";
 import ora from "ora";
 import { resolve } from "path";
 import { shell } from "await-shell";
@@ -11,11 +11,7 @@ export const create = async (name: string) => {
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
 
   const templateURL = new URL("../../../template", import.meta.url);
-  await fs.cp(
-    fileURLToPath(templateURL),
-    resolve(cwd, name),
-    { recursive: true }
-  );
+  await shell(`cp -R ${fileURLToPath(templateURL)} ${resolve(cwd, name)}`);
 
   /**
    * Replace package name in package.json.

@@ -3,9 +3,9 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { extname, resolve as resolvePath } from "path";
 import chalk from "chalk";
 import { env } from "process";
+import fs from "fs/promises";
 import glob from "fast-glob";
 import ora from "ora";
-import { promises as fs } from "fs";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
