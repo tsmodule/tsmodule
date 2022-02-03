@@ -5,9 +5,26 @@ import { log } from "create-debug-logger";
 import ora from "ora";
 import { watch } from "chokidar";
 
+const clear = () => {
+  // eslint-disable-next-line no-console
+  console.clear();
+};
+
+const timestamp = (files: string) => {
+  log(
+    "\n",
+    chalk.gray(`Built ${files}.`),
+    "\n",
+    chalk.blue(new Date().toLocaleString())
+  );
+};
+
 export const dev = async () => {
   const cwd = process.cwd();
+
+  clear();
   await build({ dev: true });
+  timestamp("src/**/*");
 
   watch(
     resolve(cwd, "src"),
@@ -15,8 +32,7 @@ export const dev = async () => {
   ).on(
     "change",
     async (filePath: string) => {
-      // eslint-disable-next-line no-console
-      console.clear();
+      clear();
 
       const preTime = Date.now();
       await build({ dev: true, files: filePath });
@@ -28,12 +44,7 @@ export const dev = async () => {
         )
       ).succeed();
 
-      log(
-        "\n",
-        chalk.gray(`Built ${relative(cwd, filePath)}`),
-        "\n",
-        chalk.blue(new Date().toLocaleString())
-      );
+      timestamp(relative(cwd, filePath));
     }
   );
 };
