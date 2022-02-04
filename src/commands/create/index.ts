@@ -5,13 +5,15 @@ import fs from "fs/promises";
 import ora from "ora";
 import { resolve } from "path";
 import { shell } from "await-shell";
+import { copy } from "fs-extra";
 
 export const create = async (name: string) => {
   const cwd = process.cwd();
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
 
   const templateURL = new URL("../../../template", import.meta.url);
-  await shell(`cp -R ${fileURLToPath(templateURL)} ${resolve(cwd, name)}`);
+  await copy(fileURLToPath(templateURL), resolve(cwd, name));
+  // await shell(`cp -R ${fileURLToPath(templateURL)} ${resolve(cwd, name)}`);
 
   /**
    * Replace package name in package.json.

@@ -7,7 +7,6 @@ import { tmpdir } from "os";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
 
-await shell("yarn link @tsmodule/tsmodule");
 await fs.rm(testModuleDir, { recursive: true, force: true });
 
 test.serial("[create] should generate TS module package", async (t) => {
@@ -21,7 +20,7 @@ test.serial("[create] should generate TS module package", async (t) => {
   /**
    * `tsmodule create` adds a `@tsmodule/tsmodule` dependency, so re-link it.
    */
-  await shell(`cd ${testModuleDir} && yarn link @tsmodule/tsmodule`);
+  // await shell(`cd ${testModuleDir} && yarn link @tsmodule/tsmodule`);
 
   t.pass();
 });
@@ -44,13 +43,15 @@ test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(testModuleDir);
   t.timeout(5000);
 
-  await Promise.allSettled([
-    shell(`cd ${testModuleDir} && tsmodule dev`),
-    new Promise((resolve) => setTimeout(() => {
-      console.log("RESULT", killShell());
-      resolve(true);
-    }, 2500))
-  ]);
+  try {
+    await Promise.allSettled([
+      shell(`cd ${testModuleDir} && tsmodule dev`),
+      new Promise((resolve) => setTimeout(() => {
+        console.log("RESULT", killShell());
+        resolve(true);
+      }, 2500))
+    ]);
+  } catch (e) {}
 
   t.pass();
   return;
