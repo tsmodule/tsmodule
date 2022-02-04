@@ -41,7 +41,6 @@ test.serial("[create] built module should execute", async (t) => {
 
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(testModuleDir);
-  t.timeout(10000);
 
   await Promise.allSettled([
     shell(`cd ${testModuleDir} && tsmodule dev`),
@@ -52,7 +51,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "export const hello = 'world';"
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
 
       const emittedDevFile = resolve(testModuleDir, "dist/index.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
