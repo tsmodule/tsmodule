@@ -1,9 +1,10 @@
 import test from "ava";
 
 import { killShell, shell } from "await-shell";
-import { promises as fs } from "fs";
+import { existsSync, promises as fs } from "fs";
 import { resolve } from "path";
 import { tmpdir } from "os";
+import { fileURLToPath, URL } from "url";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
 
@@ -91,4 +92,32 @@ test.serial("[build] built module should execute", async (t) => {
   await shell(`cd ${testModuleDir} && node dist/index.js`);
 
   t.pass();
+});
+
+const createTestAssets = async () => {
+  await fs.mkdir(resolve(testModuleDir, "src/path/to/assets"), { recursive: true });
+  /**
+   * Create CSS and image files.
+   */
+  await Promise.all([
+    fs.writeFile(
+      resolve(testModuleDir, "src/index.css"),
+      "body { color: red; }"
+    ),
+    fs.copyFile(
+      fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
+      resolve(testModuleDir, "src/path/to/assets/tsmodule.png")
+    )
+  ]);
+};
+
+test.serial("[build] should copy non-source files to dist/", async (t) => {
+  await createTestAssets();
+  await shell(`cd ${testModuleDir} && tsmodule build`);
+
+  t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
+  t.assert(existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
+
+  t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/index.css"), "utf-8"));
+  t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png"), "utf-8"));
 });

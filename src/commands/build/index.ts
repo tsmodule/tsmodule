@@ -1,7 +1,8 @@
 import { build as esbuild, BuildOptions } from "esbuild";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { extname, isAbsolute, resolve as resolvePath } from "path";
+import { extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import chalk from "chalk";
+import { copy } from "fs-extra";
 import { env } from "process";
 import fs from "fs/promises";
 import glob from "fast-glob";
@@ -13,7 +14,7 @@ import ora from "ora";
  * internal source (for bootstrap code path).
  */
 import { createDebugLogger, log } from "create-debug-logger";
-import { isTs, isTsxOrJsx } from "../../utils";
+import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { getPackageJsonFile } from "../../utils/pkgJson";
 import { normalizeImportSpecifiers } from "../normalize";
@@ -127,6 +128,25 @@ export const build = async ({
 
   ora("Built TSX files.").succeed();
 
+  /**
+   * Non JS/TS files.
+   */
+  const nonJsTsFiles = allFiles.filter((file) => !isJsOrTs.test(file));
+
+  DEBUG.log("Copying non-JS/TS files.");
+  await Promise.all(
+    nonJsTsFiles.map(async (file) => {
+      const outfile =
+        resolve(cwd, file)
+          .replace(srcDir, outDir)
+          .replace(isTs, ".js")
+          .replace(isTsxOrJsx, ".js");
+
+      DEBUG.log("Copying non-source file:", { file, outfile });
+      await copy(file, outfile);
+    })
+  );
+
   if (process.env.NO_REWRITES) {
     return;
   }
@@ -136,14 +156,16 @@ export const build = async ({
    * files in dist/.
    */
 
-  const emitted =
+  const emittedJs =
     files
       .replace(srcDir, outDir)
       .replace(/^(\.\/)?src\//, "dist/")
       .replace(isTs, ".js")
       .replace(isTsxOrJsx, ".js");
 
-  await normalizeImportSpecifiers(emitted);
+  await normalizeImportSpecifiers(
+    emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
+  );
 
   ora("Normalized import specifiers.").succeed();
   // eslint-disable-next-line no-console
