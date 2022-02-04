@@ -37,6 +37,7 @@
     "lint": "eslint --fix src",
     "prepare": "yarn build -f",
     "prepublishOnly": "yarn build && yarn test",
+    "pretest": "yarn build -f",
     "test": "ava --no-worker-threads"
   },
   "dependencies": {

@@ -1,42 +1,29 @@
 /* eslint-disable no-console */
-import { fileURLToPath, URL } from "url";
 import chalk from "chalk";
-import { copy } from "fs-extra";
-import fs from "fs/promises";
 import ora from "ora";
-import { resolve } from "path";
 import { shell } from "await-shell";
 
+import { createTemplate } from "./lib/createTemplate";
+import { rewritePkgJson } from "./lib/rewritePkgJson";
+
+// @ts-ignore - Need to add initializeShell() to await-shell.
+globalThis.SHELL_OPTIONS = {
+  stdio: ["ignore", "ignore", "inherit"],
+};
+
 export const create = async (name: string) => {
-  const cwd = process.cwd();
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
 
-  const templateURL = new URL("../../../template", import.meta.url);
-  await copy(fileURLToPath(templateURL), resolve(cwd, name));
-  // await shell(`cp -R ${fileURLToPath(templateURL)} ${resolve(cwd, name)}`);
-
-  /**
-   * Replace package name in package.json.
-   */
-  const packageJsonPath = resolve(cwd, name, "package.json");
-  const packageJsonFile = await fs.readFile(packageJsonPath, "utf-8");
-  const packageJson = JSON.parse(packageJsonFile);
-
-  packageJson.name = name;
-  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  await createTemplate("default", name);
+  await rewritePkgJson(name);
 
   spinner.succeed("Project created.");
 
   /**
-   * Enter the project directory.
+   * Install dependencies in the created directory.
    */
   process.chdir(name);
   const dependencies = ["@tsmodule/tsmodule"];
-
-  // @ts-ignore - Need to add initializeShell() to await-shell.
-  globalThis.SHELL_OPTIONS = {
-    stdio: ["ignore", "ignore", "inherit"],
-  };
 
   spinner.start("Installing dependencies.");
   await shell(`yarn add -D ${dependencies.join(" ")}`);
