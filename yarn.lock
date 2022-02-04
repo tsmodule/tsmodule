@@ -370,10 +370,10 @@ ava@^4.0.1:
     write-file-atomic "^3.0.3"
     yargs "^17.3.1"
 
-await-shell@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-8.1.0.tgz#c9bd78c3b6bd013dcdce98bb2bd6fa67a35dca44"
-  integrity sha512-9dWLgXpFAsZmaZ9UWFT+pbTm5hothot+3oyz2OV9Wh0yF0EYMHnFS6i50T00IDxdqaQ0DD6Qm8brhFzdRu7Dww==
+await-shell@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-8.3.0.tgz#27e334984f642cee2f61ab96143b1737e2f6f57e"
+  integrity sha512-X3v70Tyd663C6so/1orxfoThsh9RV0/SeXYGRn+NoczEX3WAAD/MMGyc7m8tVy46+DkQlUS59FEdgD5SgnGL8Q==
 
 balanced-match@^1.0.0:
   version "1.0.2"
