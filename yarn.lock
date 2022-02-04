@@ -1576,6 +1576,11 @@ node-fetch@^3.2.0:
     fetch-blob "^3.1.4"
     formdata-polyfill "^4.0.10"
 
+node-watch@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/node-watch/-/node-watch-0.7.3.tgz#6d4db88e39c8d09d3ea61d6568d80e5975abc7ab"
+  integrity sha512-3l4E8uMPY1HdMMryPRUAl+oIHtXtyiTlIiESNSVSNxcPfzAFzeTbXFQkZfAwBbo0B1qMSG8nUABx+Gd+YrbKrQ==
+
 nofilter@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/nofilter/-/nofilter-3.1.0.tgz#c757ba68801d41ff930ba2ec55bab52ca184aa66"

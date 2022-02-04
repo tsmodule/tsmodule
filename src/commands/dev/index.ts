@@ -3,7 +3,7 @@ import { build } from "../build";
 import chalk from "chalk";
 import { log } from "create-debug-logger";
 import ora from "ora";
-import { watch } from "chokidar";
+import watch from "node-watch";
 import { shell } from "await-shell";
 
 const clear = () => {
@@ -31,10 +31,13 @@ export const dev = async () => {
 
   watch(
     resolve(cwd, "src"),
-    { persistent: true }
+    {
+      recursive: true,
+      persistent: true
+    }
   ).on(
     "change",
-    async (filePath: string) => {
+    async (_: string, filePath: string) => {
       clear();
 
       const preTime = Date.now();
