@@ -63,5 +63,30 @@ test.serial("[dev] should watch for file changes", async (t) => {
   ]);
 
   t.pass();
-  return;
 });
+
+// test.serial("[dev] should notice new file", async (t) => {
+//   process.chdir(testModuleDir);
+//   t.timeout(10000);
+
+//   await Promise.allSettled([
+//     shell(`cd ${testModuleDir} && tsmodule dev`),
+//     (async () => {
+//       const testFile = resolve(testModuleDir, "src/newFile.ts");
+//       await fs.writeFile(
+//         testFile,
+//         "export const hello = 'world';"
+//       );
+
+//       await new Promise((resolve) => setTimeout(resolve, 5000));
+
+//       const emittedDevFile = resolve(testModuleDir, "dist/index.js");
+//       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
+
+//       t.snapshot(emittedDevModule);
+//       killShell();
+//     })(),
+//   ]);
+
+//   t.pass();
+// });
