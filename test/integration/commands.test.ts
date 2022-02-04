@@ -41,17 +41,26 @@ test.serial("[create] built module should execute", async (t) => {
 
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(testModuleDir);
-  t.timeout(5000);
+  t.timeout(10000);
 
-  try {
-    await Promise.allSettled([
-      shell(`cd ${testModuleDir} && tsmodule dev`),
-      new Promise((resolve) => setTimeout(() => {
-        console.log("RESULT", killShell());
-        resolve(true);
-      }, 2500))
-    ]);
-  } catch (e) {}
+  await Promise.allSettled([
+    shell(`cd ${testModuleDir} && tsmodule dev`),
+    (async () => {
+      const testFile = resolve(testModuleDir, "src/index.ts");
+      await fs.writeFile(
+        testFile,
+        "export const hello = 'world';"
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      const emittedDevFile = resolve(testModuleDir, "dist/index.js");
+      const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
+
+      t.snapshot(emittedDevModule);
+      killShell();
+    })(),
+  ]);
 
   t.pass();
   return;
