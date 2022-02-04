@@ -25,20 +25,6 @@ test.serial("[create] should generate TS module package", async (t) => {
   t.pass();
 });
 
-test.serial("[create] created module package should build", async (t) => {
-  process.chdir(testModuleDir);
-  await shell(`cd ${testModuleDir} && tsmodule build`);
-
-  t.pass();
-});
-
-test.serial("[create] built module should execute", async (t) => {
-  process.chdir(testModuleDir);
-  await shell(`cd ${testModuleDir} && node dist/index.js`);
-
-  t.pass();
-});
-
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(testModuleDir);
 
@@ -60,6 +46,23 @@ test.serial("[dev] should watch for file changes", async (t) => {
       killShell();
     })(),
   ]);
+
+  t.pass();
+});
+
+test.serial("[create] created module package should build", async (t) => {
+  process.chdir(testModuleDir);
+  await shell(`cd ${testModuleDir} && tsmodule build`);
+
+  const emittedFile = resolve(testModuleDir, "dist/index.js");
+  const emittedModule = await fs.readFile(emittedFile, "utf-8");
+
+  t.snapshot(emittedModule);
+});
+
+test.serial("[create] built module should execute", async (t) => {
+  process.chdir(testModuleDir);
+  await shell(`cd ${testModuleDir} && node dist/index.js`);
 
   t.pass();
 });
