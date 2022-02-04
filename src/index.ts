@@ -14,16 +14,14 @@ const { version } = PACKAGE_JSON;
 const program = new Command();
 
 program
-  .name(chalk.bold(chalk.blueBright("tsmodule")))
-  .description(chalk.blueBright("A tool for building TypeScript modules."))
+  .name(chalk.white(chalk.bold("tsmodule")))
+  .usage(chalk.white(chalk.bold("<file | command> [options]")))
+  .description(chalk.blueBright(
+    "A tool for building TypeScript modules.\n\n" +
+    `Run TS directly: ${chalk.bold("tsmodule src/index.ts")} \n` +
+    `Use a command: ${chalk.bold("tsmodule build")}`
+  ))
   .version(String(version));
-
-program
-  .command("run", { isDefault: true })
-  .argument("<file>", "The file to run.")
-  .option("--d, --dev", "Enable development mode")
-  .description("Run the given TS program, analogous to `node <file>`.")
-  .action(execute);
 
 program
   .command("dev")
@@ -54,5 +52,12 @@ program
   .action(async ({ files }) => {
     await normalizeImportSpecifiers(files);
   });
+
+program
+  .command("run", { isDefault: true })
+  .argument("<file>", "The file to run.")
+  .option("--d, --dev", "Enable development mode")
+  .description("Run the given TS program, analogous to `node <file>`.")
+  .action(execute);
 
 program.parse(process.argv);
