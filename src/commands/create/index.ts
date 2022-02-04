@@ -24,13 +24,11 @@ export const create = async (name: string) => {
   await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   spinner.succeed("Project created.");
-  spinner.start("Installing dependencies.");
 
   /**
    * Enter the project directory.
    */
   process.chdir(name);
-
   const dependencies = ["@tsmodule/tsmodule"];
 
   // @ts-ignore - Need to add initializeShell() to await-shell.
@@ -38,12 +36,11 @@ export const create = async (name: string) => {
     stdio: ["ignore", "ignore", "inherit"],
   };
 
+  spinner.start("Installing dependencies.");
   await shell(`yarn add -D ${dependencies.join(" ")}`);
-
   spinner.succeed("Dependencies installed.");
+
   spinner.start("Initializing git.");
-
   await shell("git init");
-
   spinner.succeed("Git initialized.");
 };
