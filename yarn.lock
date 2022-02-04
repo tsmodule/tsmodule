@@ -377,10 +377,10 @@ ava@^4.0.1:
     write-file-atomic "^3.0.3"
     yargs "^17.3.1"
 
-await-shell@^14.0.1:
-  version "14.0.1"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-14.0.1.tgz#dfe484369e996c95e021c0c131f35e1138e88cd5"
-  integrity sha512-oQTV/PZhvsCQ+XJ2/dfQAxFapvNXtEmvszghk0aLvJyPxz1MLciSjscYzvy5hgwjbN/BBC6zYxDEIav2bo1OKw==
+await-shell@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-15.0.0.tgz#3fee4243642474271e14060f19fbfe131b864e5c"
+  integrity sha512-69Ut4WQOXrylMh+Mil4Yvdo+LtdNWJTKrVyrpXsNS1M2DQP+/vTafvSkoGFyFH1/92x9cACGPZicS7IXFITkIA==
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -636,7 +636,7 @@ create-debug-logger@^1.10.1:
     node-fetch "^3.2.0"
     socket.io "^4.4.0"
 
-cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-spawn@^7.0.2:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==

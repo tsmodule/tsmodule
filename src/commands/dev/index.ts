@@ -3,8 +3,8 @@ import { build } from "../build";
 import chalk from "chalk";
 import { log } from "create-debug-logger";
 import ora from "ora";
-import watch from "node-watch";
 import { shell } from "await-shell";
+import watch from "node-watch";
 
 const clear = () => {
   // eslint-disable-next-line no-console
