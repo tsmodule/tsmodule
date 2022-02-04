@@ -375,10 +375,10 @@ await-shell@^10.0.0:
   resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-10.0.0.tgz#6d466b280aa994fe3bd3c23e5a524c88a02e099e"
   integrity sha512-ujxusRoEHK96xn93h+CyMHkwUAlfbIuaRvAzXzu7Fhg8VgPmE1+s/s4Bdusw5J6kmzXZpKpBa0Po6V/J7RV1dA==
 
-await-shell@^11.0.0:
-  version "11.0.0"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-11.0.0.tgz#b658220eb9c22be473f8b7f60b3989cca8c5e0e9"
-  integrity sha512-j5tiNy0qkxE/xQmJQ2Tui3st/SLc2xMFqBUOcvE1epDRx4aqsSUDANOMQzthOMSbuTdK9Jit2kt2qmc6KzlUUA==
+await-shell@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-11.1.0.tgz#3fdc4e253ecf36c7bacdfbc0d22926b4869b33cb"
+  integrity sha512-R/yomG1SuyT9RUMuITmE0L15s13mgd7Zaxa2z8UKos7qHORV4HVTPN+b8dHQfmhGxe/g/OlKnwGDVbxlag8LIw==
   dependencies:
     await-shell "^10.0.0"
 
