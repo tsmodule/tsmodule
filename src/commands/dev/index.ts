@@ -4,6 +4,7 @@ import chalk from "chalk";
 import { log } from "create-debug-logger";
 import ora from "ora";
 import { watch } from "chokidar";
+import { shell } from "await-shell";
 
 const clear = () => {
   // eslint-disable-next-line no-console
@@ -22,7 +23,9 @@ const timestamp = (files: string) => {
 export const dev = async () => {
   const cwd = process.cwd();
 
+  await shell("clear");
   clear();
+
   await build({ dev: true });
   timestamp("src/**/*");
 

@@ -66,16 +66,17 @@ export const build = async ({
   const srcDir = resolvePath(cwd, "src");
   const outDir = resolvePath(cwd, "dist");
 
-  DEBUG.log("Cleaning old output:", { outDir });
-  if (dev && isAbsolute(files)) {
+  if (isAbsolute(files)) {
     const outfile =
       files
         .replace(srcDir, outDir)
         .replace(isTs, ".js")
         .replace(isTsxOrJsx, ".js");
 
+    DEBUG.log("Cleaning emitted file:", { outfile });
     await fs.rm(outfile, { force: true });
   } else {
+    DEBUG.log("Cleaning old output:", { outDir });
     await fs.rm(outDir, { force: true, recursive: true });
   }
 

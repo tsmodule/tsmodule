@@ -2,7 +2,7 @@ import test from "ava";
 
 import { promises as fs } from "fs";
 import { resolve } from "path";
-import { shell } from "await-shell";
+import { killShell, shell } from "await-shell";
 import { tmpdir } from "os";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
@@ -40,20 +40,18 @@ test.serial("[create] built module should execute", async (t) => {
   t.pass();
 });
 
-// test.serial("[dev] should watch for file changes", async (t) => {
-//   t.timeout(240_000);
+test.serial("[dev] should watch for file changes", async (t) => {
+  process.chdir(testModuleDir);
+  t.timeout(5000);
 
-//   process.chdir(testModuleDir);
+  await Promise.allSettled([
+    shell(`cd ${testModuleDir} && tsmodule dev`),
+    new Promise((resolve) => setTimeout(() => {
+      console.log("RESULT", killShell());
+      resolve(true);
+    }, 2500))
+  ]);
 
-//   console.log("testing hard thing");
-//   await Promise.allSettled([
-//     shell(`cd ${testModuleDir} && tsmodule dev`),
-//     new Promise((resolve) => setTimeout(() => {
-//       console.log("RESULT", killShell());
-//       resolve(true);
-//     }, 2500))
-//   ]);
-
-//   t.pass();
-//   return;
-// });
+  t.pass();
+  return;
+});
