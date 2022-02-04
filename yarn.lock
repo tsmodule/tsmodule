@@ -72,13 +72,6 @@
   resolved "https://registry.yarnpkg.com/@types/cors/-/cors-2.8.12.tgz#6b2c510a7ad7039e98e7b8d3d6598f4359e5c080"
   integrity sha512-vt+kDhq/M2ayberEtJcIN/hxXy1Pk+59g2FV/ZQceeaTyCtCucjL2Q7FXlFjtWn4n15KCr1NE2lNNFhp0lEThw==
 
-"@types/cross-spawn@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@types/cross-spawn/-/cross-spawn-6.0.2.tgz#168309de311cd30a2b8ae720de6475c2fbf33ac7"
-  integrity sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/fs-extra@^9.0.13":
   version "9.0.13"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.13.tgz#7594fbae04fe7f1918ce8b3d213f74ff44ac1f45"
@@ -377,10 +370,10 @@ ava@^4.0.1:
     write-file-atomic "^3.0.3"
     yargs "^17.3.1"
 
-await-shell@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-15.0.0.tgz#3fee4243642474271e14060f19fbfe131b864e5c"
-  integrity sha512-69Ut4WQOXrylMh+Mil4Yvdo+LtdNWJTKrVyrpXsNS1M2DQP+/vTafvSkoGFyFH1/92x9cACGPZicS7IXFITkIA==
+await-shell@^16.0.0:
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-16.0.0.tgz#29cd3f3035634203987940de37f5b832193e0da4"
+  integrity sha512-Bak6gs7eC2oE8bQ08nR2/6ndIP57x4FquSYKWonXrvv/itCizwwARuTXZ1tM8mkaKj6svHSlIBZ2XQw3asAm0A==
 
 balanced-match@^1.0.0:
   version "1.0.2"
