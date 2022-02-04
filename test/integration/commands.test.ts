@@ -11,17 +11,17 @@ const testModuleDir = resolve(tmpdir(), "test-module");
 await fs.rm(testModuleDir, { recursive: true, force: true });
 
 test.serial("[create] should generate TS module package", async (t) => {
-  process.chdir(tmpdir());
-
   /**
    * Create the test TS module.
    */
-  await shell(`cd ${tmpdir()} && tsmodule create test-module`);
+  process.chdir(tmpdir());
+  await shell("tsmodule create test-module");
 
   /**
    * `tsmodule create` adds a `@tsmodule/tsmodule` dependency, so re-link it.
    */
-  await shell(`cd ${testModuleDir} && yarn link @tsmodule/tsmodule`);
+  process.chdir(testModuleDir);
+  await shell("yarn link @tsmodule/tsmodule");
 
   t.pass();
 });
@@ -30,7 +30,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(testModuleDir);
 
   await Promise.allSettled([
-    shell(`cd ${testModuleDir} && tsmodule dev`),
+    shell("tsmodule dev"),
     (async () => {
       const testFile = resolve(testModuleDir, "src/index.ts");
       await fs.writeFile(
@@ -55,7 +55,7 @@ test.serial("[dev] should notice new file", async (t) => {
   process.chdir(testModuleDir);
 
   await Promise.allSettled([
-    shell(`cd ${testModuleDir} && tsmodule dev`),
+    shell("tsmodule dev"),
     (async () => {
       const testFile = resolve(testModuleDir, "src/path/to/newFile.ts");
       await fs.mkdir(resolve(testModuleDir, "src/path/to"), { recursive: true });
@@ -79,7 +79,7 @@ test.serial("[dev] should notice new file", async (t) => {
 
 test.serial("[build] created module package should build", async (t) => {
   process.chdir(testModuleDir);
-  await shell(`cd ${testModuleDir} && tsmodule build`);
+  await shell("tsmodule build");
 
   const emittedFile = resolve(testModuleDir, "dist/index.js");
   const emittedModule = await fs.readFile(emittedFile, "utf-8");
@@ -89,7 +89,7 @@ test.serial("[build] created module package should build", async (t) => {
 
 test.serial("[build] built module should execute", async (t) => {
   process.chdir(testModuleDir);
-  await shell(`cd ${testModuleDir} && node dist/index.js`);
+  await shell("node dist/index.js");
 
   t.pass();
 });
@@ -117,8 +117,9 @@ const cleanTestDir = async () => await fs.rm(
 );
 
 test.serial("[build] should copy non-source files to dist/", async (t) => {
+  process.chdir(testModuleDir);
   await createTestAssets();
-  await shell(`cd ${testModuleDir} && tsmodule build`);
+  await shell("tsmodule build");
 
   t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
   t.assert(existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
@@ -128,8 +129,9 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   await fs.rmdir(resolve(testModuleDir, "dist"), { recursive: true });
 
+  process.chdir(testModuleDir);
   await Promise.allSettled([
-    shell(`cd ${testModuleDir} && tsmodule dev`),
+    shell("tsmodule dev"),
     (async () => {
       t.assert(!existsSync(resolve(testModuleDir, "dist/index.css")));
       t.assert(!existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
@@ -149,17 +151,19 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
 test.serial("[create --react] should create Next.js component library", async (t) => {
   process.chdir(tmpdir());
   await cleanTestDir();
-  await shell(`cd ${tmpdir()} && tsmodule create test-module --react`);
+  await shell("tsmodule create test-module --react");
 
   t.pass();
 });
 
 test.serial("[create --react] library should build and execute", async (t) => {
-  await shell(`cd ${testModuleDir} && tsmodule build && node dist/index.js`);
+  process.chdir(testModuleDir);
+  await shell("tsmodule build && node dist/index.js");
   t.pass();
 });
 
 test.serial("[create --react] library should build with Next", async (t) => {
-  await shell(`cd ${testModuleDir} && yarn build`);
+  process.chdir(testModuleDir);
+  await shell("yarn build");
   t.pass();
 });
