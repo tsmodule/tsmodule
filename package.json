@@ -48,7 +48,6 @@
     "ava": "^4.0.1",
     "await-shell": "^14.0.1",
     "chalk": "^5.0.0",
-    "chokidar": "^3.5.3",
     "commander": "^8.3.0",
     "create-debug-logger": "^1.10.1",
     "cross-spawn": "^7.0.3",

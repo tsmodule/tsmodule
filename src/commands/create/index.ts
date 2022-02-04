@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import { fileURLToPath, URL } from "url";
 import chalk from "chalk";
+import { copy } from "fs-extra";
 import fs from "fs/promises";
 import ora from "ora";
 import { resolve } from "path";
 import { shell } from "await-shell";
-import { copy } from "fs-extra";
 
 export const create = async (name: string) => {
   const cwd = process.cwd();
