@@ -117,7 +117,26 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
 
   t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
   t.assert(existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
-
   t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/index.css"), "utf-8"));
-  t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png"), "utf-8"));
+});
+
+test.serial("[dev] should copy new non-source files to dist/", async (t) => {
+  await fs.rmdir(resolve(testModuleDir, "dist"), { recursive: true });
+
+  await Promise.allSettled([
+    shell(`cd ${testModuleDir} && tsmodule dev`),
+    (async () => {
+      t.assert(!existsSync(resolve(testModuleDir, "dist/index.css")));
+      t.assert(!existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await createTestAssets();
+
+      t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
+      t.assert(existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
+      t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/index.css"), "utf-8"));
+
+      killShell();
+    })(),
+  ]);
 });
