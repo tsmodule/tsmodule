@@ -50,7 +50,33 @@ test.serial("[dev] should watch for file changes", async (t) => {
   t.pass();
 });
 
-test.serial("[create] created module package should build", async (t) => {
+test.serial("[dev] should notice new file", async (t) => {
+  process.chdir(testModuleDir);
+
+  await Promise.allSettled([
+    shell(`cd ${testModuleDir} && tsmodule dev`),
+    (async () => {
+      const testFile = resolve(testModuleDir, "src/path/to/newFile.ts");
+      await fs.mkdir(resolve(testModuleDir, "src/path/to"), { recursive: true });
+      await fs.writeFile(
+        testFile,
+        "export const abc = 123;"
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      const emittedDevFile = resolve(testModuleDir, "dist/path/to/newFile.js");
+      const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
+
+      t.snapshot(emittedDevModule);
+      killShell();
+    })(),
+  ]);
+
+  t.pass();
+});
+
+test.serial("[build] created module package should build", async (t) => {
   process.chdir(testModuleDir);
   await shell(`cd ${testModuleDir} && tsmodule build`);
 
@@ -60,35 +86,9 @@ test.serial("[create] created module package should build", async (t) => {
   t.snapshot(emittedModule);
 });
 
-test.serial("[create] built module should execute", async (t) => {
+test.serial("[build] built module should execute", async (t) => {
   process.chdir(testModuleDir);
   await shell(`cd ${testModuleDir} && node dist/index.js`);
 
   t.pass();
 });
-
-// test.serial("[dev] should notice new file", async (t) => {
-//   process.chdir(testModuleDir);
-//   t.timeout(10000);
-
-//   await Promise.allSettled([
-//     shell(`cd ${testModuleDir} && tsmodule dev`),
-//     (async () => {
-//       const testFile = resolve(testModuleDir, "src/newFile.ts");
-//       await fs.writeFile(
-//         testFile,
-//         "export const hello = 'world';"
-//       );
-
-//       await new Promise((resolve) => setTimeout(resolve, 5000));
-
-//       const emittedDevFile = resolve(testModuleDir, "dist/index.js");
-//       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
-
-//       t.snapshot(emittedDevModule);
-//       killShell();
-//     })(),
-//   ]);
-
-//   t.pass();
-// });
