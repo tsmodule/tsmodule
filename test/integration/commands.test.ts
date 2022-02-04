@@ -20,7 +20,7 @@ test.serial("[create] should generate TS module package", async (t) => {
   /**
    * `tsmodule create` adds a `@tsmodule/tsmodule` dependency, so re-link it.
    */
-  // await shell(`cd ${testModuleDir} && yarn link @tsmodule/tsmodule`);
+  await shell(`cd ${testModuleDir} && yarn link @tsmodule/tsmodule`);
 
   t.pass();
 });
