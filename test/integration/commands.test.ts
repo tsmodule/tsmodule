@@ -158,8 +158,8 @@ test.serial("[create --react] should create Next.js component library", async (t
   console.log({ dependencies });
 
   if (
-    !dependencies.includes("react") ||
-    !dependencies.includes("react-dom")
+    !("react" in dependencies) ||
+    !("react-dom" in dependencies)
   ) {
     t.fail();
   }
