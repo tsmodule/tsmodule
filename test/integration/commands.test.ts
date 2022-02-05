@@ -94,6 +94,10 @@ test.serial("[build] built module should execute", async (t) => {
   t.pass();
 });
 
+const sleep = async (t = 1000) => await new Promise(
+  (resolvePromise) => setTimeout(resolvePromise, t)
+);
+
 const createTestAssets = async () => {
   await fs.mkdir(resolve(testModuleDir, "src/path/to/assets"), { recursive: true });
   /**
@@ -135,7 +139,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
       t.assert(!existsSync(resolve(testModuleDir, "dist/index.css")));
       t.assert(!existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await sleep();
       await createTestAssets();
 
       t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
