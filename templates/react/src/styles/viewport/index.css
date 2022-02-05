@@ -1,0 +1,26 @@
+/*
+ * Ensure the page fills the viewport. Prevent purgecss from removing this
+ * styling, which it likes to do for the #__next selector.
+ */
+/* purgecss start ignore */
+html, body, #__next, #root, main {
+  /* Border-box, no padding. */
+  @apply m-0 p-0 box-border;
+  /* Fill screen, flex column, stretch items. */
+  @apply min-h-screen flex-col;
+}
+
+html,
+body {
+  background: #fafafa;
+
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* background-color: #90d5ec; */
+  /* background-image: linear-gradient(320deg, #fec3c5 20%, #d1ebf6 80%); */
+}
+
+/* purgecss end ignore */

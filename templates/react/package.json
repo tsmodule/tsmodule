@@ -1,0 +1,38 @@
+{
+  "name": "template",
+  "version": "0.0.1",
+  "license": "MIT",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/lib/*/index.js",
+    "./styles": "./dist/styles/index.css",
+    "./styles/*": "./dist/styles/*/index.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "export": "tsmodule build",
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "next lint --fix",
+    "test": "ava",
+    "pretest": "tsmodule build -f",
+    "prepublishOnly": "yarn build && yarn test"
+  },
+  "ava": {
+    "timout": 240000,
+    "files": [
+      "test/**/*.test.ts"
+    ],
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--no-warnings",
+      "--loader=@tsmodule/tsmodule"
+    ]
+  }
+}

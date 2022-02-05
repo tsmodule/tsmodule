@@ -1,10 +1,10 @@
 import test from "ava";
 
-import { killShell, shell } from "await-shell";
 import { existsSync, promises as fs } from "fs";
+import { fileURLToPath, URL } from "url";
+import { killShell, shell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
-import { fileURLToPath, URL } from "url";
 
 const testModuleDir = resolve(tmpdir(), "test-module");
 
@@ -111,6 +111,11 @@ const createTestAssets = async () => {
   ]);
 };
 
+const cleanTestDir = async () => await fs.rm(
+  testModuleDir,
+  { recursive: true, force: true }
+);
+
 test.serial("[build] should copy non-source files to dist/", async (t) => {
   await createTestAssets();
   await shell(`cd ${testModuleDir} && tsmodule build`);
@@ -139,4 +144,22 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
       killShell();
     })(),
   ]);
+});
+
+test.serial("[create --react] should create Next.js component library", async (t) => {
+  process.chdir(tmpdir());
+  await cleanTestDir();
+  await shell(`cd ${tmpdir()} && tsmodule create test-module --react`);
+
+  t.pass();
+});
+
+test.serial("[create --react] library should build and execute", async (t) => {
+  await shell(`cd ${testModuleDir} && tsmodule build && node dist/index.js`);
+  t.pass();
+});
+
+test.serial("[create --react] library should build with Next", async (t) => {
+  await shell(`cd ${testModuleDir} && yarn build`);
+  t.pass();
 });

@@ -11,10 +11,21 @@ globalThis.SHELL_OPTIONS = {
   stdio: ["ignore", "ignore", "inherit"],
 };
 
-export const create = async (name: string) => {
+export const create = async (name: string, { react = false }) => {
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
 
+  /**
+   * Always copy default template.
+   */
   await createTemplate("default", name);
+
+  /**
+   * Copy other template files as needed.
+   */
+  if (react) {
+    await createTemplate("react", name);
+  }
+
   await rewritePkgJson(name);
 
   spinner.succeed("Project created.");
@@ -23,13 +34,33 @@ export const create = async (name: string) => {
    * Install dependencies in the created directory.
    */
   process.chdir(name);
-  const dependencies = ["@tsmodule/tsmodule"];
+  const dependencies = [];
+  const devDependencies = ["@tsmodule/tsmodule"];
+
+  if (react) {
+    dependencies.push("react", "react-dom");
+    devDependencies.push(
+      "next",
+      "tailwindcss",
+      "postcss",
+      "autoprefixer",
+    );
+  }
 
   spinner.start("Installing dependencies.");
-  await shell(`yarn add -D ${dependencies.join(" ")}`);
-  spinner.succeed("Dependencies installed.");
 
+  if (dependencies.length) {
+    await shell(`yarn add ${dependencies.join(" ")}`);
+  }
+
+  if (devDependencies.length) {
+    await shell(`yarn add -D ${devDependencies.join(" ")}`);
+  }
+
+  spinner.succeed("Dependencies installed.");
   spinner.start("Initializing git.");
+
   await shell("git init");
+
   spinner.succeed("Git initialized.");
 };

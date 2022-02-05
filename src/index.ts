@@ -40,6 +40,7 @@ program
 
 program
   .command("create <name>")
+  .option("--react", "Create React component library with Next.js")
   .description("Create a new project.")
   .action(create);
 
