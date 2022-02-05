@@ -341,10 +341,10 @@ ava@^4.0.1:
     write-file-atomic "^3.0.3"
     yargs "^17.3.1"
 
-await-shell@^19.0.1:
-  version "19.0.1"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-19.0.1.tgz#d83ab6be7ee76a9f19a44f136f7356e4f1bec315"
-  integrity sha512-QKLnSOyN/kE4xdZypGoHNEIr8gpX33lIS+ALHqD4X0GFu2sLIF1pDwQP56MnPXJ4/unBwmrK83MuzqUtKyk8oQ==
+await-shell@^19.1.0:
+  version "19.1.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-19.1.0.tgz#9e836a89ab9edee130a12ef0d37de6b9a1a00d6a"
+  integrity sha512-jBeqq8aCb2x5wQWhj7UHckR8Du7kv2D9KBF2CN/H3RGrvNltSMMK6K3Lu3dS62xFEjzt/trCfHMMrRQ35dYt3A==
 
 balanced-match@^1.0.0:
   version "1.0.2"
