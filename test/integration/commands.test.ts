@@ -100,6 +100,7 @@ const sleep = async (t = 1000) => await new Promise(
 
 const createTestAssets = async () => {
   await fs.mkdir(resolve(testModuleDir, "src/path/to/assets"), { recursive: true });
+
   /**
    * Create CSS and image files.
    */
@@ -112,6 +113,8 @@ const createTestAssets = async () => {
     fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
     resolve(testModuleDir, "src/path/to/assets/tsmodule.png")
   );
+
+  await sleep();
 };
 
 const cleanTestDir = async () => await fs.rm(
