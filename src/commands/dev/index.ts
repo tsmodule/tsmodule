@@ -23,7 +23,10 @@ const timestamp = (files: string) => {
 export const dev = async () => {
   const cwd = process.cwd();
 
-  await shell("clear");
+  if (process.platform !== "win32") {
+    await shell("clear");
+  }
+
   clear();
 
   await build({ dev: true });
