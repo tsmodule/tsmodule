@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "14.0.0",
+  "version": "15.0.1",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
@@ -52,13 +52,12 @@
     "commander": "^8.3.0",
     "create-debug-logger": "^1.10.1",
     "esbuild": "^0.14.0",
-    "eslint": "^8.6.0",
+    "eslint": "^8.8.0",
     "fast-glob": "^3.2.10",
     "fs-extra": "^10.0.0",
     "node-watch": "^0.7.3",
     "ora": "^6.0.1",
     "path": "^0.12.7",
-    "react": "^17.0.2",
     "typescript": "^4.5.5"
   },
   "keywords": [
