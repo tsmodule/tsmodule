@@ -47,7 +47,7 @@
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "ava": "^4.0.1",
-    "await-shell": "^17.0.0",
+    "await-shell": "^19.0.0",
     "chalk": "^5.0.0",
     "commander": "^8.3.0",
     "create-debug-logger": "^1.10.1",
