@@ -99,16 +99,15 @@ const createTestAssets = async () => {
   /**
    * Create CSS and image files.
    */
-  await Promise.all([
-    fs.writeFile(
-      resolve(testModuleDir, "src/index.css"),
-      "body { color: red; }"
-    ),
-    fs.copyFile(
-      fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
-      resolve(testModuleDir, "src/path/to/assets/tsmodule.png")
-    )
-  ]);
+  await fs.writeFile(
+    resolve(testModuleDir, "src/index.css"),
+    "body { color: red; }"
+  );
+
+  await fs.copyFile(
+    fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
+    resolve(testModuleDir, "src/path/to/assets/tsmodule.png")
+  );
 };
 
 const cleanTestDir = async () => await fs.rm(
