@@ -155,6 +155,7 @@ test.serial("[create --react] should create Next.js component library", async (t
 
   const pkgJson = await fs.readFile(resolve(testModuleDir, "package.json"), "utf-8");
   const dependencies = JSON.parse(pkgJson).dependencies;
+  console.log({ dependencies });
 
   if (
     !dependencies.includes("react") ||
@@ -163,7 +164,6 @@ test.serial("[create --react] should create Next.js component library", async (t
     t.fail();
   }
 
-  console.log({ dependencies });
   t.pass();
 });
 
