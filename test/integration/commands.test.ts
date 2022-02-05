@@ -175,6 +175,6 @@ test.serial("[create --react] library should build and execute", async (t) => {
 
 test.serial("[create --react] library should build with Next", async (t) => {
   process.chdir(testModuleDir);
-  await shell("yarn build");
+  await shell(`cd ${testModuleDir} && yarn build`);
   t.pass();
 });
