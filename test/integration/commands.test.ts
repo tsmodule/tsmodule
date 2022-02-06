@@ -38,7 +38,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "export const hello = 'world';"
       );
 
-      await sleep(5000);
+      await sleep();
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
