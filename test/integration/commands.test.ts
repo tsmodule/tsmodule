@@ -141,9 +141,9 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
       await createTestAssets();
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
-      // t.assert(existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
-      // t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/index.css"), "utf-8"));
+      t.assert(existsSync(resolve(testModuleDir, "dist/index.css")));
+      t.assert(existsSync(resolve(testModuleDir, "dist/path/to/assets/tsmodule.png")));
+      t.snapshot(await fs.readFile(resolve(testModuleDir, "dist/index.css"), "utf-8"));
 
       shell.kill();
     })(),
