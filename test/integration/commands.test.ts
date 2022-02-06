@@ -11,6 +11,10 @@ const testModuleDir = resolve(tmpdir(), "test-module");
 await fs.rm(testModuleDir, { recursive: true, force: true });
 const shell = createShell();
 
+await shell.run("yarn why react");
+
+process.exit(1);
+
 test.serial("[create] should generate TS module package", async (t) => {
   /**
    * Create the test TS module.
