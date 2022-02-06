@@ -20,8 +20,11 @@ import { getPackageJsonFile } from "../../utils/pkgJson";
 import { normalizeImportSpecifiers } from "../normalize";
 
 export const bannerLog = (msg: string) => {
+  const logMsg = `  ${msg}  `;
   log(
-    chalk.bgBlue(chalk.white(`  ${msg}  `))
+    chalk.bgBlue(
+      chalk.bold(chalk.white(logMsg)),
+    )
   );
 };
 
