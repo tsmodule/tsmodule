@@ -13,7 +13,9 @@ const shell = createShell();
 
 await shell.run("yarn why react");
 
-process.exit(1);
+if (process.platform === "win32") {
+  process.exit(1);
+}
 
 test.serial("[create] should generate TS module package", async (t) => {
   /**
