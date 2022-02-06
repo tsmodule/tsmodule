@@ -157,9 +157,6 @@ test.serial("[create --react] should create Next.js component library", async (t
   const pkgJson = await fs.readFile(resolve(testModuleDir, "package.json"), "utf-8");
   const dependencies = JSON.parse(pkgJson).dependencies;
   console.log({ dependencies });
-  
-  await shell.run("yarn why react");
-  if (process.platform === "win32") process.exit(1);
 
   if (
     !("react" in dependencies) ||
@@ -173,6 +170,10 @@ test.serial("[create --react] should create Next.js component library", async (t
 
 test.serial("[create --react] library should build and execute", async (t) => {
   process.chdir(testModuleDir);
+
+  await shell.run("yarn why react");
+  if (process.platform === "win32") process.exit(1);
+
   await shell.run("tsmodule build && node dist/index.js");
   t.pass();
 });
