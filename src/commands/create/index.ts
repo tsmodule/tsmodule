@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import chalk from "chalk";
+import { createShell } from "await-shell";
 import ora from "ora";
-import { shell } from "await-shell";
 
 import { createTemplate } from "./lib/createTemplate";
 import { rewritePkgJson } from "./lib/rewritePkgJson";
@@ -12,6 +12,7 @@ globalThis.SHELL_OPTIONS = {
 };
 
 export const create = async (name: string, { react = false }) => {
+  const shell = createShell();
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
 
   /**
@@ -51,17 +52,17 @@ export const create = async (name: string, { react = false }) => {
   spinner.start("Installing dependencies.");
 
   if (dependencies.length) {
-    await shell(`yarn add ${dependencies.join(" ")}`);
+    await shell.run(`yarn add ${dependencies.join(" ")}`);
   }
 
   if (devDependencies.length) {
-    await shell(`yarn add -D ${devDependencies.join(" ")}`);
+    await shell.run(`yarn add -D ${devDependencies.join(" ")}`);
   }
 
   spinner.succeed("Dependencies installed.");
   spinner.start("Initializing git.");
 
-  await shell("git init");
+  await shell.run("git init");
 
   spinner.succeed("Git initialized.");
 };

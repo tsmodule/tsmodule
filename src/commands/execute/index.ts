@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { shell } from "await-shell";
+import { createShell } from "await-shell";
 
 export const execute = async () => {
   /**
@@ -16,5 +16,6 @@ export const execute = async () => {
     ...process.argv.slice(2)
   ];
 
-  await shell(`node ${nodeArgs.join(" ")}`);
+  const shell = createShell();
+  await shell.run(`node ${nodeArgs.join(" ")}`);
 };

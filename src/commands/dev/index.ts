@@ -3,7 +3,7 @@ import { build } from "../build";
 import chalk from "chalk";
 import { log } from "create-debug-logger";
 import ora from "ora";
-import { shell } from "await-shell";
+import { createShell } from "await-shell";
 import watch from "node-watch";
 
 const clear = () => {
@@ -22,9 +22,10 @@ const timestamp = (files: string) => {
 
 export const dev = async () => {
   const cwd = process.cwd();
+  const shell = createShell();
 
   if (process.platform !== "win32") {
-    await shell("clear");
+    await shell.run("clear");
   }
 
   clear();
