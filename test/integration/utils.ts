@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
-export const sleep = async (ms = 5000) => await new Promise(
+export const sleep = async (ms = 10000) => await new Promise(
   (resolvePromise) => setTimeout(resolvePromise, ms)
 );
 
