@@ -180,6 +180,6 @@ test.serial("[create --react] library should build and execute", async (t) => {
 
 test.serial("[create --react] library should build with Next", async (t) => {
   process.chdir(testModuleDir);
-  await shell.run("yarn build");
+  await shell.run(`yarn --cwd ${testModuleDir} build`);
   t.pass();
 });
