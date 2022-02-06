@@ -157,6 +157,7 @@ test.serial("[create --react] should create Next.js component library", async (t
   const pkgJson = await fs.readFile(resolve(testModuleDir, "package.json"), "utf-8");
   const dependencies = JSON.parse(pkgJson).dependencies;
   console.log({ dependencies });
+  
   await shell.run("yarn why react");
   if (process.platform === "win32") process.exit(1);
 
