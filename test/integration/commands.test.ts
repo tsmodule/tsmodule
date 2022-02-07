@@ -1,7 +1,7 @@
 import test from "ava";
 
-import { createTestDir, createTestAssets, cleanTestDir, sleep, safeMkdir, safeWriteFile, safeReadFile } from "./utils";
-import { existsSync, promises as fs } from "fs";
+import { createTestDir, createTestAssets, cleanTestDir, sleep } from "./utils";
+import { existsSync, mkdirSync, promises as fs, readFileSync, writeFileSync } from "fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
@@ -29,19 +29,19 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(testDir);
 
   const srcAssets = resolve(testDir, "src/path/to/assets");
-  await safeMkdir(srcAssets);
+  mkdirSync(srcAssets, { recursive: true });
 
   await Promise.allSettled([
     shell.run("tsmodule dev"),
     (async () => {
       await createTestAssets(testName);
       await sleep();
-      await shell.kill();
+      shell.kill();
     })(),
   ]);
 
   const emittedPng = resolve(testDir, "dist/path/to/assets/tsmodule.png");
-  const emittedCss = await safeReadFile(resolve(testDir, "dist/index.css"));
+  const emittedCss = readFileSync(resolve(testDir, "dist/index.css"), "utf-8");
 
   t.assert(
     existsSync(emittedPng),
@@ -63,15 +63,15 @@ test.serial("[dev] should watch for file changes", async (t) => {
       const testFile = resolve(testDir, "src/index.ts");
 
       await sleep();
-      await safeWriteFile(
+      writeFileSync(
         testFile,
         "export const hello = 'world';"
       );
       await sleep();
-      await shell.kill();
+      shell.kill();
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
-      const emittedDevModule = await safeReadFile(emittedDevFile);
+      const emittedDevModule = readFileSync(emittedDevFile, "utf-8");
 
       t.snapshot(emittedDevModule);
     })(),
@@ -87,18 +87,18 @@ test.serial("[dev] should notice new file", async (t) => {
     shell.run("tsmodule dev"),
     (async () => {
       const testFile = resolve(testDir, "src/path/to/newFile.ts");
-      await safeMkdir(resolve(testDir, "src/path/to"));
+      mkdirSync(resolve(testDir, "src/path/to"), { recursive: true });
 
       await sleep();
-      await safeWriteFile(
+      writeFileSync(
         testFile,
         "export const abc = 123;"
       );
       await sleep();
-      await shell.kill();
+      shell.kill();
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
-      const emittedDevModule = await safeReadFile(emittedDevFile);
+      const emittedDevModule = readFileSync(emittedDevFile, "utf-8");
 
       t.snapshot(emittedDevModule);
     })(),
@@ -112,7 +112,7 @@ test.serial("[build] created module package should build", async (t) => {
   await shell.run("tsmodule build -f");
 
   const emittedFile = resolve(testDir, "dist/index.js");
-  const emittedModule = await safeReadFile(emittedFile);
+  const emittedModule = readFileSync(emittedFile, "utf-8");
 
   t.snapshot(emittedModule);
 });
@@ -131,7 +131,7 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
 
   t.assert(existsSync(resolve(testDir, "dist/index.css")));
   t.assert(existsSync(resolve(testDir, "dist/path/to/assets/tsmodule.png")));
-  t.snapshot(await safeReadFile(resolve(testDir, "dist/index.css")));
+  t.snapshot(readFileSync(resolve(testDir, "dist/index.css"), "utf-8"));
 });
 
 test.serial("[create --react] should create Next.js component library", async (t) => {
@@ -139,7 +139,7 @@ test.serial("[create --react] should create Next.js component library", async (t
   await cleanTestDir(testName);
   await shell.run(`tsmodule create --react ${testName}`);
 
-  const pkgJson = await safeReadFile(resolve(testDir, "package.json"));
+  const pkgJson = readFileSync(resolve(testDir, "package.json"), "utf-8");
   const { dependencies } = JSON.parse(pkgJson);
 
   t.assert("react" in dependencies, "should add react dependency");
