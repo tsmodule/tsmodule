@@ -1,5 +1,5 @@
 import { URL, fileURLToPath } from "url";
-import { copyFileSync, existsSync, mkdirSync, rmdirSync, writeFileSync } from "fs";
+import fs from "graceful-fs";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
@@ -16,16 +16,16 @@ export const createTestAssets = async (testName: string) => {
   const testDir = getTestDir(testName);
   const subdir = resolve(testDir, "src/path/to/assets");
 
-  if (!existsSync(subdir)) {
-    mkdirSync(subdir, { recursive: true });
+  if (!fs.existsSync(subdir)) {
+    fs.mkdirSync(subdir, { recursive: true });
   }
 
-  writeFileSync(
+  fs.writeFileSync(
     resolve(testDir, "src/index.css"),
     "body { color: red; }"
   );
 
-  copyFileSync(
+  fs.copyFileSync(
     fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
     resolve(testDir, "src/path/to/assets/tsmodule.png")
   );
@@ -35,8 +35,8 @@ export const cleanTestDir = async (testName: string) => {
   await sleep();
   const testDir = getTestDir(testName);
 
-  if (existsSync(testDir)) {
-    rmdirSync(testDir, { recursive: true });
+  if (fs.existsSync(testDir)) {
+    fs.rmSync(testDir, { recursive: true, force: true });
   }
 
   return {
@@ -47,7 +47,7 @@ export const cleanTestDir = async (testName: string) => {
 
 export const createTestDir = async (testName: string) => {
   const { testDir } = await cleanTestDir(testName);
-  mkdirSync(testDir, { recursive: true });
+  fs.mkdirSync(testDir, { recursive: true });
 
   return {
     testName,

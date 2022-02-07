@@ -3,7 +3,7 @@ import type { GetFormatHook as ModuleGetFormatHook, LoadHook as ModuleLoadHook, 
 import { extname, isAbsolute, join, normalize, resolve as resolvePath } from "path";
 import { fileURLToPath, pathToFileURL, URL } from "url";
 import { createDebugLogger } from "create-debug-logger";
-import { promises as fs } from "fs";
+import fs from "graceful-fs";
 import { transform } from "esbuild";
 
 import { posix as posixPath } from "path";
@@ -147,7 +147,7 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
   }
 
   const path = fileURLToPath(url);
-  const source = await fs.readFile(path);
+  const source = fs.readFileSync(path, "utf8");
 
   const result = await transform(
     source.toString(), {

@@ -1,4 +1,4 @@
-import { existsSync, lstatSync } from "fs";
+import fs from "graceful-fs";
 import { relative, resolve } from "path";
 import { build } from "../build";
 import chalk from "chalk";
@@ -47,10 +47,10 @@ export const dev = async () => {
        * Windows-specific stuff.
        */
       {
-        const stillExists = existsSync(filePath);
+        const stillExists = fs.existsSync(filePath);
         if (!stillExists) return;
 
-        const isDir = !lstatSync(filePath).isFile();
+        const isDir = !fs.lstatSync(filePath).isFile();
         if (isDir) return;
       }
 

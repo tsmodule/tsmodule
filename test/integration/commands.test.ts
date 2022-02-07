@@ -1,18 +1,19 @@
 import test from "ava";
 
 import { createTestAssets, cleanTestDir, sleep } from "./utils";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import fs from "graceful-fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
 const mkdirp = (dir: string) => {
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 };
 
 const { testName: devTest, testDir: devTestDir } = await cleanTestDir("test-dev");
+const { testName: fullBuildTest, testDir: fullBuildTestDir } = await cleanTestDir("test-full-build");
 const { testName: buildTest, testDir: buildTestDir } = await cleanTestDir("test-build");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
 
@@ -27,78 +28,35 @@ test.before("[create] should create all template types", async () => {
     reactShell.run(`tsmodule create --react ${reactTest}`),
   ]);
 
-  const dirsToCopyDevInto = [buildTestDir];
+  const dirsToCopyDevInto = [buildTestDir, fullBuildTestDir];
 
   await Promise.all(
     dirsToCopyDevInto.map(async (dirToCopyInto) => {
       const shell = createShell();
       if (process.platform === "win32") {
-        await shell.run(`xcopy /E /Y /F /Q ${devTest} ${dirToCopyInto}\\`);
+        await shell.run(`xcopy /E /Y /F /Q ${devTestDir} ${dirToCopyInto}\\`);
       } else {
-        await shell.run(`cp -rf ${devTest} ${dirToCopyInto}`);
+        await shell.run(`cp -rf ${devTestDir} ${dirToCopyInto}`);
       }
     })
   );
-});
 
-test("[dev] should notice new file", async (t) => {
-  process.chdir(devTestDir);
-  const shell = createShell();
-
-  await Promise.allSettled([
-    shell.run("tsmodule dev"),
-    (async () => {
-      const testFile = resolve(devTestDir, "src/path/to/newFile.ts");
-      mkdirp(resolve(devTestDir, "src/path/to"));
-
-      await sleep(5000);
-      writeFileSync(
-        testFile,
-        "export const abc = 123;"
-      );
-      await sleep(5000);
-      shell.kill();
-
-      const emittedDevFile = resolve(devTestDir, "dist/path/to/newFile.js");
-      const emittedDevModule = readFileSync(emittedDevFile, "utf-8");
-
-      t.snapshot(emittedDevModule);
-    })(),
-  ]);
-
-  t.pass();
-});
-
-test("[dev] should watch for file changes", async (t) => {
-  process.chdir(devTestDir);
-  const shell = createShell();
-
-  await Promise.allSettled([
-    shell.run("tsmodule dev"),
-    (async () => {
-      const testFile = resolve(devTestDir, "src/update.ts");
-
-      await sleep(5000);
-      writeFileSync(
-        testFile,
-        "export const hello = 'world';"
-      );
-      await sleep(5000);
-      shell.kill();
-
-      const emittedDevFile = resolve(devTestDir, "dist/update.js");
-      const emittedDevModule = readFileSync(emittedDevFile, "utf-8");
-
-      t.snapshot(emittedDevModule);
-    })(),
-  ]);
+  for (const dirToLink of [
+    devTestDir,
+    reactTestDir,
+    fullBuildTestDir,
+    buildTestDir
+  ]) {
+    process.chdir(dirToLink);
+    await defaultShell.run("yarn link @tsmodule/tsmodule");
+  }
 });
 
 test("[create --react] should create Next.js component library", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
 
-  const pkgJson = readFileSync(resolve(reactTestDir, "package.json"), "utf-8");
+  const pkgJson = fs.readFileSync(resolve(reactTestDir, "package.json"), "utf-8");
   const { dependencies } = JSON.parse(pkgJson);
 
   t.assert("react" in dependencies, "should add react dependency");
@@ -126,7 +84,60 @@ test("[create --react] library should build with Next", async (t) => {
   t.pass();
 });
 
-test.serial("[dev] should copy new non-source files to dist/", async (t) => {
+test("[dev] should notice new file", async (t) => {
+  process.chdir(devTestDir);
+  const shell = createShell();
+
+  await Promise.allSettled([
+    shell.run("tsmodule dev"),
+    (async () => {
+      const testFile = resolve(devTestDir, "src/path/to/newFile.ts");
+      mkdirp(resolve(devTestDir, "src/path/to"));
+
+      await sleep(5000);
+      fs.writeFileSync(
+        testFile,
+        "export const abc = 123;"
+      );
+      await sleep(5000);
+      shell.kill();
+
+      const emittedDevFile = resolve(devTestDir, "dist/path/to/newFile.js");
+      const emittedDevModule = fs.readFileSync(emittedDevFile, "utf-8");
+
+      t.snapshot(emittedDevModule);
+    })(),
+  ]);
+
+  t.pass();
+});
+
+test("[dev] should watch for file changes", async (t) => {
+  process.chdir(devTestDir);
+  const shell = createShell();
+
+  await Promise.allSettled([
+    shell.run("tsmodule dev"),
+    (async () => {
+      const testFile = resolve(devTestDir, "src/update.ts");
+
+      await sleep(5000);
+      fs.writeFileSync(
+        testFile,
+        "export const hello = 'world';"
+      );
+      await sleep(5000);
+      shell.kill();
+    })(),
+  ]);
+
+  const emittedDevFile = resolve(devTestDir, "dist/update.js");
+  const emittedDevModule = fs.readFileSync(emittedDevFile, "utf-8");
+
+  t.snapshot(emittedDevModule);
+});
+
+test("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();
 
@@ -143,10 +154,10 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   ]);
 
   const emittedPng = resolve(devTestDir, "dist/path/to/assets/tsmodule.png");
-  const emittedCss = readFileSync(resolve(devTestDir, "dist/index.css"), "utf-8");
+  const emittedCss = fs.readFileSync(resolve(devTestDir, "dist/index.css"), "utf-8");
 
   t.assert(
-    existsSync(emittedPng),
+    fs.existsSync(emittedPng),
     "should copy src/path/to/assets/tsmodule.png to dist/"
   );
 
@@ -156,26 +167,17 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   );
 });
 
-test.serial("[build] created module package should build", async (t) => {
-  process.chdir(buildTestDir);
+test.serial("[build] created module package should build and execute", async (t) => {
+  process.chdir(fullBuildTestDir);
   const shell = createShell();
 
-  await shell.run("tsmodule build -f");
+  await shell.run("tsmodule build && node dist/index.js");
   await sleep();
 
-  const emittedFile = resolve(buildTestDir, "dist/index.js");
-  const emittedModule = readFileSync(emittedFile, "utf-8");
+  const emittedFile = resolve(fullBuildTestDir, "dist/index.js");
+  const emittedModule = fs.readFileSync(emittedFile, "utf-8");
 
   t.snapshot(emittedModule);
-});
-
-test.serial("[build] built module should execute", async (t) => {
-  process.chdir(buildTestDir);
-  const shell = createShell();
-
-  await shell.run("node dist/index.js");
-
-  t.pass();
 });
 
 test.serial("[build] should copy non-source files to dist/", async (t) => {
@@ -183,9 +185,10 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
   const shell = createShell();
 
   await createTestAssets(buildTest);
+  await sleep();
   await shell.run("tsmodule build -f");
 
-  t.assert(existsSync(resolve(buildTestDir, "dist/index.css")));
-  t.assert(existsSync(resolve(buildTestDir, "dist/path/to/assets/tsmodule.png")));
-  t.snapshot(readFileSync(resolve(buildTestDir, "dist/index.css"), "utf-8"));
+  t.assert(fs.existsSync(resolve(buildTestDir, "dist/index.css")));
+  t.assert(fs.existsSync(resolve(buildTestDir, "dist/path/to/assets/tsmodule.png")));
+  t.snapshot(fs.readFileSync(resolve(buildTestDir, "dist/index.css"), "utf-8"));
 });

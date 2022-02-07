@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import fs from "graceful-fs";
 import { fileURLToPath } from "url";
 import { posix as path } from "path";
 import { sep } from "path";
@@ -44,7 +44,7 @@ export const normalizeSpecifier = (specifier: string) => {
 
 export const fileExists = (fileUrl: string): string | void => {
   const tmp = fileURLToPath(fileUrl);
-  if (existsSync(tmp)) {
+  if (fs.existsSync(tmp)) {
     return fileUrl;
   }
 };
