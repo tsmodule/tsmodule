@@ -61,6 +61,8 @@ test.serial("[dev] should watch for file changes", async (t) => {
     shell.run("tsmodule dev"),
     (async () => {
       const testFile = resolve(testDir, "src/index.ts");
+
+      await sleep();
       await safeWriteFile(
         testFile,
         "export const hello = 'world';"
@@ -86,6 +88,7 @@ test.serial("[dev] should notice new file", async (t) => {
       const testFile = resolve(testDir, "src/path/to/newFile.ts");
       await safeMkdir(resolve(testDir, "src/path/to"));
 
+      await sleep();
       await safeWriteFile(
         testFile,
         "export const abc = 123;"
