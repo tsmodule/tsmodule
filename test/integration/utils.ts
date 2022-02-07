@@ -4,9 +4,9 @@ import { resolve } from "path";
 import { tmpdir } from "os";
 
 /**
- * Sleep for a given number of ms (default 1000ms).
+ * Sleep for a given number of ms (default 250ms).
  */
-export const sleep = async (ms = 1000) => {
+export const sleep = async (ms = 250) => {
   await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
 };
 
