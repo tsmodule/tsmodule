@@ -70,7 +70,23 @@ export const build = async ({
   const srcDir = resolvePath(cwd, "src");
   const outDir = resolvePath(cwd, "dist");
 
+  /**
+   * All files for the build. Ignore .d.ts files.
+   */
+  const allFiles =
+    glob
+      .sync(files, { cwd })
+      .filter((file) => extname(file) !== ".d.ts")
+      .map((file) => resolvePath(file));
+
   if (isAbsolute(files)) {
+    /**
+     * fast-glob won't pick up absolute filepaths on Windows. Windows sucks.
+     */
+    if (!allFiles.length) {
+      allFiles.push(files);
+    }
+
     const outfile =
       files
         .replace(srcDir, outDir)
@@ -87,14 +103,6 @@ export const build = async ({
   // eslint-disable-next-line no-console
   console.log();
 
-  /**
-   * All files for the build. Ignore .d.ts files.
-   */
-  const allFiles =
-      glob
-        .sync(files, { cwd })
-        .filter((file) => extname(file) !== ".d.ts")
-        .map((file) => resolvePath(file));
 
   /**
    * Compile TS files.
@@ -136,7 +144,7 @@ export const build = async ({
    */
   const nonJsTsFiles = allFiles.filter((file) => !isJsOrTs.test(file));
 
-  DEBUG.log("Copying non-JS/TS files.");
+  DEBUG.log("Copying non-JS/TS files.", { allFiles, nonJsTsFiles });
   await Promise.all(
     nonJsTsFiles.map(async (file) => {
       const outfile =

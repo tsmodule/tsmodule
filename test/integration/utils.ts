@@ -1,5 +1,5 @@
 import { URL, fileURLToPath } from "url";
-import { promises as fs } from "fs";
+import { existsSync, promises as fs } from "fs";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
@@ -19,7 +19,8 @@ export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
 export const createTestAssets = async (testName: string) => {
   const testDir = getTestDir(testName);
-  await fs.mkdir(resolve(testDir, "src/path/to/assets"), { recursive: true });
+  await longSleep();
+
   /**
    * Create CSS and image files.
    */
@@ -33,16 +34,20 @@ export const createTestAssets = async (testName: string) => {
       resolve(testDir, "src/path/to/assets/tsmodule.png")
     )
   ]);
+
+  await longSleep();
 };
 
 export const cleanTestDir = async (testName: string) => {
   await longSleep();
   const testDir = getTestDir(testName);
 
-  await fs.rm(
-    testDir,
-    { recursive: true, force: true }
-  );
+  if (existsSync(testDir)) {
+    await fs.rmdir(
+      testDir,
+      { recursive: true }
+    );
+  }
 
   return {
     testName,

@@ -1,9 +1,10 @@
 import { relative, resolve } from "path";
 import { build } from "../build";
 import chalk from "chalk";
-import { log } from "create-debug-logger";
-import ora from "ora";
 import { createShell } from "await-shell";
+import { log } from "create-debug-logger";
+import { existsSync, lstatSync } from "fs";
+import ora from "ora";
 import watch from "node-watch";
 
 const clear = () => {
@@ -42,6 +43,17 @@ export const dev = async () => {
   ).on(
     "change",
     async (_: string, filePath: string) => {
+      /**
+       * Windows-specific stuff.
+       */
+      {
+        const stillExists = existsSync(filePath);
+        if (!stillExists) return;
+
+        const isDir = !lstatSync(filePath).isFile();
+        if (isDir) return;
+      }
+
       clear();
 
       const preTime = Date.now();

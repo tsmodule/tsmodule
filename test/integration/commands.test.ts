@@ -1,6 +1,6 @@
 import test from "ava";
 
-import { createTestDir, longSleep, createTestAssets, cleanTestDir } from "./utils";
+import { createTestDir, longSleep, createTestAssets, cleanTestDir, sleep } from "./utils";
 import { existsSync, promises as fs } from "fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
@@ -8,6 +8,8 @@ import { tmpdir } from "os";
 
 const { testName, testDir } = await createTestDir("test-module");
 const shell = createShell();
+
+test.beforeEach(async () => sleep());
 
 test.serial("[create] should generate TS module package", async (t) => {
   /**
@@ -23,6 +25,38 @@ test.serial("[create] should generate TS module package", async (t) => {
   await shell.run("yarn link @tsmodule/tsmodule");
 
   t.pass();
+});
+
+test.serial("[dev] should copy new non-source files to dist/", async (t) => {
+  process.chdir(testDir);
+
+  const srcAssets = resolve(testDir, "src/path/to/assets");
+  await fs.mkdir(srcAssets, { recursive: true });
+  await longSleep();
+
+  await Promise.allSettled([
+    shell.run("tsmodule dev"),
+    (async () => {
+      await longSleep();
+      await createTestAssets(testName);
+      await longSleep();
+
+      shell.kill();
+    })(),
+  ]);
+
+  const emittedPng = resolve(testDir, "dist/path/to/assets/tsmodule.png");
+  const emittedCss = await fs.readFile(resolve(testDir, "dist/index.css"), "utf-8");
+
+  t.assert(
+    existsSync(emittedPng),
+    "should copy src/path/to/assets/tsmodule.png to dist/"
+  );
+
+  t.snapshot(
+    emittedCss,
+    "should copy src/index.css to dist/"
+  );
 });
 
 test.serial("[dev] should watch for file changes", async (t) => {
