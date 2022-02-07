@@ -154,12 +154,6 @@ test.serial("[create --react] library should build and execute", async (t) => {
 
 test.serial("[create --react] library should build with Next", async (t) => {
   process.chdir(testDir);
-  /**
-   * Some kind of React hook issue on Windows. Unrelated to shell logic,
-   * refactored entire library and issue persists.
-   */
-  if (process.platform !== "win32") {
-    await shell.run("yarn build");
-  }
+  await shell.run("yarn build");
   t.pass();
 });
