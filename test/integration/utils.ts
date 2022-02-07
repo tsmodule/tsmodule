@@ -14,6 +14,11 @@ export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
 export const createTestAssets = async (testName: string) => {
   const testDir = getTestDir(testName);
+  const subdir = resolve(testDir, "src/path/to/assets");
+
+  if (!existsSync(subdir)) {
+    mkdirSync(subdir, { recursive: true });
+  }
 
   writeFileSync(
     resolve(testDir, "src/index.css"),
