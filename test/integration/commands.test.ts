@@ -109,16 +109,10 @@ test.serial("[create --react] should create Next.js component library", async (t
   await shell.run(`tsmodule create --react ${testName}`);
 
   const pkgJson = await fs.readFile(resolve(testDir, "package.json"), "utf-8");
-  const dependencies = JSON.parse(pkgJson).dependencies;
+  const { dependencies } = JSON.parse(pkgJson);
 
-  if (
-    !("react" in dependencies) ||
-    !("react-dom" in dependencies)
-  ) {
-    t.fail();
-  }
-
-  t.pass();
+  t.assert("react" in dependencies, "should add react dependency");
+  t.assert("react-dom" in dependencies, "should add react-dom dependency");
 });
 
 test.serial("[create --react] library should build and execute", async (t) => {
