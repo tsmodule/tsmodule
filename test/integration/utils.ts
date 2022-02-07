@@ -6,20 +6,15 @@ import { tmpdir } from "os";
 /**
  * Sleep for a given number of ms (default 1000ms).
  */
-export const sleep = async (ms = 10000) => {
+export const sleep = async (ms = 1000) => {
   await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
 };
-
-/**
- * Sleep for 5 seconds (5000ms).
- */
-export const longSleep = async () => await sleep(5000);
 
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
 export const createTestAssets = async (testName: string) => {
   const testDir = getTestDir(testName);
-  await longSleep();
+  await sleep();
 
   /**
    * Create CSS and image files.
@@ -35,11 +30,11 @@ export const createTestAssets = async (testName: string) => {
     )
   ]);
 
-  await longSleep();
+  await sleep();
 };
 
 export const cleanTestDir = async (testName: string) => {
-  await longSleep();
+  await sleep();
   const testDir = getTestDir(testName);
 
   if (existsSync(testDir)) {

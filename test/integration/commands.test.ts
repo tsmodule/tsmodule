@@ -1,6 +1,6 @@
 import test from "ava";
 
-import { createTestDir, longSleep, createTestAssets, cleanTestDir, sleep } from "./utils";
+import { createTestDir, createTestAssets, cleanTestDir, sleep } from "./utils";
 import { existsSync, promises as fs } from "fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
@@ -8,8 +8,6 @@ import { tmpdir } from "os";
 
 const { testName, testDir } = await createTestDir("test-module");
 const shell = createShell();
-
-test.beforeEach(async () => sleep());
 
 test.serial("[create] should generate TS module package", async (t) => {
   /**
@@ -32,14 +30,14 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
 
   const srcAssets = resolve(testDir, "src/path/to/assets");
   await fs.mkdir(srcAssets, { recursive: true });
-  await longSleep();
+  await sleep();
 
   await Promise.allSettled([
     shell.run("tsmodule dev"),
     (async () => {
-      await longSleep();
+      await sleep();
       await createTestAssets(testName);
-      await longSleep();
+      await sleep();
 
       shell.kill();
     })(),
@@ -71,7 +69,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "export const hello = 'world';"
       );
 
-      await longSleep();
+      await sleep();
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
@@ -97,7 +95,7 @@ test.serial("[dev] should notice new file", async (t) => {
         "export const abc = 123;"
       );
 
-      await longSleep();
+      await sleep();
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
