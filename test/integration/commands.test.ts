@@ -39,7 +39,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
       await createTestAssets(testName);
       await sleep();
 
-      shell.kill();
+      await shell.kill();
     })(),
   ]);
 
@@ -75,7 +75,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
 
       t.snapshot(emittedDevModule);
-      shell.kill();
+      await shell.kill();
     })(),
   ]);
 
@@ -101,7 +101,7 @@ test.serial("[dev] should notice new file", async (t) => {
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
 
       t.snapshot(emittedDevModule);
-      shell.kill();
+      await shell.kill();
     })(),
   ]);
 
