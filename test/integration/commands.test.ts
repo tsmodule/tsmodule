@@ -94,12 +94,12 @@ test("[dev] should notice new file", async (t) => {
       const testFile = resolve(devTestDir, "src/path/to/newFile.ts");
       mkdirp(resolve(devTestDir, "src/path/to"));
 
-      await sleep(5000);
+      await sleep(2500);
       fs.writeFileSync(
         testFile,
         "export const abc = 123;"
       );
-      await sleep(5000);
+      await sleep(2500);
       shell.kill();
 
       const emittedDevFile = resolve(devTestDir, "dist/path/to/newFile.js");
@@ -121,12 +121,12 @@ test("[dev] should watch for file changes", async (t) => {
     (async () => {
       const testFile = resolve(devTestDir, "src/update.ts");
 
-      await sleep(5000);
+      await sleep(2500);
       fs.writeFileSync(
         testFile,
         "export const hello = 'world';"
       );
-      await sleep(5000);
+      await sleep(2500);
       shell.kill();
     })(),
   ]);
@@ -148,7 +148,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
     shell.run("tsmodule dev"),
     (async () => {
       await createTestAssets(devTestDir);
-      await sleep(5000);
+      await sleep(2500);
       shell.kill();
     })(),
   ]);
@@ -185,7 +185,7 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
   const shell = createShell();
 
   await createTestAssets(buildTest);
-  await sleep(5000);
+  await sleep(2500);
   await shell.run("tsmodule build -f");
 
   t.assert(fs.existsSync(resolve(buildTestDir, "dist/index.css")));
