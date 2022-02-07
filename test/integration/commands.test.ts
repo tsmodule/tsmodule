@@ -62,12 +62,12 @@ test.serial("[dev] should watch for file changes", async (t) => {
     (async () => {
       const testFile = resolve(testDir, "src/index.ts");
 
-      await sleep();
+      await sleep(5000);
       writeFileSync(
         testFile,
         "export const hello = 'world';"
       );
-      await sleep();
+      await sleep(5000);
       shell.kill();
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
