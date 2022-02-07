@@ -67,7 +67,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         testFile,
         "export const hello = 'world';"
       );
-
+      await sleep();
       await shell.kill();
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
@@ -94,12 +94,13 @@ test.serial("[dev] should notice new file", async (t) => {
         testFile,
         "export const abc = 123;"
       );
+      await sleep();
+      await shell.kill();
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
       const emittedDevModule = await safeReadFile(emittedDevFile);
 
       t.snapshot(emittedDevModule);
-      await shell.kill();
     })(),
   ]);
 
