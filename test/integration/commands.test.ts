@@ -7,6 +7,30 @@ import { createShell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
+const createTestAssets = async () => {
+  await fs.mkdir(resolve(testDir, "src/path/to/assets"), { recursive: true });
+  /**
+   * Create CSS and image files.
+   */
+  await fs.writeFile(
+    resolve(testDir, "src/index.css"),
+    "body { color: red; }"
+  );
+
+  await fs.copyFile(
+    fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
+    resolve(testDir, "src/path/to/assets/tsmodule.png")
+  );
+};
+
+const cleanTestDir = async () => {
+  await sleep(5000);
+  await fs.rm(
+    testDir,
+    { recursive: true, force: true }
+  );
+};
+
 const { testName, testDir } = await createTestDir("test-module");
 const shell = createShell();
 
@@ -38,7 +62,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "export const hello = 'world';"
       );
 
-      await sleep();
+      await sleep(5000);
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
@@ -64,7 +88,7 @@ test.serial("[dev] should notice new file", async (t) => {
         "export const abc = 123;"
       );
 
-      await sleep();
+      await sleep(5000);
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
@@ -94,54 +118,10 @@ test.serial("[build] built module should execute", async (t) => {
   t.pass();
 });
 
-const createTestAssets = async () => {
-  await fs.mkdir(resolve(testDir, "src/path/to/assets"), { recursive: true });
-  /**
-   * Create CSS and image files.
-   */
-  await fs.writeFile(
-    resolve(testDir, "src/index.css"),
-    "body { color: red; }"
-  );
-
-  await fs.copyFile(
-    fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
-    resolve(testDir, "src/path/to/assets/tsmodule.png")
-  );
-};
-
-const cleanTestDir = async () => await fs.rm(
-  testDir,
-  { recursive: true, force: true }
-);
-
 test.serial("[build] should copy non-source files to dist/", async (t) => {
   process.chdir(testDir);
   await createTestAssets();
   await shell.run("tsmodule build -f");
-
-  t.assert(existsSync(resolve(testDir, "dist/index.css")));
-  t.assert(existsSync(resolve(testDir, "dist/path/to/assets/tsmodule.png")));
-  t.snapshot(await fs.readFile(resolve(testDir, "dist/index.css"), "utf-8"));
-});
-
-test.serial("[dev] should copy new non-source files to dist/", async (t) => {
-  await fs.rmdir(resolve(testDir, "dist"), { recursive: true });
-
-  t.assert(!existsSync(resolve(testDir, "dist/index.css")));
-  t.assert(!existsSync(resolve(testDir, "dist/path/to/assets/tsmodule.png")));
-
-  process.chdir(testDir);
-  await Promise.allSettled([
-    shell.run("tsmodule dev"),
-    (async () => {
-      await sleep();
-      await createTestAssets();
-      await sleep();
-
-      shell.kill();
-    })(),
-  ]);
 
   t.assert(existsSync(resolve(testDir, "dist/index.css")));
   t.assert(existsSync(resolve(testDir, "dist/path/to/assets/tsmodule.png")));
