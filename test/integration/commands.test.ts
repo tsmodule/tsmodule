@@ -1,7 +1,7 @@
 import test from "ava";
 
 import { createTestDir, createTestAssets, cleanTestDir, sleep } from "./utils";
-import { existsSync, mkdirSync, promises as fs, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
