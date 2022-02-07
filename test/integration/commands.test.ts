@@ -30,30 +30,17 @@ test.before("[create] should create all template types", async () => {
     reactShell.run(`tsmodule create --react ${reactTest}`),
   ]);
 
-  for (const dirToCopyInto of [devTestDir, buildTestDir]) {
-    if (process.platform === "win32") {
-      await shell.run(`xcopy /E /Y /F ${defaultTestDir} ${dirToCopyInto}\\`);
-    } else {
-      await shell.run(`cp -rf ${defaultTestDir} ${dirToCopyInto}`);
-    }
-  }
+  await Promise.all(
+    [devTestDir, buildTestDir].map(async (dirToCopyInto) => {
+      const shell = createShell();
+      if (process.platform === "win32") {
+        await shell.run(`xcopy /E /Y /F /Q ${defaultTestDir} ${dirToCopyInto}\\`);
+      } else {
+        await shell.run(`cp -rf ${defaultTestDir} ${dirToCopyInto}`);
+      }
+    })
+  );
 });
-
-// test.serial("[create] should generate TS module package", async (t) => {
-//   /**
-//    * Create the test TS module.
-//    */
-//   process.chdir(tmpdir());
-//   await shell.run(`tsmodule create ${defaultTest}`);
-
-//   /**
-//    * `tsmodule create` adds a `@tsmodule/tsmodule` dependency, so re-link it.
-//    */
-//   process.chdir(defaultTestDir);
-//   await shell.run("yarn link @tsmodule/tsmodule");
-
-//   t.pass();
-// });
 
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
