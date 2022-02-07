@@ -1,35 +1,10 @@
 import test from "ava";
 
-import { createTestDir, sleep } from "./utils";
+import { createTestDir, longSleep, createTestAssets, cleanTestDir } from "./utils";
 import { existsSync, promises as fs } from "fs";
-import { fileURLToPath, URL } from "url";
 import { createShell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
-
-const createTestAssets = async () => {
-  await fs.mkdir(resolve(testDir, "src/path/to/assets"), { recursive: true });
-  /**
-   * Create CSS and image files.
-   */
-  await fs.writeFile(
-    resolve(testDir, "src/index.css"),
-    "body { color: red; }"
-  );
-
-  await fs.copyFile(
-    fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
-    resolve(testDir, "src/path/to/assets/tsmodule.png")
-  );
-};
-
-const cleanTestDir = async () => {
-  await sleep(5000);
-  await fs.rm(
-    testDir,
-    { recursive: true, force: true }
-  );
-};
 
 const { testName, testDir } = await createTestDir("test-module");
 const shell = createShell();
@@ -62,7 +37,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "export const hello = 'world';"
       );
 
-      await sleep(5000);
+      await longSleep();
 
       const emittedDevFile = resolve(testDir, "dist/index.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
@@ -88,7 +63,7 @@ test.serial("[dev] should notice new file", async (t) => {
         "export const abc = 123;"
       );
 
-      await sleep(5000);
+      await longSleep();
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
       const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
@@ -120,7 +95,7 @@ test.serial("[build] built module should execute", async (t) => {
 
 test.serial("[build] should copy non-source files to dist/", async (t) => {
   process.chdir(testDir);
-  await createTestAssets();
+  await createTestAssets(testName);
   await shell.run("tsmodule build -f");
 
   t.assert(existsSync(resolve(testDir, "dist/index.css")));
@@ -130,7 +105,7 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
 
 test.serial("[create --react] should create Next.js component library", async (t) => {
   process.chdir(tmpdir());
-  await cleanTestDir();
+  await cleanTestDir(testName);
   await shell.run(`tsmodule create --react ${testName}`);
 
   const pkgJson = await fs.readFile(resolve(testDir, "package.json"), "utf-8");
