@@ -41,7 +41,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
     shell.run("tsmodule dev"),
     (async () => {
       await createTestAssets(testName);
-      await sleep();
+      await sleep(5000);
       shell.kill();
     })(),
   ]);
@@ -95,13 +95,13 @@ test.serial("[dev] should notice new file", async (t) => {
       const testFile = resolve(testDir, "src/path/to/newFile.ts");
       mkdirp(resolve(testDir, "src/path/to"));
 
-      await sleep(500);
+      await sleep(5000);
       writeFileSync(
         testFile,
         "export const abc = 123;"
       );
-      await sleep();
-      shell.kill(500);
+      await sleep(5000);
+      shell.kill();
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
       const emittedDevModule = readFileSync(emittedDevFile, "utf-8");

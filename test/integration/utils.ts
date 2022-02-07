@@ -64,8 +64,6 @@ export const createTestAssets = async (testName: string) => {
     fileURLToPath(new URL("../../assets/tsmodule.png", import.meta.url)),
     resolve(testDir, "src/path/to/assets/tsmodule.png")
   );
-
-  await sleep();
 };
 
 export const cleanTestDir = async (testName: string) => {
