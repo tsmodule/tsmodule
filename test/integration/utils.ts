@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 /**
  * Sleep for a given number of ms (default 1000ms).
  */
-export const sleep = async (ms = 1000) => {
+export const sleep = async (ms = 500) => {
   await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
 };
 
