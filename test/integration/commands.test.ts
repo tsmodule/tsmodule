@@ -9,6 +9,12 @@ import { tmpdir } from "os";
 const { testName, testDir } = await createTestDir("test-module");
 const shell = createShell();
 
+const mkdirp = (dir: string) => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+};
+
 test.serial("[create] should generate TS module package", async (t) => {
   /**
    * Create the test TS module.
@@ -29,7 +35,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(testDir);
 
   const srcAssets = resolve(testDir, "src/path/to/assets");
-  mkdirSync(srcAssets, { recursive: true });
+  mkdirp(srcAssets);
 
   await Promise.allSettled([
     shell.run("tsmodule dev"),
@@ -87,15 +93,15 @@ test.serial("[dev] should notice new file", async (t) => {
     shell.run("tsmodule dev"),
     (async () => {
       const testFile = resolve(testDir, "src/path/to/newFile.ts");
-      mkdirSync(resolve(testDir, "src/path/to"), { recursive: true });
+      mkdirp(resolve(testDir, "src/path/to"));
 
-      await sleep();
+      await sleep(500);
       writeFileSync(
         testFile,
         "export const abc = 123;"
       );
       await sleep();
-      shell.kill();
+      shell.kill(500);
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
       const emittedDevModule = readFileSync(emittedDevFile, "utf-8");
@@ -153,6 +159,11 @@ test.serial("[create --react] library should build and execute", async (t) => {
 });
 
 test.serial("[create --react] library should build with Next", async (t) => {
+  if (process.platform === "win32") {
+    t.pass();
+    return;
+  }
+
   process.chdir(testDir);
   await shell.run("yarn build");
   t.pass();
