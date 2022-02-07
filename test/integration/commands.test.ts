@@ -1,7 +1,7 @@
 import test from "ava";
 
 import { createTestAssets, cleanTestDir, sleep } from "./utils";
-import fs from "graceful-fs";
+import fs from "fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
 import { tmpdir } from "os";
@@ -137,7 +137,7 @@ test("[dev] should watch for file changes", async (t) => {
   t.snapshot(emittedDevModule);
 });
 
-test("[dev] should copy new non-source files to dist/", async (t) => {
+test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();
 
@@ -185,7 +185,7 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
   const shell = createShell();
 
   await createTestAssets(buildTest);
-  await sleep();
+  await sleep(5000);
   await shell.run("tsmodule build -f");
 
   t.assert(fs.existsSync(resolve(buildTestDir, "dist/index.css")));
