@@ -5,7 +5,7 @@
  * with esbuild and then use it to normalize emitted output.
  */
 
-import fs from "graceful-fs";
+import { readFileSync, writeFileSync } from "fs";
 import glob from "fast-glob";
 import { pathToFileURL } from "url";
 import { resolve as resolvePath } from "path";
@@ -73,7 +73,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
     if (!rewrites) return null;
     DEBUG.log("TypeScript API yielded specifiers to rewrite:", { rewrites });
 
-    let code = fs.readFileSync(resolvedEntryPoint, "utf8");
+    let code = readFileSync(resolvedEntryPoint, "utf8");
     DEBUG.group();
     for (const { specifierToReplace, specifierReplacement } of rewrites) {
       /**
@@ -114,7 +114,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
         );
 
         code = code.replace(importStatement, rewrittenImportStatement);
-        fs.writeFileSync(resolvedEntryPoint, code);
+        writeFileSync(resolvedEntryPoint, code);
 
         DEBUG.log("Wrote output file.", { resolvedEntryPoint });
         DEBUG.groupEnd();

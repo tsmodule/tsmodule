@@ -1,8 +1,8 @@
-import fs from "graceful-fs";
 import { relative, resolve } from "path";
 import { build } from "../build";
 import chalk from "chalk";
 import { createShell } from "await-shell";
+import { existsSync, lstatSync } from "fs";
 import { log } from "create-debug-logger";
 import ora from "ora";
 import watch from "node-watch";
@@ -47,10 +47,10 @@ export const dev = async () => {
        * Windows-specific stuff.
        */
       {
-        const stillExists = fs.existsSync(filePath);
+        const stillExists = existsSync(filePath);
         if (!stillExists) return;
 
-        const isDir = !fs.lstatSync(filePath).isFile();
+        const isDir = !lstatSync(filePath).isFile();
         if (isDir) return;
       }
 

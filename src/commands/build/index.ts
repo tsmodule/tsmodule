@@ -1,6 +1,6 @@
 import { build as esbuild, BuildOptions } from "esbuild";
-import fs from "graceful-fs";
 import { extname, isAbsolute, resolve, resolve as resolvePath } from "path";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
 import { copy } from "fs-extra";
 import { env } from "process";
@@ -29,8 +29,8 @@ export const bannerLog = (msg: string) => {
 
 const forceTypeModuleInDist = () => {
   let distPkgJson;
-  if (fs.existsSync("dist/package.json")) {
-    distPkgJson = JSON.parse(fs.readFileSync("dist/package.json", "utf-8"));
+  if (existsSync("dist/package.json")) {
+    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
   } else {
     distPkgJson = {};
   }
@@ -40,7 +40,7 @@ const forceTypeModuleInDist = () => {
   }
 
   distPkgJson.type = "module";
-  fs.writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
+  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
 };
 
 /**
@@ -109,10 +109,10 @@ export const build = async ({
         .replace(isTsxOrJsx, ".js");
 
     DEBUG.log("Cleaning emitted file:", { outfile });
-    fs.rmSync(outfile, { force: true });
+    rmSync(outfile, { force: true });
   } else {
     DEBUG.log("Cleaning old output:", { outDir });
-    fs.rmSync(outDir, { force: true, recursive: true });
+    rmSync(outDir, { force: true, recursive: true });
   }
 
   // eslint-disable-next-line no-console

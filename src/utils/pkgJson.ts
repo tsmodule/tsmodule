@@ -1,8 +1,8 @@
-import fs from "graceful-fs";
+import { readFileSync } from "fs";
 import { resolve } from "path";
 
 export const getPackageJsonFile = async () => {
   const cwd = process.cwd();
   const pkgJsonFile = resolve(cwd, "package.json");
-  return fs.readFileSync(pkgJsonFile, "utf-8");
+  return readFileSync(pkgJsonFile, "utf-8");
 };
