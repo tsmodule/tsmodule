@@ -28,6 +28,22 @@ export const bannerLog = (msg: string) => {
   );
 };
 
+const forceTypeModuleInDist = () => {
+  let distPkgJson;
+  if (existsSync("dist/package.json")) {
+    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
+  } else {
+    distPkgJson = {};
+  }
+
+  if (distPkgJson?.module === "module") {
+    return true;
+  }
+
+  distPkgJson.type = "module";
+  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
+};
+
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
  * could mean many things, all of which is handled by the loader which will
@@ -158,27 +174,32 @@ export const build = async ({
     })
   );
 
-  if (process.env.NO_REWRITES) {
-    return;
+  /**
+   * Rewrite import specifiers in emitted output.
+   */
+  if (!process.env.NO_REWRITES) {
+    const emittedJs =
+      files
+        .replace(srcDir, outDir)
+        .replace(/^(\.\/)?src\//, "dist/")
+        .replace(isTs, ".js")
+        .replace(isTsxOrJsx, ".js");
+
+    await normalizeImportSpecifiers(
+      emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
+    );
+
+    ora("Normalized import specifiers.").succeed();
   }
 
   /**
-   * Resolve file specifiers given to build() that might refer to src/ files to
-   * files in dist/.
+   * Ensure that the dist/ package.json has { type: module }.
    */
+  const rewrotePkgJson = forceTypeModuleInDist();
+  if (rewrotePkgJson) {
+    ora("Forced \"type\": \"module\" in output.").succeed();
+  }
 
-  const emittedJs =
-    files
-      .replace(srcDir, outDir)
-      .replace(/^(\.\/)?src\//, "dist/")
-      .replace(isTs, ".js")
-      .replace(isTsxOrJsx, ".js");
-
-  await normalizeImportSpecifiers(
-    emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
-  );
-
-  ora("Normalized import specifiers.").succeed();
   // eslint-disable-next-line no-console
   console.log();
 
@@ -192,16 +213,5 @@ export const build = async ({
   emitTsDeclarations(allFiles);
   ora(`Generated delcarations for ${allFiles.length} files.`).succeed();
 
-  let distPkgJson;
-  if (existsSync("dist/package.json")) {
-    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
-  } else {
-    distPkgJson = {};
-  }
-
-  distPkgJson.type = "module";
-  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
-
-  ora("Forced \"type\": \"module\" in output.").succeed();
   log(chalk.green("Build complete."));
 };
