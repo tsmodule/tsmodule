@@ -1,6 +1,6 @@
 import test from "ava";
 
-import { createTestDir, createTestAssets, cleanTestDir, sleep, safeMkdir, safeWriteFile } from "./utils";
+import { createTestDir, createTestAssets, cleanTestDir, sleep, safeMkdir, safeWriteFile, safeReadFile } from "./utils";
 import { existsSync, promises as fs } from "fs";
 import { createShell } from "await-shell";
 import { resolve } from "path";
@@ -41,7 +41,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   ]);
 
   const emittedPng = resolve(testDir, "dist/path/to/assets/tsmodule.png");
-  const emittedCss = await fs.readFile(resolve(testDir, "dist/index.css"), "utf-8");
+  const emittedCss = await safeReadFile(resolve(testDir, "dist/index.css"));
 
   t.assert(
     existsSync(emittedPng),
@@ -68,11 +68,12 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "export const hello = 'world';"
       );
 
+      await shell.kill();
+
       const emittedDevFile = resolve(testDir, "dist/index.js");
-      const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
+      const emittedDevModule = await safeReadFile(emittedDevFile);
 
       t.snapshot(emittedDevModule);
-      await shell.kill();
     })(),
   ]);
 
@@ -95,7 +96,7 @@ test.serial("[dev] should notice new file", async (t) => {
       );
 
       const emittedDevFile = resolve(testDir, "dist/path/to/newFile.js");
-      const emittedDevModule = await fs.readFile(emittedDevFile, "utf-8");
+      const emittedDevModule = await safeReadFile(emittedDevFile);
 
       t.snapshot(emittedDevModule);
       await shell.kill();
@@ -110,7 +111,7 @@ test.serial("[build] created module package should build", async (t) => {
   await shell.run("tsmodule build -f");
 
   const emittedFile = resolve(testDir, "dist/index.js");
-  const emittedModule = await fs.readFile(emittedFile, "utf-8");
+  const emittedModule = await safeReadFile(emittedFile);
 
   t.snapshot(emittedModule);
 });
@@ -129,7 +130,7 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
 
   t.assert(existsSync(resolve(testDir, "dist/index.css")));
   t.assert(existsSync(resolve(testDir, "dist/path/to/assets/tsmodule.png")));
-  t.snapshot(await fs.readFile(resolve(testDir, "dist/index.css"), "utf-8"));
+  t.snapshot(await safeReadFile(resolve(testDir, "dist/index.css")));
 });
 
 test.serial("[create --react] should create Next.js component library", async (t) => {
@@ -137,7 +138,7 @@ test.serial("[create --react] should create Next.js component library", async (t
   await cleanTestDir(testName);
   await shell.run(`tsmodule create --react ${testName}`);
 
-  const pkgJson = await fs.readFile(resolve(testDir, "package.json"), "utf-8");
+  const pkgJson = await safeReadFile(resolve(testDir, "package.json"));
   const { dependencies } = JSON.parse(pkgJson);
 
   t.assert("react" in dependencies, "should add react dependency");

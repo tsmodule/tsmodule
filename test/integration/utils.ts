@@ -38,6 +38,12 @@ export const safeWriteFile = async (file: string, content: string) => {
   return written;
 };
 
+export const safeReadFile = async (file: string) => {
+  const fileContents = await fs.readFile(file, "utf-8");
+  await sleep();
+  return fileContents;
+};
+
 export const safeCopyFile = async (from: string, to: string) => {
   const copied = await fs.copyFile(from, to);
   await sleep();
