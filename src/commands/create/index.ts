@@ -41,6 +41,8 @@ export const create = async (name: string, { react = false }) => {
   if (react) {
     dependencies.push("react", "react-dom");
     devDependencies.push(
+      "@types/react",
+      "@types/react-dom",
       "next",
       "eslint-config-next",
       "tailwindcss",
