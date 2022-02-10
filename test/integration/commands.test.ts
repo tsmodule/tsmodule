@@ -19,14 +19,13 @@ const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-
 
 test.before("[create] should create all template types", async () => {
   process.chdir(tmpdir());
+  const shell = createShell();
 
-  const defaultShell = createShell();
-  const reactShell = createShell();
-
-  await Promise.all([
-    defaultShell.run(`tsmodule create ${devTest}`),
-    reactShell.run(`tsmodule create --react ${reactTest}`),
-  ]);
+  /**
+   * Install dependencies for tests serially to prevent yarn cache errors.
+   */
+  await shell.run(`tsmodule create ${devTest}`);
+  await shell.run(`tsmodule create --react ${reactTest}`);
 
   const dirsToCopyDevInto = [buildTestDir, fullBuildTestDir];
 
@@ -48,7 +47,7 @@ test.before("[create] should create all template types", async () => {
     buildTestDir
   ]) {
     process.chdir(dirToLink);
-    await defaultShell.run("yarn link @tsmodule/tsmodule");
+    await shell.run("yarn link @tsmodule/tsmodule");
   }
 });
 
