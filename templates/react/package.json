@@ -17,6 +17,7 @@
     "export": "tsmodule build",
     "dev": "next dev",
     "build": "next build",
+    "start": "next start",
     "lint": "next lint --fix",
     "test": "ava",
     "prepublishOnly": "yarn build && yarn test"
