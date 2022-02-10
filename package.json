@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "17.0.0",
+  "version": "17.0.1",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
