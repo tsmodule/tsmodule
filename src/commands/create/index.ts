@@ -29,7 +29,7 @@ export const create = async (name: string, { react = false }) => {
 
   await rewritePkgJson(name);
 
-  spinner.succeed("Project created. Installing dependencies.");
+  spinner.succeed("Project created.");
 
   /**
    * Install dependencies in the created directory.
@@ -59,7 +59,7 @@ export const create = async (name: string, { react = false }) => {
     await shell.run(`yarn add -D ${devDependencies.join(" ")}`);
   }
 
-  spinner.succeed("Dependencies installed. Initializing git.");
+  spinner.succeed("Dependencies installed.");
 
   await shell.run("git init");
 
