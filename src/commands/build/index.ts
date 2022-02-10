@@ -1,10 +1,9 @@
 import { build as esbuild, BuildOptions } from "esbuild";
-import { existsSync, readFileSync, writeFileSync } from "fs";
 import { extname, isAbsolute, resolve, resolve as resolvePath } from "path";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
 import { copy } from "fs-extra";
 import { env } from "process";
-import fs from "fs/promises";
 import glob from "fast-glob";
 import ora from "ora";
 
@@ -26,6 +25,22 @@ export const bannerLog = (msg: string) => {
       chalk.bold(chalk.white(logMsg)),
     )
   );
+};
+
+const forceTypeModuleInDist = () => {
+  let distPkgJson;
+  if (existsSync("dist/package.json")) {
+    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
+  } else {
+    distPkgJson = {};
+  }
+
+  if (distPkgJson?.module === "module") {
+    return true;
+  }
+
+  distPkgJson.type = "module";
+  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
 };
 
 /**
@@ -70,7 +85,23 @@ export const build = async ({
   const srcDir = resolvePath(cwd, "src");
   const outDir = resolvePath(cwd, "dist");
 
+  /**
+   * All files for the build. Ignore .d.ts files.
+   */
+  const allFiles =
+    glob
+      .sync(files, { cwd })
+      .filter((file) => extname(file) !== ".d.ts")
+      .map((file) => resolvePath(file));
+
   if (isAbsolute(files)) {
+    /**
+     * fast-glob won't pick up absolute filepaths on Windows. Windows sucks.
+     */
+    if (!allFiles.length) {
+      allFiles.push(files);
+    }
+
     const outfile =
       files
         .replace(srcDir, outDir)
@@ -78,23 +109,15 @@ export const build = async ({
         .replace(isTsxOrJsx, ".js");
 
     DEBUG.log("Cleaning emitted file:", { outfile });
-    await fs.rm(outfile, { force: true });
+    rmSync(outfile, { force: true });
   } else {
     DEBUG.log("Cleaning old output:", { outDir });
-    await fs.rm(outDir, { force: true, recursive: true });
+    rmSync(outDir, { force: true, recursive: true });
   }
 
   // eslint-disable-next-line no-console
   console.log();
 
-  /**
-   * All files for the build. Ignore .d.ts files.
-   */
-  const allFiles =
-      glob
-        .sync(files, { cwd })
-        .filter((file) => extname(file) !== ".d.ts")
-        .map((file) => resolvePath(file));
 
   /**
    * Compile TS files.
@@ -136,7 +159,7 @@ export const build = async ({
    */
   const nonJsTsFiles = allFiles.filter((file) => !isJsOrTs.test(file));
 
-  DEBUG.log("Copying non-JS/TS files.");
+  DEBUG.log("Copying non-JS/TS files.", { allFiles, nonJsTsFiles });
   await Promise.all(
     nonJsTsFiles.map(async (file) => {
       const outfile =
@@ -150,27 +173,32 @@ export const build = async ({
     })
   );
 
-  if (process.env.NO_REWRITES) {
-    return;
+  /**
+   * Rewrite import specifiers in emitted output.
+   */
+  if (!process.env.NO_REWRITES) {
+    const emittedJs =
+      files
+        .replace(srcDir, outDir)
+        .replace(/^(\.\/)?src\//, "dist/")
+        .replace(isTs, ".js")
+        .replace(isTsxOrJsx, ".js");
+
+    await normalizeImportSpecifiers(
+      emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
+    );
+
+    ora("Normalized import specifiers.").succeed();
   }
 
   /**
-   * Resolve file specifiers given to build() that might refer to src/ files to
-   * files in dist/.
+   * Ensure that the dist/ package.json has { type: module }.
    */
+  const rewrotePkgJson = forceTypeModuleInDist();
+  if (rewrotePkgJson) {
+    ora("Forced \"type\": \"module\" in output.").succeed();
+  }
 
-  const emittedJs =
-    files
-      .replace(srcDir, outDir)
-      .replace(/^(\.\/)?src\//, "dist/")
-      .replace(isTs, ".js")
-      .replace(isTsxOrJsx, ".js");
-
-  await normalizeImportSpecifiers(
-    emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
-  );
-
-  ora("Normalized import specifiers.").succeed();
   // eslint-disable-next-line no-console
   console.log();
 
@@ -184,16 +212,5 @@ export const build = async ({
   emitTsDeclarations(allFiles);
   ora(`Generated delcarations for ${allFiles.length} files.`).succeed();
 
-  let distPkgJson;
-  if (existsSync("dist/package.json")) {
-    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
-  } else {
-    distPkgJson = {};
-  }
-
-  distPkgJson.type = "module";
-  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
-
-  ora("Forced \"type\": \"module\" in output.").succeed();
   log(chalk.green("Build complete."));
 };
