@@ -8,10 +8,10 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./*": "./dist/lib/*/index.js",
     "./styles": "./dist/styles/index.css",
     "./styles/*": "./dist/styles/*/index.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./*": "./dist/components/*/index.js"
   },
   "scripts": {
     "export": "tsmodule build",
@@ -19,7 +19,6 @@
     "build": "next build",
     "lint": "next lint --fix",
     "test": "ava",
-    "pretest": "tsmodule build -f",
     "prepublishOnly": "yarn build && yarn test"
   },
   "ava": {
