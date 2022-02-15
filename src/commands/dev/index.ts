@@ -1,8 +1,8 @@
+import { existsSync, lstatSync } from "fs";
 import { relative, resolve } from "path";
 import { build } from "../build";
 import chalk from "chalk";
 import { createShell } from "await-shell";
-import { existsSync, lstatSync } from "fs";
 import { log } from "create-debug-logger";
 import ora from "ora";
 import watch from "node-watch";
