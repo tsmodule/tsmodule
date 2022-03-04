@@ -13,7 +13,7 @@ export const sleep = async (ms = 1000) => {
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
 export const createTestAssets = async (testName: string) => {
-  await sleep(1000);
+  await sleep(2500);
   console.log("Creating test assets for", { testName });
 
   const testDir = getTestDir(testName);
@@ -40,7 +40,7 @@ export const createTestAssets = async (testName: string) => {
   );
   console.log("Copied image");
 
-  await sleep(1000);
+  await sleep(2500);
   console.log("Created test assets.");
 };
 
