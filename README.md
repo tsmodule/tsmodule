@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/tsmodule.png">
+  <img src="tsmodule.png">
   <h4>TypeScript Module Toolkit</h4>
 </div>
 
