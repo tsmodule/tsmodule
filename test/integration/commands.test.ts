@@ -54,7 +54,9 @@ test.before("[create] should create all template types", async () => {
 const dev = async (shell: Shell) => {
   try {
     await shell.run(`tsmodule dev ${devTest}`);
-  } catch (e) {}
+  } catch (e) {
+    console.log({ e });
+  }
 };
 
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
