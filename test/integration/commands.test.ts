@@ -66,7 +66,7 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   await Promise.all([
     dev(shell),
     (async () => {
-      await createTestAssets(devTestDir);
+      createTestAssets(devTestDir);
       console.log("Created test assets.");
       await sleep(2500);
       shell.kill();
@@ -189,7 +189,7 @@ test.serial("[build] should copy non-source files to dist/", async (t) => {
   process.chdir(buildTestDir);
   const shell = createShell();
 
-  await createTestAssets(buildTest);
+  createTestAssets(buildTest);
   await sleep(2500);
   await shell.run("tsmodule build -f");
 
