@@ -8,8 +8,10 @@ import ora from "ora";
 import watch from "node-watch";
 
 const clear = () => {
-  // eslint-disable-next-line no-console
-  console.clear();
+  if (process.env.NODE_ENV !== "test") {
+    // eslint-disable-next-line no-console
+    console.clear();
+  }
 };
 
 const timestamp = (files: string) => {
@@ -25,7 +27,7 @@ export const dev = async () => {
   const cwd = process.cwd();
   const shell = createShell();
 
-  if (process.platform !== "win32") {
+  if (process.platform !== "win32" && process.env.NODE_ENV !== "test") {
     await shell.run("clear");
   }
 
@@ -38,7 +40,6 @@ export const dev = async () => {
     resolve(cwd, "src"),
     {
       recursive: true,
-      persistent: true
     }
   ).on(
     "change",
@@ -50,7 +51,7 @@ export const dev = async () => {
         const stillExists = existsSync(filePath);
         if (!stillExists) return;
 
-        const isDir = !lstatSync(filePath).isFile();
+        const isDir = lstatSync(filePath).isDirectory();
         if (isDir) return;
       }
 

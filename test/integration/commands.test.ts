@@ -1,9 +1,9 @@
 import test from "ava";
 
 import { createTestAssets, cleanTestDir, sleep } from "./utils";
+import { createShell, Shell } from "await-shell";
 import fs from "fs";
-import { createShell } from "await-shell";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
 import { tmpdir } from "os";
 
 const mkdirp = (dir: string) => {
@@ -13,13 +13,13 @@ const mkdirp = (dir: string) => {
 };
 
 const { testName: devTest, testDir: devTestDir } = await cleanTestDir("test-dev");
-const { testName: fullBuildTest, testDir: fullBuildTestDir } = await cleanTestDir("test-full-build");
+const { testName: _, testDir: fullBuildTestDir } = await cleanTestDir("test-full-build");
 const { testName: buildTest, testDir: buildTestDir } = await cleanTestDir("test-build");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
 
 test.before("[create] should create all template types", async () => {
-  process.chdir(tmpdir());
   const shell = createShell();
+  process.chdir(tmpdir());
 
   /**
    * Install dependencies for tests serially to prevent yarn cache errors.
@@ -51,9 +51,68 @@ test.before("[create] should create all template types", async () => {
   }
 });
 
-test("[create --react] should create Next.js component library", async (t) => {
-  process.chdir(reactTestDir);
+const dev = async (shell: Shell) => {
+  try {
+    await shell.run(`tsmodule dev ${devTest}`);
+  } catch (e) {}
+};
+
+test.serial("[dev] should copy new non-source files to dist/", async (t) => {
+  process.chdir(devTestDir);
   const shell = createShell();
+
+  await Promise.all([
+    dev(shell),
+    (async () => {
+      await createTestAssets(devTestDir);
+      console.log("Created test assets.");
+      await sleep(2500);
+      shell.kill();
+    })(),
+  ]);
+
+  const emittedPng = resolve(devTestDir, "dist/path/to/assets/tsmodule.png");
+  const emittedCss = fs.readFileSync(resolve(devTestDir, "dist/index.css"), "utf-8");
+
+  t.assert(
+    fs.existsSync(emittedPng),
+    "should copy test PNG to dist/"
+  );
+
+  t.snapshot(
+    emittedCss,
+    "should copy src/index.css to dist/"
+  );
+});
+
+test.serial("[dev] should watch for file changes", async (t) => {
+  process.chdir(devTestDir);
+  const shell = createShell();
+
+  await Promise.allSettled([
+    dev(shell),
+    (async () => {
+      const testFile = resolve(devTestDir, "src/update.ts");
+
+      await sleep(2500);
+      fs.writeFileSync(
+        testFile,
+        "export const hello = 'world';"
+      );
+      await sleep(2500);
+      shell.kill();
+    })(),
+  ]);
+
+  const emittedDevFile = resolve(devTestDir, "dist/update.js");
+  const emittedDevModule = fs.readFileSync(emittedDevFile, "utf-8");
+
+  t.snapshot(emittedDevModule);
+});
+
+test.serial("[create --react] should create Next.js component library", async (t) => {
+  process.chdir(reactTestDir);
+  // const shell = createShell();
 
   const pkgJson = fs.readFileSync(resolve(reactTestDir, "package.json"), "utf-8");
   const { dependencies } = JSON.parse(pkgJson);
@@ -62,7 +121,7 @@ test("[create --react] should create Next.js component library", async (t) => {
   t.assert("react-dom" in dependencies, "should add react-dom dependency");
 });
 
-test("[create --react] library should build and execute", async (t) => {
+test.serial("[create --react] library should build and execute", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
 
@@ -70,7 +129,7 @@ test("[create --react] library should build and execute", async (t) => {
   t.pass();
 });
 
-test("[create --react] library should build with Next", async (t) => {
+test.serial("[create --react] library should build with Next", async (t) => {
   if (process.platform === "win32") {
     t.pass();
     return;
@@ -83,12 +142,12 @@ test("[create --react] library should build with Next", async (t) => {
   t.pass();
 });
 
-test("[dev] should notice new file", async (t) => {
+test.serial("[dev] should notice new file", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();
 
   await Promise.allSettled([
-    shell.run("tsmodule dev"),
+    dev(shell),
     (async () => {
       const testFile = resolve(devTestDir, "src/path/to/newFile.ts");
       mkdirp(resolve(devTestDir, "src/path/to"));
@@ -109,61 +168,6 @@ test("[dev] should notice new file", async (t) => {
   ]);
 
   t.pass();
-});
-
-test("[dev] should watch for file changes", async (t) => {
-  process.chdir(devTestDir);
-  const shell = createShell();
-
-  await Promise.allSettled([
-    shell.run("tsmodule dev"),
-    (async () => {
-      const testFile = resolve(devTestDir, "src/update.ts");
-
-      await sleep(2500);
-      fs.writeFileSync(
-        testFile,
-        "export const hello = 'world';"
-      );
-      await sleep(2500);
-      shell.kill();
-    })(),
-  ]);
-
-  const emittedDevFile = resolve(devTestDir, "dist/update.js");
-  const emittedDevModule = fs.readFileSync(emittedDevFile, "utf-8");
-
-  t.snapshot(emittedDevModule);
-});
-
-test.serial("[dev] should copy new non-source files to dist/", async (t) => {
-  process.chdir(devTestDir);
-  const shell = createShell();
-
-  const srcAssets = resolve(devTestDir, "src/path/to/assets");
-  mkdirp(srcAssets);
-
-  await Promise.allSettled([
-    shell.run("tsmodule dev"),
-    (async () => {
-      await createTestAssets(devTestDir);
-      await sleep(2500);
-      shell.kill();
-    })(),
-  ]);
-
-  const emittedPng = resolve(devTestDir, "dist/path/to/assets/tsmodule.png");
-  const emittedCss = fs.readFileSync(resolve(devTestDir, "dist/index.css"), "utf-8");
-
-  t.assert(
-    fs.existsSync(emittedPng),
-    "should copy src/path/to/assets/tsmodule.png to dist/"
-  );
-
-  t.snapshot(
-    emittedCss,
-    "should copy src/index.css to dist/"
-  );
 });
 
 test.serial("[build] created module package should build and execute", async (t) => {

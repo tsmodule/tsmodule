@@ -1,8 +1,7 @@
+import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, BuildOptions } from "esbuild";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { extname, isAbsolute, resolve, resolve as resolvePath } from "path";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
-import { copy } from "fs-extra";
 import { env } from "process";
 import glob from "fast-glob";
 import ora from "ora";
@@ -169,7 +168,14 @@ export const build = async ({
           .replace(isTsxOrJsx, ".js");
 
       DEBUG.log("Copying non-source file:", { file, outfile });
-      await copy(file, outfile);
+
+      mkdirSync(dirname(outfile), { recursive: true });
+
+      writeFileSync(
+        outfile,
+        readFileSync(file),
+        { encoding: "binary", flag: "w" }
+      );
     })
   );
 
