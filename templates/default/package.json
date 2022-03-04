@@ -13,6 +13,7 @@
     "./*": "./dist/*/index.js"
   },
   "scripts": {
+    "dev": "tsmodule dev",
     "build": "tsmodule build",
     "test": "ava",
     "lint": "eslint src --fix",
