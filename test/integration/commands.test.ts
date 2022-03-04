@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 import test from "ava";
 
-import { createTestAssets, cleanTestDir, sleep } from "./utils";
 import { createShell, Shell } from "await-shell";
+import { createTestAssets, cleanTestDir, sleep } from "./utils";
 import fs from "fs";
-import { dirname, resolve } from "path";
+import { resolve } from "path";
 import { tmpdir } from "os";
 
 const mkdirp = (dir: string) => {
@@ -13,7 +14,7 @@ const mkdirp = (dir: string) => {
 };
 
 const { testName: devTest, testDir: devTestDir } = await cleanTestDir("test-dev");
-const { testName: _, testDir: fullBuildTestDir } = await cleanTestDir("test-full-build");
+const { testDir: fullBuildTestDir } = await cleanTestDir("test-full-build");
 const { testName: buildTest, testDir: buildTestDir } = await cleanTestDir("test-build");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
 

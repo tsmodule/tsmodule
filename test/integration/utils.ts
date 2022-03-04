@@ -1,5 +1,6 @@
-import { URL, fileURLToPath } from "url";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+/* eslint-disable no-console */
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { URL } from "url";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
@@ -13,7 +14,6 @@ export const sleep = async (ms = 1000) => {
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
 export const createTestAssets = (testName: string) => {
-  // await sleep(2500);
   console.log("Creating test assets for", { testName });
 
   const testDir = getTestDir(testName);
@@ -48,9 +48,9 @@ export const cleanTestDir = async (testName: string) => {
   await sleep();
   const testDir = getTestDir(testName);
 
-  // if (existsSync(testDir)) {
-  //   rmSync(testDir, { recursive: true, force: true });
-  // }
+  if (existsSync(testDir)) {
+    rmSync(testDir, { recursive: true, force: true });
+  }
 
   return {
     testName,
