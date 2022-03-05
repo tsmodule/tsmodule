@@ -12,9 +12,10 @@ import ora from "ora";
  * internal source (for bootstrap code path).
  */
 import { createDebugLogger, log } from "create-debug-logger";
+import { getPackageJson, getPackageJsonFile } from "../../utils/pkgJson";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils";
+import { createShell } from "await-shell";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
-import { getPackageJsonFile } from "../../utils/pkgJson";
 import { normalizeImportSpecifiers } from "../normalize";
 
 export const bannerLog = (msg: string) => {
@@ -53,6 +54,7 @@ export const build = async ({
   fast = false
 }) => {
   env.NODE_ENV = dev ? "development" : "production";
+  const shell = createShell();
 
   const DEBUG = createDebugLogger(build);
   DEBUG.log("Building", { files, dev, fast });
@@ -213,6 +215,20 @@ export const build = async ({
 
   if (dev || fast) {
     return;
+  }
+
+  if (existsSync(resolve("src", "styles","components", "index.css"))) {
+    DEBUG.log("Build minified component styles from styles/components.");
+    const localPackageJson = await getPackageJson();
+    const { style = "./dist/styles.css" } = localPackageJson;
+
+    const twCmd = "npx tailwindcss";
+    const minify = dev ? "" : "-m";
+    const postcss = "--postcss postcss.config.js";
+
+    const cmd = [twCmd, minify, postcss, "-i src/styles/components/index.css", "-o", style];
+
+    await shell.run(cmd.join(" "));
   }
 
   bannerLog("Running post-build setup.");

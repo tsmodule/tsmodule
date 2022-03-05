@@ -44,9 +44,11 @@ export const create = async (name: string, { react = false }) => {
       "@types/react",
       "@types/react-dom",
       "next",
+      "eslint",
       "eslint-config-next",
       "tailwindcss",
       "postcss",
+      "postcss-import",
       "autoprefixer",
     );
   }

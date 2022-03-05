@@ -1,0 +1,268 @@
+/* FONTS: Customize */
+/* Style your serif font here. */
+.serif {
+  font-family: serif;
+}
+
+/* Style your sans font here. */
+.sans-serif {
+  font-family: sans-serif;
+}
+
+/* Style your display font here. */
+.display {}
+
+/* Style your interface font here. */
+.interface {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+/* LINKS */
+a {
+  @apply underline;
+  color: inherit;
+  text-decoration: none;
+}
+
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+  color: #0070f3;
+}
+
+/* If the user can hover, transition in by default. */
+@media (hover: hover) {
+  a {
+    transition: 300ms;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+  }
+
+  a:hover {
+    text-decoration-color: inherit;
+  }
+}
+
+/* FONT SIZES */
+@media (min-width: 769px) {
+  html {
+    font-size: 1.25em;
+  }
+}
+
+@media (min-width: 1081px) {
+  html {
+    font-size: 1.5em;
+  }
+}
+
+@media (min-width: 1441px) {
+  html {
+    font-size: 1.8em;
+  }
+}
+
+@media (min-width: 1921px) {
+  html {
+    font-size: 2.5em;
+  }
+}
+
+/* HEADINGS */
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  @apply font-bold display;
+  @apply pb-2 leading-snug;
+}
+
+h1, .h1 {
+  @apply text-4xl;
+}
+
+h2, .h2 {
+  @apply text-2xl;
+}
+
+h3, .h3 {
+  @apply text-xl;
+}
+
+h4, .h4 {
+  @apply text-lg;
+}
+
+h5, .h5 {
+  @apply text-base;
+}
+
+h6, .h6 {
+  @apply text-sm;
+}
+
+.title {
+  @apply mt-2 display font-bold;
+}
+
+.title p {
+  @apply p-0 m-0;
+}
+
+/* FLEX */
+
+/**
+  * A container that expands to fill its parent.
+  */
+.expanded {
+  @apply h-full w-full;
+}
+/**
+  * A flex container that is filled by its content.
+  */
+.filled {
+  @apply flex flex-1 items-stretch;
+}
+/**
+  * A pure-flex container will be display: flex.
+  */
+.pure-flex {
+  @apply flex;
+}
+/**
+  * And its immediate children will have zero padding and margin.
+  */
+.pure-flex > * {
+  @apply m-0 p-0;
+}
+/*
+  * A flex container centered along both axes.
+  */
+.flex-center {
+  @apply flex justify-center items-center;
+}
+/**
+  * Center flex and text.
+  */
+.center {
+  @apply flex-center text-center;
+}
+
+/* CONTENT */
+
+code {}
+
+main {
+  /* @apply px-0 py-0; */
+  padding: 0 !important;
+  @apply flex-col center expanded filled gap-16;
+}
+
+header {
+  z-index: 9999;
+}
+
+footer {
+  @apply flex-center py-4 border-t-2 border-gray-200;
+}
+
+article {
+  @apply text-lg serif mx-auto;
+  @apply max-w-screen-sm lg:max-w-screen-lg 2xl:max-w-screen-2xl 4xl:max-w-screen-4xl;
+}
+
+/* FORMS */
+
+button, .button {
+  @apply cursor-pointer;
+  @apply pure-flex flex-center;
+  @apply px-8 py-4;
+  @apply rounded-lg border-2;
+  @apply bg-blue-500 text-white font-bold;
+
+  text-decoration: none !important;
+}
+
+label {
+  @apply p-4 font-light;
+}
+
+input {
+  @apply border-2 border-gray-300 rounded-lg;
+  @apply p-2;
+}
+
+select {
+  @apply bg-white;
+  @apply border-2 border-gray-300 rounded-lg;
+  @apply p-2;
+}
+
+/* Buttons already signal that the user can interact by touching. */
+button, .button {
+  text-decoration: none !important;
+  @apply cursor-pointer;
+  @apply pure-flex flex-center;
+  @apply px-8 py-4;
+  @apply rounded-lg border-2;
+  @apply bg-blue-500 text-white font-bold;
+}
+
+/* TABLES */
+
+table {
+  @apply mx-auto w-full;
+}
+
+table tr, table tr div {
+  @apply truncate;
+}
+
+table tr:nth-child(even) {
+  /* @apply bg-gray-400; */
+}
+
+
+.squish {
+  animation-name: squish;
+  animation-timing-function: ease;
+  animation-duration: 2s;
+  animation-iteration-count: 1;
+}
+
+@keyframes squish {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  10% {
+    transform: scale(1.1, 0.9);
+  }
+
+  30% {
+    transform: scale(0.9, 1.1);
+  }
+
+  50% {
+    transform: scale(1.05, 0.95);
+  }
+
+  57% {
+    transform: scale(1, 1);
+  }
+
+  64% {
+    transform: scale(1, 1);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
+}
