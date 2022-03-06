@@ -30,9 +30,10 @@ program
 
 program
   .command("build")
-  .option("--files <files>", "The files to build (default: all)")
-  .option("-d, --dev", "Build development version")
-  .option("-f, --fast", "Do not emit type declarations, only transform to JS")
+  .option("--files <files>", "Files to build", "src/**/*")
+  .option("--styles <styles>", "The styles to build", "src/styles/components/index.css")
+  .option("-d, --dev", "Build development runtime")
+  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime")
   .description(
     "Builds TS files to output in dist/."
   )

@@ -205,13 +205,13 @@ test.serial("[build] command", async (t) => {
   );
 });
 
-test.serial("[build -f] should copy non-source files to dist/", async (t) => {
+test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   process.chdir(buildTestDir);
   const shell = createShell();
 
   createTestAssets(buildTest);
   await sleep(2500);
-  await shell.run("tsmodule build -f");
+  await shell.run("tsmodule build -r");
 
   t.assert(existsSync(resolve(buildTestDir, "dist/path/to/assets/tsmodule.png")));
   t.snapshot(readTextFile(resolve(buildTestDir, "dist/index.css")));
