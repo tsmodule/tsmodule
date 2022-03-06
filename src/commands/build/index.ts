@@ -52,13 +52,13 @@ export const build = async ({
   files = "src/**/*",
   styles = "src/styles/components/index.css",
   dev = false,
-  fast = false
+  runtimeOnly = false,
 }) => {
   env.NODE_ENV = dev ? "development" : "production";
   const shell = createShell();
 
   const DEBUG = createDebugLogger(build);
-  DEBUG.log("Building", { files, dev, fast });
+  DEBUG.log("Building", { files, dev, runtimeOnly });
   bannerLog(`${chalk.bold("TS Module")} [${env.NODE_ENV}]`);
 
   /**
@@ -214,7 +214,7 @@ export const build = async ({
   // eslint-disable-next-line no-console
   console.log();
 
-  if (dev || fast) {
+  if (dev || runtimeOnly) {
     return;
   }
 
