@@ -50,6 +50,7 @@ const forceTypeModuleInDist = () => {
  */
 export const build = async ({
   files = "src/**/*",
+  styles = "src/styles/components/index.css",
   dev = false,
   fast = false
 }) => {
@@ -217,8 +218,9 @@ export const build = async ({
     return;
   }
 
-  if (existsSync(resolve("src", "styles","components", "index.css"))) {
-    DEBUG.log("Build minified component styles from styles/components.");
+  if (existsSync(resolve(styles))) {
+    DEBUG.log("Building styles for production.");
+
     const localPackageJson = await getPackageJson();
     const { style = "./dist/styles.css" } = localPackageJson;
 
@@ -226,9 +228,11 @@ export const build = async ({
     const minify = dev ? "" : "-m";
     const postcss = "--postcss postcss.config.js";
 
-    const cmd = [twCmd, minify, postcss, "-i src/styles/components/index.css", "-o", style];
+    const cmd = [twCmd, minify, postcss, `-i ${styles}`, "-o", style];
 
     await shell.run(cmd.join(" "));
+  } else {
+    DEBUG.log("Styles not found.", { styles });
   }
 
   bannerLog("Running post-build setup.");

@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "19.0.0",
+  "version": "20.0.0",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
@@ -30,14 +30,14 @@
   },
   "scripts": {
     "bootstrap": "node bootstrap.js",
-    "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -f",
+    "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
     "prebuild": "yarn bootstrap && yarn bootload && yarn link -f",
     "build": "tsmodule build",
     "dev": "tsmodule dev",
     "lint": "eslint --fix src",
-    "prepare": "yarn build -f",
+    "prepare": "yarn build -r",
     "prepublishOnly": "yarn build && yarn test",
-    "pretest": "yarn build -f",
+    "pretest": "yarn build -r",
     "test": "ava --no-worker-threads"
   },
   "dependencies": {

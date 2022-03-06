@@ -17,7 +17,7 @@
     "build": "tsmodule build",
     "test": "ava",
     "lint": "eslint src --fix",
-    "pretest": "tsmodule build -f",
+    "pretest": "tsmodule build -r",
     "prepublishOnly": "yarn build && yarn test"
   },
   "ava": {
