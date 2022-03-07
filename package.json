@@ -1,7 +1,7 @@
 {
   "name": "@tsmodule/tsmodule",
   "type": "module",
-  "version": "22.0.0",
+  "version": "22.1.0",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
     "ava": "^4.1.0",
-    "await-shell": "^30.0.0",
+    "await-shell": "^31.0.0",
     "chalk": "^5.0.0",
     "commander": "^9.0.0",
     "create-debug-logger": "^3.0.0",
