@@ -344,10 +344,10 @@ ava@^4.1.0:
     write-file-atomic "^4.0.1"
     yargs "^17.3.1"
 
-await-shell@^30.0.0:
-  version "30.0.0"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-30.0.0.tgz#54b6b7887c9ef76b9b0e6489626072039b15b4ac"
-  integrity sha512-TJULCJ5oHwIgYzqXfT+/KgWGuUmcqcIzYZPLKCPaGgZ4MQGwd+CQBUtbL0KWBlSgRIfLiVQ4n2wvmDQFo8EZMw==
+await-shell@^31.0.0:
+  version "31.0.0"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-31.0.0.tgz#3f965f442fa77ad7676a12e045928e6c3602b375"
+  integrity sha512-bWeLVC0nbR1n4MS/fCEFEXvgcqj+zsSI66uNYywMnJaoZkb4Bc5MKVbhzzqRBWpje7zGwewxyWMe4AeKH0Tm6Q==
   dependencies:
     chalk "^5.0.0"
 
