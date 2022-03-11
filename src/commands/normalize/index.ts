@@ -69,6 +69,7 @@ export const rewriteImportStatement = (
 export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
   const DEBUG = createDebugLogger(normalizeImportSpecifiers);
   const filesToNormalize = await glob(files, { cwd: process.cwd() });
+
   DEBUG.log("Normalizing import/require specifiers:", { filesToNormalize });
 
   for (const file of filesToNormalize) {
@@ -80,9 +81,10 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
 
     const rewrites = getRewrittenSpecifiers(resolvedEntryPoint);
     if (!rewrites) return null;
-    DEBUG.log("TypeScript API yielded specifiers to rewrite:", { rewrites });
 
+    DEBUG.log("TypeScript API yielded specifiers to rewrite:", { rewrites });
     let code = readFileSync(resolvedEntryPoint, "utf8");
+
     DEBUG.group();
     for (const { specifierToReplace, specifierReplacement } of rewrites) {
       /**
