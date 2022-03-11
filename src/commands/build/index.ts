@@ -51,6 +51,7 @@ const forceTypeModuleInDist = () => {
 export const build = async ({
   files = "src/**/*",
   styles = "src/styles/components/index.css",
+  bundle = false,
   dev = false,
   runtimeOnly = false,
 }) => {
@@ -68,6 +69,7 @@ export const build = async ({
   const cwd = process.cwd();
   const shared: BuildOptions = {
     absWorkingDir: cwd,
+    bundle,
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
