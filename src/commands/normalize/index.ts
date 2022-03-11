@@ -13,20 +13,22 @@ import { resolve as resolvePath } from "path";
 import { createDebugLogger } from "create-debug-logger";
 import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
 
+const EXPR_BREAK = "[^\n\r;]*";
+const IMPORT_SPECIFIER = `[\"\']${EXPR_BREAK}[\'\"][;\n]?$`;
+const IMPORT_CLAUSE = `(import${EXPR_BREAK}(from)?)`;
+const DYNAMIC_IMPORT = `(import|require)${EXPR_BREAK}\\(`;
+const EXPORT_FROM = `(export${EXPR_BREAK}from)`;
+
 /**
  * Matches a complete import statement, including the import keyword, as well as
  * dynamic imports, requires, and export statements.
  */
 export const generateImportPattern = (importSource: string) => {
-  const exprBreak = "[^\n\r;]*";
   const escaped = importSource.replace(".", "\\.").replace("/", "\\/");
-  const padded = `${exprBreak}["']${escaped}["']${exprBreak}`;
+  const padded = `${EXPR_BREAK}["']${escaped}["']${EXPR_BREAK}`;
 
-  const importFrom = `(import${exprBreak}from)`;
-  const dynamicImport = `(import|require)${exprBreak}\\(`;
-  const exportFrom = `(export${exprBreak}from)`;
   return new RegExp(
-    `(${importFrom}|${dynamicImport}|${exportFrom})${padded}`,
+    `(${IMPORT_CLAUSE}|${DYNAMIC_IMPORT}|${EXPORT_FROM})${padded}`,
     "g",
   );
 };
@@ -45,7 +47,14 @@ export const rewriteImportStatement = (
     { importStatement, specifierToReplace, specifierReplacement }
   );
 
-  const [, specifier] = importStatement.split(/from|\(/);
+  const specifierPattern = new RegExp(IMPORT_SPECIFIER);
+  const specifierMatch = importStatement.match(specifierPattern);
+  if (!specifierMatch) {
+    DEBUG.log("No specifier match", { importStatement, specifierPattern });
+    throw new Error(`Could not identify specifier in import statement: ${importStatement}`);
+  }
+
+  const specifier = specifierMatch[0];
   const rewrittenSource =
     specifier
       .replace(specifierToReplace, specifierReplacement)
@@ -79,8 +88,8 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
       /**
         * Read the matched import/require statements and replace them.
         */
-      const importMatch = generateImportPattern(specifierToReplace);
-      const importStatements = code.match(importMatch) ?? [];
+      const importPattern = generateImportPattern(specifierToReplace);
+      const importStatements = code.match(importPattern) ?? [];
       DEBUG.log(
         "Replacing import statements.",
         {
