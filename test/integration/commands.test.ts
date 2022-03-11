@@ -64,43 +64,6 @@ const dev = async (shell: Shell) => {
   }
 };
 
-test.serial("[build -b] should bundle dependencies", async (t) => {
-  const shell = createShell();
-
-  writeFileSync(
-    resolve(buildTestDir, "src/a.ts"),
-    "import { b } from \"./b\";\nconsole.log(b);"
-  );
-
-  writeFileSync(
-    resolve(buildTestDir, "src/b.ts"),
-    "export const b = 42;"
-  );
-
-  process.chdir(buildTestDir);
-  await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build -b"),
-    "should bundle non-React projects"
-  );
-
-  t.snapshot(
-    readTextFile(resolve(buildTestDir, "dist/a.js")),
-    "should inline dependencies in emitted bundles"
-  );
-
-  process.chdir(reactTestDir);
-  await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build -b"),
-    "should bundle React projects"
-  );
-
-  const loadComponent = async () => await import(resolve(reactTestDir, "dist/pages/index.js"));
-  await t.notThrowsAsync(loadComponent, "bundled component modules should load");
-
-  const { default: bundledComponent } = await loadComponent();
-  t.snapshot(bundledComponent(), "bundled component should render");
-});
-
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();
@@ -174,11 +137,6 @@ test.serial("[create --react] library should build and execute", async (t) => {
 });
 
 test.serial("[create --react] library should build with Next", async (t) => {
-  if (process.platform === "win32") {
-    t.pass();
-    return;
-  }
-
   process.chdir(reactTestDir);
   const shell = createShell();
 
@@ -253,4 +211,41 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   t.assert(existsSync(resolve(buildTestDir, "dist/path/to/assets/tsmodule.png")));
   t.snapshot(readTextFile(resolve(buildTestDir, "dist/index.css")));
   t.snapshot(readTextFile(resolve(buildTestDir, "dist/index.css")));
+});
+
+test.serial("[build -b] should bundle dependencies", async (t) => {
+  const shell = createShell();
+
+  writeFileSync(
+    resolve(buildTestDir, "src/a.ts"),
+    "import { b } from \"./b\";\nconsole.log(b);"
+  );
+
+  writeFileSync(
+    resolve(buildTestDir, "src/b.ts"),
+    "export const b = 42;"
+  );
+
+  process.chdir(buildTestDir);
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build -b"),
+    "should bundle non-React projects"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/a.js")),
+    "should inline dependencies in emitted bundles"
+  );
+
+  process.chdir(reactTestDir);
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build -b"),
+    "should bundle React projects"
+  );
+
+  const loadComponent = async () => await import(resolve(reactTestDir, "dist/pages/index.js"));
+  await t.notThrowsAsync(loadComponent, "bundled component modules should load");
+
+  const { default: bundledComponent } = await loadComponent();
+  t.snapshot(bundledComponent(), "bundled component should render");
 });
