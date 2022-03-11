@@ -64,6 +64,43 @@ const dev = async (shell: Shell) => {
   }
 };
 
+test.serial("[build -b] should bundle dependencies", async (t) => {
+  const shell = createShell();
+
+  writeFileSync(
+    resolve(buildTestDir, "src/a.ts"),
+    "import { b } from \"./b\";\nconsole.log(b);"
+  );
+
+  writeFileSync(
+    resolve(buildTestDir, "src/b.ts"),
+    "export const b = 42;"
+  );
+
+  process.chdir(buildTestDir);
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build -b"),
+    "should bundle non-React projects"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/a.js")),
+    "should inline dependencies in emitted bundles"
+  );
+
+  process.chdir(reactTestDir);
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build -b"),
+    "should bundle React projects"
+  );
+
+  const loadComponent = async () => await import(resolve(reactTestDir, "dist/pages/index.js"));
+  await t.notThrowsAsync(loadComponent, "bundled component modules should load");
+
+  const { default: bundledComponent } = await loadComponent();
+  t.snapshot(bundledComponent(), "bundled component should render");
+});
+
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();

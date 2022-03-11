@@ -51,6 +51,7 @@ const forceTypeModuleInDist = () => {
 export const build = async ({
   files = "src/**/*",
   styles = "src/styles/components/index.css",
+  bundle = false,
   dev = false,
   runtimeOnly = false,
 }) => {
@@ -68,6 +69,7 @@ export const build = async ({
   const cwd = process.cwd();
   const shared: BuildOptions = {
     absWorkingDir: cwd,
+    bundle,
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
@@ -145,14 +147,35 @@ export const build = async ({
       .filter((file) => isTsxOrJsx.test(file));
 
   DEBUG.log("Compiling TSX files:", { tsxFiles });
-  await esbuild({
-    ...shared,
-    entryPoints: tsxFiles.filter((file) => !file.endsWith(".d.ts")),
-    jsxFactory: "createElement",
-    banner: {
-      js: "import { createElement } from \"react\";\n",
-    },
-  });
+  const compilableTsxFiles = tsxFiles.filter((file) => !file.endsWith(".d.ts"));
+
+  await Promise.all(
+    compilableTsxFiles.map(
+      async (tsxFile) => {
+        /**
+         * Prepend the necessary createElement import to the TSX source.
+         */
+        const contents = `
+import React from "react";
+import ReactDOM from "react-dom";
+${readFileSync(tsxFile, "utf-8")}
+`;
+
+        await esbuild({
+          ...shared,
+          stdin: {
+            contents,
+            sourcefile: tsxFile,
+            resolveDir: dirname(tsxFile),
+            loader: "tsx",
+          },
+          outdir: undefined,
+          outfile: tsxFile.replace(isTsxOrJsx, ".js").replace(srcDir, outDir),
+          jsxFactory: "React.createElement",
+        });
+      }
+    )
+  );
 
   ora("Built TSX files.").succeed();
 
