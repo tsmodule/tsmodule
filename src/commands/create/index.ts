@@ -38,7 +38,9 @@ export const create = async (name: string, { react = false }) => {
   const dependencies = [];
   const devDependencies = ["@tsmodule/tsmodule"];
 
-  if (react) {
+  if (!react) {
+    devDependencies.push("@types/node");
+  } else {
     dependencies.push("react", "react-dom");
     devDependencies.push(
       "@types/react",
