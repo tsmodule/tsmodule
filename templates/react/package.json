@@ -1,5 +1,6 @@
 {
   "name": "template",
+  "platform": "browser",
   "version": "0.0.1",
   "license": "MIT",
   "types": "dist/index.d.ts",

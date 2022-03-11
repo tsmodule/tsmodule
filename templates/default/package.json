@@ -1,5 +1,6 @@
 {
   "name": "template",
+  "platform": "node",
   "type": "module",
   "version": "0.0.1",
   "license": "MIT",

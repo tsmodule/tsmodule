@@ -12,10 +12,10 @@ import ora from "ora";
  * internal source (for bootstrap code path).
  */
 import { createDebugLogger, log } from "create-debug-logger";
-import { getPackageJson, getPackageJsonFile } from "../../utils/pkgJson";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils";
 import { createShell } from "await-shell";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
+import { getPackageJsonFile } from "../../utils/pkgJson";
 import { normalizeImportSpecifiers } from "../normalize";
 
 export const bannerLog = (msg: string) => {
@@ -66,10 +66,12 @@ export const build = async ({
    * Initialize build options, and inject PACKAGE_JSON for library builds.
    */
   const pkgJsonFile = await getPackageJsonFile();
+  const pkgJson = JSON.parse(pkgJsonFile);
   const cwd = process.cwd();
   const shared: BuildOptions = {
     absWorkingDir: cwd,
     bundle,
+    treeShaking: bundle,
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
@@ -77,6 +79,7 @@ export const build = async ({
     charset: "utf8",
     format: "esm",
     target: "esnext",
+    platform: pkgJson?.platform ?? "node",
     minify: !dev,
     define: {
       PACKAGE_JSON: pkgJsonFile,
@@ -243,9 +246,7 @@ ${readFileSync(tsxFile, "utf-8")}
 
   if (existsSync(resolve(styles))) {
     DEBUG.log("Building styles for production.");
-
-    const localPackageJson = await getPackageJson();
-    const { style = "./dist/styles.css" } = localPackageJson;
+    const { style = "./dist/styles.css" } = pkgJson;
 
     const twCmd = "npx tailwindcss";
     const minify = dev ? "" : "-m";
