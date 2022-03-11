@@ -83,6 +83,7 @@ export const build = async ({
     minify: !dev,
     define: {
       PACKAGE_JSON: pkgJsonFile,
+      "process.env.NODE_ENV": dev ? JSON.stringify("development") : JSON.stringify("production"),
     },
   };
 
