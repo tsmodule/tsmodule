@@ -137,6 +137,11 @@ test.serial("[create --react] library should build and execute", async (t) => {
 });
 
 test.serial("[create --react] library should build with Next", async (t) => {
+  if (process.platform === "win32") {
+    t.pass();
+    return;
+  }
+
   process.chdir(reactTestDir);
   const shell = createShell();
 
