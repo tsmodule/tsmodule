@@ -192,53 +192,6 @@ const stdin = "import { test } from \"./stdin-import\";\nconsole.log(test);";
 const writeStdinDep = () =>
   writeFileSync(resolve(buildTestDir, "src/stdin-import.ts"), "export const test = 42;");
 
-test("[build --stdin] should build source provided via stdin", async (t) => {
-  process.chdir(buildTestDir);
-  const shell = createShell();
-
-  writeStdinDep();
-
-  await t.notThrowsAsync(
-    async () => await build({
-      stdin,
-      stdinFile: "src/stdin-nobundle.ts",
-    }),
-    "[non-bundle] should build source provided programmatically via { stdin } arg"
-  );
-
-  await t.notThrowsAsync(
-    async () => await build({
-      stdin,
-      stdinFile: "src/stdin-bundle.ts",
-      bundle: true,
-    }),
-    "[bundle] should build source provided programmatically via { stdin } arg"
-  );
-
-  t.snapshot(
-    readTextFile(resolve(buildTestDir, "dist/stdin-nobundle.js")),
-    "[non-bundle] emitted stdin bundle should match snapshot"
-  );
-
-  t.snapshot(
-    readTextFile(resolve(buildTestDir, "dist/stdin-bundle.js")),
-    "[bundle] emitted stdin bundle should match snapshot"
-  );
-
-  if (process.platform !== "win32") {
-    await t.notThrowsAsync(
-      async () => {
-        await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
-      }
-    );
-
-    t.snapshot(
-      readTextFile(resolve(buildTestDir, "dist/stdin-pipe.js")),
-      "[pipe] emitted stdin bundle should match snapshot"
-    );
-  }
-});
-
 test("[build --no-write] should return transformed code", async (t) => {
   process.chdir(buildTestDir);
   let code;
@@ -330,4 +283,51 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   t.assert(existsSync(resolve(fullBuildTestDir, "dist/path/to/assets/tsmodule.png")));
   t.snapshot(readTextFile(resolve(fullBuildTestDir, "dist/index.css")));
   t.snapshot(readTextFile(resolve(fullBuildTestDir, "dist/index.css")));
+});
+
+test.serial("[build --stdin] should build source provided via stdin", async (t) => {
+  process.chdir(buildTestDir);
+  const shell = createShell();
+
+  writeStdinDep();
+
+  await t.notThrowsAsync(
+    async () => await build({
+      stdin,
+      stdinFile: "src/stdin-nobundle.ts",
+    }),
+    "[non-bundle] should build source provided programmatically via { stdin } arg"
+  );
+
+  await t.notThrowsAsync(
+    async () => await build({
+      stdin,
+      stdinFile: "src/stdin-bundle.ts",
+      bundle: true,
+    }),
+    "[bundle] should build source provided programmatically via { stdin } arg"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/stdin-nobundle.js")),
+    "[non-bundle] emitted stdin bundle should match snapshot"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/stdin-bundle.js")),
+    "[bundle] emitted stdin bundle should match snapshot"
+  );
+
+  if (process.platform !== "win32") {
+    await t.notThrowsAsync(
+      async () => {
+        await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
+      }
+    );
+
+    t.snapshot(
+      readTextFile(resolve(buildTestDir, "dist/stdin-pipe.js")),
+      "[pipe] emitted stdin bundle should match snapshot"
+    );
+  }
 });
