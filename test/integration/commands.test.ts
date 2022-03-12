@@ -150,44 +150,6 @@ test("[dev] should notice new file", async (t) => {
   t.pass();
 });
 
-test("[build -b] should bundle dependencies", async (t) => {
-  const shell = createShell();
-
-  writeFileSync(
-    resolve(buildTestDir, "src/bundle-a.ts"),
-    "import { b } from \"./bundle-b\";\nconsole.log(b);"
-  );
-
-  writeFileSync(
-    resolve(buildTestDir, "src/bundle-b.ts"),
-    "export const b = 42;"
-  );
-
-  process.chdir(buildTestDir);
-  await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build -b"),
-    "should bundle non-React projects"
-  );
-
-  t.is(
-    readTextFile(resolve(buildTestDir, "dist/bundle-a.js")),
-    `console.log(42);${EOL}`,
-    "should inline dependencies in emitted bundles"
-  );
-
-  process.chdir(reactTestDir);
-  await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build -b"),
-    "should bundle React projects"
-  );
-
-  const loadComponent = async () => await import(resolve(reactTestDir, "dist/pages/index.js"));
-  await t.notThrowsAsync(loadComponent, "bundled component modules should load");
-
-  const { default: bundledComponent } = await loadComponent();
-  t.snapshot(bundledComponent(), "bundled component should render");
-});
-
 const stdin = "import { test } from \"./stdin-import\";\nconsole.log(test);";
 const writeStdinDep = () =>
   writeFileSync(resolve(buildTestDir, "src/stdin-import.ts"), "export const test = 42;");
@@ -210,6 +172,17 @@ test("[build --no-write] should return transformed code", async (t) => {
   );
 
   t.snapshot(code, "transformed code should match snapshot");
+});
+
+test("[create --react] should create Next.js component library", async (t) => {
+  process.chdir(reactTestDir);
+  // const shell = createShell();
+
+  const pkgJson = readTextFile(resolve(reactTestDir, "package.json"));
+  const { dependencies } = JSON.parse(pkgJson);
+
+  t.assert("react" in dependencies, "should add react dependency");
+  t.assert("react-dom" in dependencies, "should add react-dom dependency");
 });
 
 test.serial("[build] command", async (t) => {
@@ -238,17 +211,6 @@ test.serial("[build] command", async (t) => {
     readTextFile(resolve(reactTestDir, "dist/styles.css")),
     "[react] should build production CSS to dist/styles.css"
   );
-});
-
-test.serial("[create --react] should create Next.js component library", async (t) => {
-  process.chdir(reactTestDir);
-  // const shell = createShell();
-
-  const pkgJson = readTextFile(resolve(reactTestDir, "package.json"));
-  const { dependencies } = JSON.parse(pkgJson);
-
-  t.assert("react" in dependencies, "should add react dependency");
-  t.assert("react-dom" in dependencies, "should add react-dom dependency");
 });
 
 test.serial("[create --react] library should build and execute", async (t) => {
@@ -330,4 +292,42 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
       "[pipe] emitted stdin bundle should match snapshot"
     );
   }
+});
+
+test.serial("[build -b] should bundle dependencies", async (t) => {
+  process.chdir(buildTestDir);
+  const shell = createShell();
+
+  writeFileSync(
+    resolve(buildTestDir, "src/bundle-a.ts"),
+    "import { b } from \"./bundle-b\";\nconsole.log(b);"
+  );
+
+  writeFileSync(
+    resolve(buildTestDir, "src/bundle-b.ts"),
+    "export const b = 42;"
+  );
+
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build -b"),
+    "should bundle non-React projects"
+  );
+
+  t.is(
+    readTextFile(resolve(buildTestDir, "dist/bundle-a.js")),
+    `console.log(42);${EOL}`,
+    "should inline dependencies in emitted bundles"
+  );
+
+  process.chdir(reactTestDir);
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build -b"),
+    "should bundle React projects"
+  );
+
+  const loadComponent = async () => await import(resolve(reactTestDir, "dist/pages/index.js"));
+  await t.notThrowsAsync(loadComponent, "bundled component modules should load");
+
+  const { default: bundledComponent } = await loadComponent();
+  t.snapshot(bundledComponent(), "bundled component should render");
 });
