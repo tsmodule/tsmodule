@@ -21,6 +21,8 @@ import { getPackageJsonFile } from "../../utils/pkgJson";
 import { getWorkingDirs } from "../../utils/cwd";
 import { readStdin } from "../../utils/stdin";
 
+const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
+
 export const bannerLog = (msg: string) => {
   const logMsg = `  ${msg}  `;
   log(
@@ -205,11 +207,10 @@ export const build = async ({
         /**
          * Prepend the necessary createElement import to the TSX source.
          */
-        const contents =
-          "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n" +
-          `${readFileSync(tsxFile, "utf-8")}`;
+        const tsxFileContents = readFileSync(tsxFile, "utf-8");
+        const runtimeCode = REACT_IMPORTS + tsxFileContents;
 
-        const jsxConfig = singleEntryPointConfig(contents, tsxFile, "tsx");
+        const jsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
         await esbuild({
           ...shared,
           ...jsxConfig,

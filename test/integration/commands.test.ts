@@ -294,18 +294,16 @@ test("[build --stdin] should build source provided via stdin", async (t) => {
     "[bundle] emitted stdin bundle should match snapshot"
   );
 
-  await t.notThrowsAsync(
-    async () => {
-      if (process.platform === "win32") {
-        return;
+  if (process.platform !== "win32") {
+    await t.notThrowsAsync(
+      async () => {
+        await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
       }
+    );
 
-      await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
-    }
-  );
-
-  t.snapshot(
-    readTextFile(resolve(buildTestDir, "dist/stdin-pipe.js")),
-    "[pipe] emitted stdin bundle should match snapshot"
-  );
+    t.snapshot(
+      readTextFile(resolve(buildTestDir, "dist/stdin-pipe.js")),
+      "[pipe] emitted stdin bundle should match snapshot"
+    );
+  }
 });
