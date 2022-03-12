@@ -8,7 +8,7 @@ export const DEVELOPMENT_MODE = process.env.NODE_ENV === "development";
 export const isTs = /\.[mc]?tsx?(?=\?|$)/;
 export const isJs = /\.([mc])?js$/;
 export const isTsxOrJsx = /\.([mc])?[tj]sx$/;
-export  const isJsOrTs = /\.([mc])?[tj]sx?$/;
+export const isJsOrTs = /\.([mc])?[tj]sx?$/;
 
 export const BASE_CONFIG = {
   format: "esm",

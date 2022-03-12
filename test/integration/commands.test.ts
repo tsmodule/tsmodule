@@ -6,6 +6,7 @@ import { createTestAssets, cleanTestDir, sleep } from "./utils";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { tmpdir } from "os";
+import { build } from "../../src/commands/build";
 
 const readTextFile = (file: string) => {
   return readFileSync(file, "utf-8");
@@ -23,6 +24,10 @@ const { testName: buildTest, testDir: buildTestDir } = await cleanTestDir("test-
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
 
 test.before("[create] should create all template types", async () => {
+  if (process.env.SKIP_TEST_SETUP) {
+    return;
+  }
+
   const shell = createShell();
   process.chdir(tmpdir());
 
@@ -253,4 +258,49 @@ test.serial("[build -b] should bundle dependencies", async (t) => {
 
   const { default: bundledComponent } = await loadComponent();
   t.snapshot(bundledComponent(), "bundled component should render");
+});
+
+test("[build --stdin] should build source provided via stdin", async (t) => {
+  process.chdir(buildTestDir);
+  const shell = createShell();
+
+  writeFileSync(resolve(buildTestDir, "src/a.ts"), "export const a = 42;");
+  const stdin = "import { a } from \"./a\";\nconsole.log(a);";
+
+  await t.notThrowsAsync(
+    async () => build({
+      stdin,
+      stdinFile: "src/stdin-nobundle.ts",
+    }),
+    "[non-bundle] should build source provided programmatically via { stdin } arg"
+  );
+
+  await t.notThrowsAsync(
+    async () => build({
+      stdin,
+      stdinFile: "src/stdin-bundle.ts",
+      bundle: true,
+    }),
+    "[bundle] should build source provided programmatically via { stdin } arg"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/stdin-nobundle.js")),
+    "[non-bundle] emitted stdin bundle should match snapshot"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/stdin-bundle.js")),
+    "[bundle] emitted stdin bundle should match snapshot"
+  );
+
+  await t.notThrowsAsync(
+    async () => {
+      if (process.platform === "win32") {
+        return;
+      }
+
+      await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin.ts");
+    }
+  );
 });

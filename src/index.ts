@@ -32,9 +32,11 @@ program
   .command("build")
   .option("--files <files>", "Files to build", "src/**/*")
   .option("--styles <styles>", "The styles to build", "src/styles/components/index.css")
-  .option("-b, --bundle", "Bundle dependencies")
-  .option("-d, --dev", "Build development runtime")
-  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime")
+  .option("-b, --bundle", "Bundle dependencies", false)
+  .option("-d, --dev", "Build development runtime", false)
+  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime", false)
+  .option("--stdin [source]", "Read from a string or stdin.", "")
+  .option("--stdin-file [file]", "File path to mock for stdin.", "")
   .description(
     "Builds TS files to output in dist/."
   )

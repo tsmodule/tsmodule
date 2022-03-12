@@ -49,7 +49,9 @@ export const cleanTestDir = async (testName: string) => {
   const testDir = getTestDir(testName);
 
   if (existsSync(testDir)) {
-    rmSync(testDir, { recursive: true, force: true });
+    if (!process.env.SKIP_TEST_SETUP) {
+      rmSync(testDir, { recursive: true, force: true });
+    }
   }
 
   return {

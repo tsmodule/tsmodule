@@ -1,5 +1,5 @@
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
-import { build as esbuild, BuildOptions } from "esbuild";
+import { build as esbuild, BuildOptions, Loader } from "esbuild";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
 import { env } from "process";
@@ -15,8 +15,11 @@ import { createDebugLogger, log } from "create-debug-logger";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils";
 import { createShell } from "await-shell";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
-import { getPackageJsonFile } from "../../utils/pkgJson";
 import { normalizeImportSpecifiers } from "../normalize";
+
+import { getPackageJsonFile } from "../../utils/pkgJson";
+import { getWorkingDirs } from "../../utils/cwd";
+import { readStdin } from "../../utils/stdin";
 
 export const bannerLog = (msg: string) => {
   const logMsg = `  ${msg}  `;
@@ -43,6 +46,28 @@ const forceTypeModuleInDist = () => {
   writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
 };
 
+const singleEntryPointConfig = (
+  source: string,
+  file: string,
+  loader?: Loader
+) => {
+  const { srcDir, outDir } = getWorkingDirs();
+  file = resolvePath(file);
+
+  const config: BuildOptions = {
+    stdin: {
+      contents: source,
+      sourcefile: file,
+      resolveDir: dirname(file),
+      loader,
+    },
+    outdir: undefined,
+    outfile: file.replace(isJsOrTs, ".js").replace(srcDir, outDir)
+  };
+
+  return config;
+};
+
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
  * could mean many things, all of which is handled by the loader which will
@@ -54,20 +79,20 @@ export const build = async ({
   bundle = false,
   dev = false,
   runtimeOnly = false,
+  stdin = "",
+  stdinFile = "",
 }) => {
   env.NODE_ENV = dev ? "development" : "production";
+  const DEBUG = createDebugLogger(build);
   const shell = createShell();
 
-  const DEBUG = createDebugLogger(build);
-  DEBUG.log("Building", { files, dev, runtimeOnly });
-  bannerLog(`${chalk.bold("TS Module")} [${env.NODE_ENV}]`);
+  const { cwd, srcDir, outDir } = getWorkingDirs();
 
   /**
    * Initialize build options, and inject PACKAGE_JSON for library builds.
    */
   const pkgJsonFile = await getPackageJsonFile();
   const pkgJson = JSON.parse(pkgJsonFile);
-  const cwd = process.cwd();
   const shared: BuildOptions = {
     absWorkingDir: cwd,
     bundle,
@@ -87,11 +112,32 @@ export const build = async ({
     },
   };
 
-  /**
-   * Clean old output.
-   */
-  const srcDir = resolvePath(cwd, "src");
-  const outDir = resolvePath(cwd, "dist");
+  let stdinSource = "";
+  if (stdin) {
+    DEBUG.log("Building file from stdin", { stdin, stdinFile });
+
+    if (!stdinFile) {
+      log(chalk.red("ERROR: --stdin-file must be specified when using stdin."));
+      process.exit(1);
+    }
+
+    if (typeof stdin === "string" && stdin.length) {
+      stdinSource = stdin;
+    } else {
+      stdinSource= await readStdin();
+    }
+
+    const stdinConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
+    await esbuild({
+      ...shared,
+      ...stdinConfig,
+    });
+
+    return;
+  }
+
+  DEBUG.log("Building", { files, dev, runtimeOnly });
+  bannerLog(`${chalk.bold("TS Module")} [${env.NODE_ENV}]`);
 
   /**
    * All files for the build. Ignore .d.ts files.
@@ -165,16 +211,10 @@ import ReactDOM from "react-dom";
 ${readFileSync(tsxFile, "utf-8")}
 `;
 
+        const jsxConfig = singleEntryPointConfig(contents, tsxFile, "tsx");
         await esbuild({
           ...shared,
-          stdin: {
-            contents,
-            sourcefile: tsxFile,
-            resolveDir: dirname(tsxFile),
-            loader: "tsx",
-          },
-          outdir: undefined,
-          outfile: tsxFile.replace(isTsxOrJsx, ".js").replace(srcDir, outDir),
+          ...jsxConfig,
           jsxFactory: "React.createElement",
         });
       }
