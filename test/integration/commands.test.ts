@@ -300,7 +300,12 @@ test("[build --stdin] should build source provided via stdin", async (t) => {
         return;
       }
 
-      await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin.ts");
+      await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
     }
+  );
+
+  t.snapshot(
+    readTextFile(resolve(buildTestDir, "dist/stdin-pipe.js")),
+    "[pipe] emitted stdin bundle should match snapshot"
   );
 });
