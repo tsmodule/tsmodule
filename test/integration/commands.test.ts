@@ -6,7 +6,7 @@ import { createTestAssets, cleanTestDir, sleep } from "./utils";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { build } from "../../src/commands/build";
 import { resolve } from "path";
-import { EOL, tmpdir } from "os";
+import { tmpdir } from "os";
 
 const readTextFile = (file: string) => {
   return readFileSync(file, "utf-8");
@@ -20,7 +20,6 @@ const mkdirp = (dir: string) => {
 
 const { testName: devTest, testDir: devTestDir } = await cleanTestDir("test-dev");
 const { testName: fullBuildTest, testDir: fullBuildTestDir } = await cleanTestDir("test-full-build");
-const { testName: buildTest, testDir: buildTestDir } = await cleanTestDir("test-build");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
 
 test.before("[create] should create all template types", async () => {
@@ -37,7 +36,7 @@ test.before("[create] should create all template types", async () => {
   await shell.run(`tsmodule create ${devTest}`);
   await shell.run(`tsmodule create --react ${reactTest}`);
 
-  const dirsToCopyDevInto = [buildTestDir, fullBuildTestDir];
+  const dirsToCopyDevInto = [fullBuildTestDir];
 
   await Promise.all(
     dirsToCopyDevInto.map(async (dirToCopyInto) => {
@@ -53,8 +52,7 @@ test.before("[create] should create all template types", async () => {
   for (const dirToLink of [
     devTestDir,
     reactTestDir,
-    fullBuildTestDir,
-    buildTestDir
+    ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
     await shell.run("yarn link @tsmodule/tsmodule");
@@ -68,6 +66,44 @@ const dev = async (shell: Shell) => {
     console.log({ e });
   }
 };
+
+/**
+ * Concurrent: React
+ */
+test("[create --react] library should build and execute", async (t) => {
+  process.chdir(reactTestDir);
+  const shell = createShell();
+
+  await t.notThrowsAsync(
+    async () => await shell.run("yarn build && node dist/index.js"),
+    "should build and execute"
+  );
+
+  t.snapshot(
+    readTextFile(resolve(reactTestDir, "dist/styles.css")),
+    "[react] should build production CSS to dist/styles.css"
+  );
+});
+
+/**
+ * Concurrent: Full Build
+ */
+test("[build] command", async (t) => {
+  process.chdir(fullBuildTestDir);
+  const shell = createShell();
+
+  await t.notThrowsAsync(
+    async () => await shell.run("tsmodule build && node dist/index.js"),
+    "should build and execute"
+  );
+
+  await sleep();
+
+  const emittedFile = resolve(fullBuildTestDir, "dist/index.js");
+  const emittedModule = readTextFile(emittedFile);
+
+  t.snapshot(emittedModule, "emitted module should match snapshot");
+});
 
 test("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
@@ -152,10 +188,10 @@ test("[dev] should notice new file", async (t) => {
 
 const stdin = "import { test } from \"./stdin-import\";\nconsole.log(test);";
 const writeStdinDep = () =>
-  writeFileSync(resolve(buildTestDir, "src/stdin-import.ts"), "export const test = 42;");
+  writeFileSync(resolve(fullBuildTestDir, "src/stdin-import.ts"), "export const test = 42;");
 
 test("[build --no-write] should return transformed code", async (t) => {
-  process.chdir(buildTestDir);
+  process.chdir(fullBuildTestDir);
   let code;
 
   writeStdinDep();
@@ -185,42 +221,6 @@ test("[create --react] should create Next.js component library", async (t) => {
   t.assert("react-dom" in dependencies, "should add react-dom dependency");
 });
 
-test.serial("[build] command", async (t) => {
-  process.chdir(fullBuildTestDir);
-  const shell = createShell();
-
-  await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build && node dist/index.js"),
-    "should build and execute"
-  );
-
-  await sleep();
-
-  const emittedFile = resolve(fullBuildTestDir, "dist/index.js");
-  const emittedModule = readTextFile(emittedFile);
-
-  t.snapshot(emittedModule, "emitted module should match snapshot");
-
-  process.chdir(reactTestDir);
-  await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build"),
-    "[react] should build"
-  );
-
-  t.snapshot(
-    readTextFile(resolve(reactTestDir, "dist/styles.css")),
-    "[react] should build production CSS to dist/styles.css"
-  );
-});
-
-test.serial("[create --react] library should build and execute", async (t) => {
-  process.chdir(reactTestDir);
-  const shell = createShell();
-
-  await shell.run("tsmodule build && node dist/index.js");
-  t.pass();
-});
-
 test.serial("[create --react] library should build with Next", async (t) => {
   if (process.platform === "win32") {
     t.pass();
@@ -248,7 +248,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
 });
 
 test.serial("[build --stdin] should build source provided via stdin", async (t) => {
-  process.chdir(buildTestDir);
+  process.chdir(fullBuildTestDir);
   const shell = createShell();
 
   writeStdinDep();
@@ -271,12 +271,12 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   );
 
   t.snapshot(
-    readTextFile(resolve(buildTestDir, "dist/stdin-nobundle.js")),
+    readTextFile(resolve(fullBuildTestDir, "dist/stdin-nobundle.js")),
     "[non-bundle] emitted stdin bundle should match snapshot"
   );
 
   t.snapshot(
-    readTextFile(resolve(buildTestDir, "dist/stdin-bundle.js")),
+    readTextFile(resolve(fullBuildTestDir, "dist/stdin-bundle.js")),
     "[bundle] emitted stdin bundle should match snapshot"
   );
 
@@ -288,23 +288,23 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
     );
 
     t.snapshot(
-      readTextFile(resolve(buildTestDir, "dist/stdin-pipe.js")),
+      readTextFile(resolve(fullBuildTestDir, "dist/stdin-pipe.js")),
       "[pipe] emitted stdin bundle should match snapshot"
     );
   }
 });
 
 test.serial("[build -b] should bundle dependencies", async (t) => {
-  process.chdir(buildTestDir);
+  process.chdir(fullBuildTestDir);
   const shell = createShell();
 
   writeFileSync(
-    resolve(buildTestDir, "src/bundle-a.ts"),
+    resolve(fullBuildTestDir, "src/bundle-a.ts"),
     "import { b } from \"./bundle-b\";\nconsole.log(b);"
   );
 
   writeFileSync(
-    resolve(buildTestDir, "src/bundle-b.ts"),
+    resolve(fullBuildTestDir, "src/bundle-b.ts"),
     "export const b = 42;"
   );
 
@@ -314,8 +314,8 @@ test.serial("[build -b] should bundle dependencies", async (t) => {
   );
 
   t.is(
-    readTextFile(resolve(buildTestDir, "dist/bundle-a.js")),
-    `console.log(42);${EOL}`,
+    readTextFile(resolve(fullBuildTestDir, "dist/bundle-a.js")).trim(),
+    "console.log(42);",
     "should inline dependencies in emitted bundles"
   );
 
