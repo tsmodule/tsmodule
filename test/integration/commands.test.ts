@@ -74,6 +74,11 @@ test("[create --react] library should build and execute", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
 
+  if (process.platform === "win32") {
+    t.pass();
+    return;
+  }
+
   await t.notThrowsAsync(
     async () => await shell.run("yarn build && node dist/index.js"),
     "should build and execute"
