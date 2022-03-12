@@ -22,7 +22,7 @@ Supports React via TSX/JSX. Ready with zero config:
 
   - Build and watch for changes
 
-### Run TypeScript directly with **`tsmodule <file>`**
+#### Run TypeScript directly with **`tsmodule <file>`**
 
   - Uses Node module loader to resolve TS at runtime
   - Executable TypeScript files with `#!/usr/bin/env tsmodule`
