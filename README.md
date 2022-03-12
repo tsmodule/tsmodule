@@ -5,7 +5,7 @@
 
 ---
 
-### Quickly create TypeScript projects with **`tsmodule create`**
+#### Quickly create TypeScript projects with **`tsmodule create`**
 
 Supports React via TSX/JSX. Ready with zero config:
 
@@ -13,12 +13,12 @@ Supports React via TSX/JSX. Ready with zero config:
   - ESLint + TypeScript configs
   - CI/CD with GitHub Actions
 
-### Build TypeScript to pure ESM with **`tsmodule build`**
+#### Build TypeScript to pure ESM with **`tsmodule build`**
 
   - No more polyfilling to CJS or older featuresets
   - Use latest syntax in source, leave backporting to downstream consumers
 
-### Dev mode with **`tsmodule dev`**
+#### Dev mode with **`tsmodule dev`**
 
   - Build and watch for changes
 
