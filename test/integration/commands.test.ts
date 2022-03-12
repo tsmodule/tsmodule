@@ -133,7 +133,7 @@ test("[dev] should copy new non-source files to dist/", async (t) => {
   );
 });
 
-test("[dev] should watch for file changes", async (t) => {
+test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();
 
