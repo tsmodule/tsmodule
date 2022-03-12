@@ -4,9 +4,9 @@ import test from "ava";
 import { createShell, Shell } from "await-shell";
 import { createTestAssets, cleanTestDir, sleep } from "./utils";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { build } from "../../src/commands/build";
 import { resolve } from "path";
 import { tmpdir } from "os";
-import { build } from "../../src/commands/build";
 
 const readTextFile = (file: string) => {
   return readFileSync(file, "utf-8");
