@@ -1,5 +1,5 @@
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
-import { build as esbuild, BuildOptions, Loader } from "esbuild";
+import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions } from "esbuild";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
 import { env } from "process";
@@ -81,6 +81,7 @@ export const build = async ({
   bundle = false,
   dev = false,
   runtimeOnly = false,
+  noWrite = false,
   stdin = "",
   stdinFile = "",
 }) => {
@@ -95,18 +96,13 @@ export const build = async ({
    */
   const pkgJsonFile = await getPackageJsonFile();
   const pkgJson = JSON.parse(pkgJsonFile);
-  const shared: BuildOptions = {
-    absWorkingDir: cwd,
-    bundle,
+
+  const commonOptions: CommonOptions = {
     treeShaking: bundle,
-    outbase: "src",
-    outdir: "dist",
-    assetNames: "[name].js",
     logLevel: dev ? "warning" : "error",
     charset: "utf8",
     format: "esm",
     target: "esnext",
-    platform: pkgJson?.platform ?? "node",
     minify: !dev,
     define: {
       PACKAGE_JSON: pkgJsonFile,
@@ -114,12 +110,25 @@ export const build = async ({
     },
   };
 
+  const buildOptions: BuildOptions = {
+    ...commonOptions,
+    bundle,
+    absWorkingDir: cwd,
+    outbase: "src",
+    outdir: "dist",
+    assetNames: "[name].js",
+    format: "esm",
+    target: "esnext",
+    platform: pkgJson?.platform ?? "node",
+    write: !noWrite,
+  };
+
   let stdinSource = "";
   if (stdin) {
     DEBUG.log("Building file from stdin", { stdin, stdinFile });
 
-    if (!stdinFile) {
-      log(chalk.red("ERROR: --stdin-file must be specified when using stdin."));
+    if (!noWrite && !stdinFile) {
+      log(chalk.red("ERROR: --stdin-file must be specified when using stdin in write mode."));
       process.exit(1);
     }
 
@@ -129,13 +138,25 @@ export const build = async ({
       stdinSource= await readStdin();
     }
 
-    const stdinConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
-    await esbuild({
-      ...shared,
-      ...stdinConfig,
-    });
+    const transformOptions: TransformOptions = {
+      ...commonOptions,
+      sourcefile: stdinFile,
+      loader: "tsx",
+      banner: undefined,
+      footer: undefined,
+    };
 
-    return;
+    if (noWrite) {
+      const build = await transform(stdinSource, transformOptions);
+      console.log({ build })
+      return build.code;
+    } else {
+      const stdinBuildConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
+      await esbuild({
+        ...buildOptions,
+        ...stdinBuildConfig,
+      });
+    }
   }
 
   DEBUG.log("Building", { files, dev, runtimeOnly });
@@ -185,7 +206,7 @@ export const build = async ({
 
   DEBUG.log("Compiling TS files:", { tsFiles });
   await esbuild({
-    ...shared,
+    ...buildOptions,
     entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
   });
 
@@ -212,7 +233,7 @@ export const build = async ({
 
         const jsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
         await esbuild({
-          ...shared,
+          ...buildOptions,
           ...jsxConfig,
           jsxFactory: "React.createElement",
         });

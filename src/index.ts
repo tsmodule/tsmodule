@@ -37,10 +37,13 @@ program
   .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime", false)
   .option("--stdin [source]", "Read from a string or stdin.", "")
   .option("--stdin-file [file]", "File path to mock for stdin.", "")
+  .option("--no-write", "Do not write to disk", false)
   .description(
     "Builds TS files to output in dist/."
   )
-  .action(build);
+  .action(async (options) => {
+    await build(options);
+  });
 
 program
   .command("create <name>")

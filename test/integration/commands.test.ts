@@ -307,3 +307,23 @@ test("[build --stdin] should build source provided via stdin", async (t) => {
     );
   }
 });
+
+test("[build --no-write] should return transformed code", async (t) => {
+  process.chdir(buildTestDir);
+  let code;
+
+  writeFileSync(resolve(buildTestDir, "src/a.ts"), "export const a = 42;");
+
+  await t.notThrowsAsync(
+    async () => {
+      code = await build({
+        stdin: "import { a } from \"./a\";\nconsole.log(a);",
+        stdinFile: "src/stdin-nowrite.ts",
+        noWrite: true,
+      });
+    },
+    "[--no-write] should return transformed code"
+  );
+
+  t.snapshot(code, "transformed code should match snapshot");
+});
