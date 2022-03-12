@@ -205,11 +205,9 @@ export const build = async ({
         /**
          * Prepend the necessary createElement import to the TSX source.
          */
-        const contents = `
-import React from "react";
-import ReactDOM from "react-dom";
-${readFileSync(tsxFile, "utf-8")}
-`;
+        const contents =
+          "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n" +
+          `${readFileSync(tsxFile, "utf-8")}`;
 
         const jsxConfig = singleEntryPointConfig(contents, tsxFile, "tsx");
         await esbuild({
