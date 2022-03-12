@@ -80,7 +80,7 @@ test("[create --react] library should build and execute", async (t) => {
   }
 
   await t.notThrowsAsync(
-    async () => await shell.run("yarn build && node dist/index.js"),
+    async () => await shell.run("tsmodule build && node dist/index.js"),
     "should build and execute"
   );
 
@@ -102,7 +102,7 @@ test("[build] command", async (t) => {
     "should build and execute"
   );
 
-  await sleep();
+  await sleep(2000);
 
   const emittedFile = resolve(fullBuildTestDir, "dist/index.js");
   const emittedModule = readTextFile(emittedFile);
@@ -119,7 +119,7 @@ test("[dev] should copy new non-source files to dist/", async (t) => {
     (async () => {
       createTestAssets(devTestDir);
       console.log("Created test assets.");
-      await sleep(2500);
+      await sleep(2000);
       shell.kill();
     })(),
   ]);
@@ -147,12 +147,12 @@ test.serial("[dev] should watch for file changes", async (t) => {
     (async () => {
       const testFile = resolve(devTestDir, "src/update.ts");
 
-      await sleep(2500);
+      await sleep(2000);
       writeFileSync(
         testFile,
         "export const hello = 'world';"
       );
-      await sleep(2500);
+      await sleep(2000);
       shell.kill();
     })(),
   ]);
@@ -173,12 +173,12 @@ test("[dev] should notice new file", async (t) => {
       const testFile = resolve(devTestDir, "src/path/to/newFile.ts");
       mkdirp(resolve(devTestDir, "src/path/to"));
 
-      await sleep(2500);
+      await sleep(2000);
       writeFileSync(
         testFile,
         "export const abc = 123;"
       );
-      await sleep(2500);
+      await sleep(2000);
       shell.kill();
 
       const emittedDevFile = resolve(devTestDir, "dist/path/to/newFile.js");
@@ -244,7 +244,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   const shell = createShell();
 
   createTestAssets(fullBuildTest);
-  await sleep(2500);
+  await sleep(2000);
   await shell.run("tsmodule build -r");
 
   t.assert(existsSync(resolve(fullBuildTestDir, "dist/path/to/assets/tsmodule.png")));
