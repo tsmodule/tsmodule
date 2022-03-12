@@ -125,7 +125,7 @@ export const build = async ({
 
   let stdinSource = "";
   if (stdin) {
-    DEBUG.log("Building file from stdin", { stdin, stdinFile });
+    DEBUG.log("Building file from stdin", { stdin, stdinFile, noWrite });
 
     if (!noWrite && !stdinFile) {
       log(chalk.red("ERROR: --stdin-file must be specified when using stdin in write mode."));
@@ -135,7 +135,7 @@ export const build = async ({
     if (typeof stdin === "string" && stdin.length) {
       stdinSource = stdin;
     } else {
-      stdinSource= await readStdin();
+      stdinSource = await readStdin();
     }
 
     const transformOptions: TransformOptions = {
@@ -148,11 +148,10 @@ export const build = async ({
 
     if (noWrite) {
       const build = await transform(stdinSource, transformOptions);
-      console.log({ build })
       return build.code;
     } else {
       const stdinBuildConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
-      await esbuild({
+      return await esbuild({
         ...buildOptions,
         ...stdinBuildConfig,
       });

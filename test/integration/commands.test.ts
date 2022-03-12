@@ -260,7 +260,7 @@ test.serial("[build -b] should bundle dependencies", async (t) => {
   t.snapshot(bundledComponent(), "bundled component should render");
 });
 
-test("[build --stdin] should build source provided via stdin", async (t) => {
+test.serial("[build --stdin] should build source provided via stdin", async (t) => {
   process.chdir(buildTestDir);
   const shell = createShell();
 
@@ -268,7 +268,7 @@ test("[build --stdin] should build source provided via stdin", async (t) => {
   const stdin = "import { a } from \"./a\";\nconsole.log(a);";
 
   await t.notThrowsAsync(
-    async () => build({
+    async () => await build({
       stdin,
       stdinFile: "src/stdin-nobundle.ts",
     }),
@@ -276,7 +276,7 @@ test("[build --stdin] should build source provided via stdin", async (t) => {
   );
 
   await t.notThrowsAsync(
-    async () => build({
+    async () => await build({
       stdin,
       stdinFile: "src/stdin-bundle.ts",
       bundle: true,
@@ -308,7 +308,7 @@ test("[build --stdin] should build source provided via stdin", async (t) => {
   }
 });
 
-test("[build --no-write] should return transformed code", async (t) => {
+test.serial("[build --no-write] should return transformed code", async (t) => {
   process.chdir(buildTestDir);
   let code;
 
