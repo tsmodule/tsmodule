@@ -12,7 +12,7 @@ import ora from "ora";
  * internal source (for bootstrap code path).
  */
 import { createDebugLogger, log } from "create-debug-logger";
-import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils";
+import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { createShell } from "await-shell";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { normalizeImportSpecifiers } from "../normalize";

@@ -14,7 +14,7 @@ import { win32 as winPath } from "path";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { checkExtensions, checkTsExtensions, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/index.js";
+import { checkExtensions, checkTsExtensions, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/resolve.js";
 import { getPackageJsonFile } from "../utils/pkgJson.js";
 
 const packageJsonFile = await getPackageJsonFile();
