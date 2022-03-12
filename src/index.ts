@@ -31,7 +31,8 @@ program
 program
   .command("build")
   .option("--files <files>", "Files to build", "src/**/*")
-  .option("--styles <styles>", "The styles to build", "src/styles/components/index.css")
+  .option("--styles <styles>", "Specify stylesheet entrypoint.", "src/styles/components/index.css")
+  .option("-t, --target <target>", "ECMAScript featureset to target.", "esnext")
   .option("-b, --bundle", "Bundle dependencies", false)
   .option("-d, --dev", "Build development runtime", false)
   .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime", false)
