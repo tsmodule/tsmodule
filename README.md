@@ -133,6 +133,11 @@ And conditional exports in package.json will be configured like so, such that
 This has no restriction on internal imports between files, only the default
 configuration for how downstream consumers can import from module subpaths.
 
+#### Package.json export
+
+For information on why the `"./package.json": "./package.json"` export is
+specified, see [#1](https://github.com/tsmodule/tsmodule/issues/1#issuecomment-1065500448).
+
 ## License
 
 MIT © [C. Lewis](https://ctjlewis.com)
