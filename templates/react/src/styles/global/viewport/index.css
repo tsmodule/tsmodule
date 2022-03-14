@@ -3,7 +3,7 @@
  * styling, which it likes to do for the #__next selector.
  */
 /* purgecss start ignore */
-html, body, main, #__next {
+html, body, #__next {
   @apply m-0 p-0 box-border;
   @apply min-h-screen;
   @apply w-full h-full;

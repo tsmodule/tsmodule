@@ -2,11 +2,11 @@ import { Card } from "../Card";
 
 export const CardGrid = () => {
   return (
-    <div className="grid md:grid-cols-2">
-      <a href="https://nextjs.org/docs" className="card">
+    <div className="px-4 grid md:grid-cols-2 gap-8">
+      <Card href="https://nextjs.org/learn">
         <h4>Documentation &rarr;</h4>
         <p>Find in-depth information about Next.js features and API.</p>
-      </a>
+      </Card>
 
       <Card href="https://nextjs.org/learn">
         <h4>Learn &rarr;</h4>
@@ -21,7 +21,7 @@ export const CardGrid = () => {
       <Card href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app">
         <h4>Deploy &rarr;</h4>
         <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
+          Instantly deploy your Next.js site to a public URL with Vercel.
         </p>
       </Card>
     </div>

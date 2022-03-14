@@ -1,8 +1,8 @@
 export const GetStarted = () => {
   return (
-    <p className="my-8 text-center md:my-16 font-size-3">
+    <p className="text-gray-700 text-center font-size-3">
         Get started by editing{" "}
-      <code className="code">pages/index.js</code>
+      <code className="code">pages/index.js</code>.
     </p>
   );
 };
