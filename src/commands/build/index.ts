@@ -80,6 +80,7 @@ export const build = async ({
   styles = "src/styles/components/index.css",
   bundle = false,
   dev = false,
+  target = "esnext",
   runtimeOnly = false,
   noWrite = false,
   stdin = "",
@@ -99,11 +100,11 @@ export const build = async ({
 
   const commonOptions: CommonOptions = {
     treeShaking: bundle,
-    logLevel: dev ? "warning" : "error",
-    charset: "utf8",
-    format: "esm",
-    target: "esnext",
+    target,
     minify: !dev,
+    format: "esm",
+    charset: "utf8",
+    logLevel: dev ? "warning" : "error",
     define: {
       PACKAGE_JSON: pkgJsonFile,
       "process.env.NODE_ENV": dev ? JSON.stringify("development") : JSON.stringify("production"),

@@ -30,14 +30,15 @@ program
 
 program
   .command("build")
-  .option("--files <files>", "Files to build", "src/**/*")
-  .option("--styles <styles>", "The styles to build", "src/styles/components/index.css")
-  .option("-b, --bundle", "Bundle dependencies", false)
-  .option("-d, --dev", "Build development runtime", false)
-  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime", false)
-  .option("--stdin [source]", "Read from a string or stdin.", "")
-  .option("--stdin-file [file]", "File path to mock for stdin.", "")
-  .option("--no-write", "Do not write to disk", false)
+  .option("--files <files>", "Entrypoints to compile.\r", "src/**/*")
+  .option("--styles <styles>", "Specify stylesheet entrypoint.\r", "src/styles/components/index.css")
+  .option("-t, --target <target>", "ECMAScript featureset to target.\r", "esnext")
+  .option("-b, --bundle", "Bundle dependencies into entrypoints.\r", false)
+  .option("-d, --dev", "Build development runtime.\r", false)
+  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime.\r", false)
+  .option("--stdin [source]", "Read from a string or stdin.")
+  .option("--stdin-file [file]", "File path to mock for stdin.")
+  .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.")
   .description(
     "Builds TS files to output in dist/."
   )
