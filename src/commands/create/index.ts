@@ -3,7 +3,7 @@ import chalk from "chalk";
 import { createShell } from "await-shell";
 import ora from "ora";
 
-import { createTemplate } from "./lib/createTemplate";
+import { copyTemplate } from "./lib/createTemplate";
 import { rewritePkgJson } from "./lib/rewritePkgJson";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
@@ -18,13 +18,13 @@ export const create = async (name: string, { react = false }) => {
   /**
    * Always copy default template.
    */
-  await createTemplate("default", name);
+  await copyTemplate("default", name);
 
   /**
    * Copy other template files as needed.
    */
   if (react) {
-    await createTemplate("react", name);
+    await copyTemplate("react", name);
   }
 
   await rewritePkgJson(name);
