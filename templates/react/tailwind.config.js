@@ -10,8 +10,6 @@ module.exports = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))"
       },
       border : [ "hover"],
-        
-      
     },
   },
   variants: {

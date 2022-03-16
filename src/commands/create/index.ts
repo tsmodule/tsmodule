@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { createShell } from "await-shell";
 import ora from "ora";
 
+import { dependencies, devDependencies } from "../../constants";
 import { copyTemplate } from "./lib/createTemplate";
 import { rewritePkgJson } from "./lib/rewritePkgJson";
 
@@ -35,32 +36,23 @@ export const create = async (name: string, { react = false }) => {
    * Install dependencies in the created directory.
    */
   process.chdir(name);
-  const dependencies = [];
-  const devDependencies = ["@tsmodule/tsmodule"];
+
+  const depsToInstall: string[] = [];
+  const devDepsToInstall: string[] = ["@tsmodule/tsmodule"];
 
   if (!react) {
-    devDependencies.push("@types/node");
+    devDepsToInstall.push(...devDependencies.default);
   } else {
-    dependencies.push("react", "react-dom");
-    devDependencies.push(
-      "@types/react",
-      "@types/react-dom",
-      "next",
-      "eslint",
-      "eslint-config-next",
-      "tailwindcss",
-      "postcss",
-      "postcss-import",
-      "autoprefixer",
-    );
+    depsToInstall.push(...dependencies.react);
+    devDepsToInstall.push(...devDependencies.react);
   }
 
-  if (dependencies.length) {
-    await shell.run(`yarn add ${dependencies.join(" ")}`);
+  if (depsToInstall.length) {
+    await shell.run(`yarn add ${depsToInstall.join(" ")}`);
   }
 
-  if (devDependencies.length) {
-    await shell.run(`yarn add -D ${devDependencies.join(" ")}`);
+  if (devDepsToInstall.length) {
+    await shell.run(`yarn add -D ${devDepsToInstall.join(" ")}`);
   }
 
   spinner.succeed("Dependencies installed.");
