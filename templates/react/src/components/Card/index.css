@@ -16,7 +16,3 @@
 .card > p {
   @apply text-gray-700;
 }
-
-.test {
-  @apply flex-pure;
-}
