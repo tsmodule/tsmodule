@@ -38,13 +38,15 @@ export const create = async (name: string, { react = false }) => {
   process.chdir(name);
 
   const depsToInstall: string[] = [];
-  const devDepsToInstall: string[] = ["@tsmodule/tsmodule"];
+  const devDepsToInstall: string[] = [
+    "@tsmodule/tsmodule",
+  ];
 
-  if (!react) {
-    devDepsToInstall.push(...devDependencies.default);
-  } else {
+  if (react) {
     depsToInstall.push(...dependencies.react);
     devDepsToInstall.push(...devDependencies.react);
+  } else {
+    devDepsToInstall.push(...devDependencies.default);
   }
 
   if (depsToInstall.length) {

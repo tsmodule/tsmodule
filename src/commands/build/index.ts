@@ -70,6 +70,18 @@ const singleEntryPointConfig = (
   return config;
 };
 
+interface BuildArgs {
+  files?: string;
+  styles?: string;
+  bundle?: boolean;
+  dev?: boolean;
+  target?: string | string[];
+  runtimeOnly?: boolean;
+  noWrite?: boolean;
+  stdin?: string;
+  stdinFile?: string;
+}
+
 /**
  * Build TS to JS. This will contain incomplete specifiers like `./foo` which
  * could mean many things, all of which is handled by the loader which will
@@ -77,15 +89,15 @@ const singleEntryPointConfig = (
  */
 export const build = async ({
   files = "src/**/*",
-  styles = "src/styles/components/index.css",
+  styles = "src/components/index.css",
   bundle = false,
   dev = false,
   target = "esnext",
   runtimeOnly = false,
   noWrite = false,
-  stdin = "",
-  stdinFile = "",
-}) => {
+  stdin,
+  stdinFile,
+}: BuildArgs) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
   const shell = createShell();
@@ -128,8 +140,8 @@ export const build = async ({
   if (stdin) {
     DEBUG.log("Building file from stdin", { stdin, stdinFile, noWrite });
 
-    if (!noWrite && !stdinFile) {
-      log(chalk.red("ERROR: --stdin-file must be specified when using stdin in write mode."));
+    if (!stdinFile) {
+      log(chalk.red("ERROR: --stdin-file must be specified to emulate a file location when using stdin."));
       process.exit(1);
     }
 

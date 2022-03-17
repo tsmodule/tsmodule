@@ -129,15 +129,15 @@ p {
   @apply flex flex-1 items-stretch;
 }
 /**
-  * A pure-flex container will be display: flex.
+  * A flex-pure container will be display: flex.
   */
-.pure-flex {
+.flex-pure {
   @apply flex;
 }
 /**
   * And its immediate children will have zero padding and margin.
   */
-.pure-flex > * {
+.flex-pure > * {
   @apply m-0 p-0;
 }
 /*
@@ -180,7 +180,7 @@ article {
 
 button, .button {
   @apply cursor-pointer;
-  @apply pure-flex flex-center;
+  @apply flex-pure flex-center;
   @apply px-8 py-4;
   @apply rounded-lg border-2;
   @apply bg-blue-500 text-white font-bold;
@@ -207,7 +207,7 @@ select {
 button, .button {
   text-decoration: none !important;
   @apply cursor-pointer;
-  @apply pure-flex flex-center;
+  @apply flex-pure flex-center;
   @apply px-8 py-4;
   @apply rounded-lg border-2;
   @apply bg-blue-500 text-white font-bold;
