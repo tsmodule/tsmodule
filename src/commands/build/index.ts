@@ -114,6 +114,8 @@ export const build = async ({
     treeShaking: bundle,
     target,
     minify: !dev,
+    jsx: "transform",
+    jsxFactory: "React.createElement",
     format: "esm",
     charset: "utf8",
     logLevel: dev ? "warning" : "error",
@@ -209,6 +211,37 @@ export const build = async ({
 
 
   /**
+   * TSX files to compile.
+   */
+  const tsxFiles =
+    allFiles
+      .filter((file) => isTsxOrJsx.test(file));
+
+  DEBUG.log("Compiling TSX files:", { tsxFiles });
+  const compilableTsxFiles = tsxFiles.filter((file) => !file.endsWith(".d.ts"));
+
+  await Promise.all(
+    compilableTsxFiles.map(
+      async (tsxFile) => {
+        /**
+        * Prepend the necessary createElement import to the TSX source.
+        */
+        const tsxFileContents = readFileSync(tsxFile, "utf-8");
+        const runtimeCode = REACT_IMPORTS + tsxFileContents;
+
+        const jsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
+        await esbuild({
+          ...buildOptions,
+          ...jsxConfig,
+        });
+      }
+    )
+  );
+
+  ora("Built TSX files.").succeed();
+
+
+  /**
    * Compile TS files.
    */
   const tsFiles =
@@ -223,37 +256,6 @@ export const build = async ({
   });
 
   ora("Built TS files.").succeed();
-
-  /**
-   * TSX files to compile.
-   */
-  const tsxFiles =
-    allFiles
-      .filter((file) => isTsxOrJsx.test(file));
-
-  DEBUG.log("Compiling TSX files:", { tsxFiles });
-  const compilableTsxFiles = tsxFiles.filter((file) => !file.endsWith(".d.ts"));
-
-  await Promise.all(
-    compilableTsxFiles.map(
-      async (tsxFile) => {
-        /**
-         * Prepend the necessary createElement import to the TSX source.
-         */
-        const tsxFileContents = readFileSync(tsxFile, "utf-8");
-        const runtimeCode = REACT_IMPORTS + tsxFileContents;
-
-        const jsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
-        await esbuild({
-          ...buildOptions,
-          ...jsxConfig,
-          jsxFactory: "React.createElement",
-        });
-      }
-    )
-  );
-
-  ora("Built TSX files.").succeed();
 
   /**
    * Non JS/TS files.

@@ -1,6 +1,6 @@
 export const dependencies = {
   default: [],
-  react: ["react", "react-dom"],
+  react: ["@tsmodule/react", "react", "react-dom"],
 };
 
 export const devDependencies = {

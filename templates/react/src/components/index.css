@@ -1,5 +1,6 @@
 /**
- * @fileoverview
+ * @fileoverview 
+ * COMPONENT STYLES
  *
  * This file loads all styles needed to render any of the module components, and
  * does not include, e.g., the standardized viewport styles (which would alter
@@ -7,10 +8,10 @@
  */
 
 /**
- * ❌ DO NOT CHANGE: Load the standardized styles that may be relied on by
- * component styles.
+ * ❌ DO NOT CHANGE: Load standardized styles that may be relied on by component
+ * styles.
  */
-@import "../_styles/index.css";
+@import "@tsmodule/react";
 
 /**
  * 📝 EXPORT COMPONENT STYLES: Load your component style exports here as needed.
