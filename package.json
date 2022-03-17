@@ -6,6 +6,7 @@
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
+  "types": "dist/types/index.d.ts",
   "bin": {
     "tsmodule": "dist/index.js"
   },
@@ -14,14 +15,6 @@
     "./*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
-  "types": "dist/types/index.d.ts",
-  "contributors": [
-    {
-      "name": "C. Lewis",
-      "email": "ctj.lewis@icloud.com",
-      "url": "https://ctjlewis.com"
-    }
-  ],
   "files": [
     "dist/",
     "templates/"
@@ -62,14 +55,10 @@
     "path": "^0.12.7",
     "typescript": "^4.6.2"
   },
-  "keywords": [
-    "esm",
-    "loader",
-    "typescript",
-    "loader hook",
-    "require hook",
-    "experimental-loader"
-  ],
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "eslint-config-next": "^12.1.0"
+  },
   "ava": {
     "timeout": "10 minutes",
     "files": [
@@ -83,8 +72,19 @@
       "--loader=@tsmodule/tsmodule"
     ]
   },
-  "devDependencies": {
-    "@types/fs-extra": "^9.0.13",
-    "eslint-config-next": "^12.1.0"
-  }
+  "keywords": [
+    "esm",
+    "loader",
+    "typescript",
+    "loader hook",
+    "require hook",
+    "experimental-loader"
+  ],
+  "contributors": [
+    {
+      "name": "C. Lewis",
+      "email": "ctj.lewis@icloud.com",
+      "url": "https://ctjlewis.com"
+    }
+  ]
 }

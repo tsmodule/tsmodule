@@ -3,7 +3,7 @@ import "../index.css";
 import type { AppProps } from "next/app";
 import { StrictMode } from "react";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   return (
     <StrictMode>
       <Component {...pageProps} />
@@ -11,4 +11,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default App;
