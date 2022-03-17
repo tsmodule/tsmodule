@@ -85,8 +85,8 @@ test("[create --react] library should build and execute", async (t) => {
   );
 
   t.snapshot(
-    readTextFile(resolve(reactTestDir, "dist/styles.css")),
-    "[react] should build production CSS to dist/styles.css"
+    readTextFile(resolve(reactTestDir, "dist/bundle.css")),
+    "[react] should build production CSS to dist/bundle.css"
   );
 });
 

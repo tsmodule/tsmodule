@@ -319,7 +319,7 @@ export const build = async ({
 
   if (existsSync(resolve(styles))) {
     DEBUG.log("Building styles for production.");
-    const { style = "./dist/styles.css" } = pkgJson;
+    const { style = "./dist/bundle.css" } = pkgJson;
 
     const twCmd = "npx tailwindcss";
     const minify = dev ? "" : "-m";

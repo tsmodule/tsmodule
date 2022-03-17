@@ -39,10 +39,10 @@ To reuse your components:
 
 #### Footnotes
 
-Styles are exported in `dist/`, and are also bundled to `dist/styles.css` from
+Styles are exported in `dist/`, and are also bundled to `dist/bundle.css` from
 the entrypoint given in the `style` package.json.
 
 The default behavior is to export all component styles, i.e.
-`src/styles/components/index.css ➞ dist/styles.css`.  This can be overridden
+`src/styles/components/index.css ➞ dist/bundle.css`.  This can be overridden
 with tsmodule's `--styles` flag, i.e. `tsmodule build --styles
 src/styles/index.css` (which would include all styles in emitted bundle).
