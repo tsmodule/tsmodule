@@ -10,7 +10,7 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./styles": "./dist/styles/index.css",
+    "./styles": "./dist/bundle.css",
     "./styles/*": "./dist/components/*/index.css",
     "./package.json": "./package.json",
     "./*": "./dist/components/*/index.js"
