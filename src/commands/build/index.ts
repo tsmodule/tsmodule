@@ -93,8 +93,8 @@ const buildCssEntryPoint = async (
 
   const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
   const shell = createShell({
-    log: true,
-    // stdio: "inherit",
+    log: false,
+    stdio: "ignore",
   });
 
   await shell.run(cmd.join(" "));
@@ -362,25 +362,25 @@ export const build = async ({
     /**
      * If using -b bundle mode, bundle copied styles in-place.
      */
-    // if (bundle) {
-    //   DEBUG.log("Bundling all styles.");
-    //   const cssFiles = glob.sync(resolve("./dist/**/*.css"));
+    if (bundle) {
+      DEBUG.log("Bundling all styles.");
+      const cssFiles = glob.sync(resolve("./dist/**/*.css"));
 
-    //   await Promise.all(
-    //     cssFiles.map(
-    //       async (file) => await buildCssEntryPoint(
-    //         file,
-    //         file,
-    //         dev,
-    //         noStandardStyles,
-    //       )
-    //     )
-    //   );
+      const message = ora("Bundled emitted styles.").start();
+      await Promise.all(
+        cssFiles.map(
+          async (file) => await buildCssEntryPoint(
+            file,
+            file,
+            dev,
+            noStandardStyles,
+          )
+        )
+      );
+      message.succeed();
+    }
 
-    //   ora("Bundled emitted styles.").succeed();
-    // }
-
-    // ora(`Built style bundle at ${chalk.bold(bundleOutput)}.`).succeed();
+    ora(`Bundled all styles to ${chalk.bold(bundleOutput)}.`).succeed();
   } else {
     log(chalk.grey("Bundle styles not found for this projected. Checked:"), { styles: bundleInput });
   }
