@@ -370,7 +370,7 @@ export const build = async ({
      */
     if (bundle) {
       DEBUG.log("Bundling all styles.");
-      const cssFiles = glob.sync(resolve("./dist/**/*.css"));
+      const cssFiles = glob.sync("dist/**/*.css");
 
       const message = ora("Bundled emitted styles.").start();
       await Promise.all(

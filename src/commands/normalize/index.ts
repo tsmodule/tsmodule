@@ -6,9 +6,9 @@
  */
 
 import { existsSync, readFileSync, writeFileSync } from "fs";
+import { isAbsolute, resolve as resolvePath } from "path";
 import glob from "fast-glob";
 import { pathToFileURL } from "url";
-import { isAbsolute, resolve as resolvePath } from "path";
 
 import { createDebugLogger } from "create-debug-logger";
 import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
