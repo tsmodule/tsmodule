@@ -9,7 +9,7 @@ import { resolve } from "path";
 import { tmpdir } from "os";
 
 const readTextFile = (file: string) => {
-  return readFileSync(resolve(file), "utf-8");
+  return readFileSync(resolve(process.cwd(), file), "utf-8");
 };
 
 const mkdirp = (dir: string) => {
