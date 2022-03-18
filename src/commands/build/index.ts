@@ -74,7 +74,7 @@ const singleEntryPointConfig = (
  * Generate a Tailwind command that will build the given input stylesheet.
  * Add an import for standard styles.
  */
-const prepareCssForBuild = (
+const buildCssEntryPoint = async (
   inputStyles: string,
   outputStyles: string,
   dev: boolean,
@@ -92,7 +92,9 @@ const prepareCssForBuild = (
   writeFileSync(rewrittenInput, outputCss);
 
   const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
-  return cmd.join(" ");
+
+  const shell = createShell();
+  await shell.run(cmd.join(" "));
 };
 
 interface BuildArgs {
@@ -115,7 +117,7 @@ interface BuildArgs {
  */
 export const build = async ({
   files = "src/**/*",
-  styles: inputStyles = "src/components/index.css",
+  styles: bundleInput = "src/components/index.css",
   bundle = false,
   dev = false,
   target = "esnext",
@@ -127,7 +129,6 @@ export const build = async ({
 }: BuildArgs) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
-  const shell = createShell();
 
   const { cwd, srcDir, outDir } = getWorkingDirs();
 
@@ -292,18 +293,12 @@ export const build = async ({
   DEBUG.log("Copying non-JS/TS files.", { allFiles, nonJsTsFiles });
   await Promise.all(
     nonJsTsFiles.map(async (file) => {
-      const outfile =
-        resolve(cwd, file)
-          .replace(srcDir, outDir)
-          .replace(isTs, ".js")
-          .replace(isTsxOrJsx, ".js");
+      const emittedFile = getEmittedFile(file);
+      DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-      DEBUG.log("Copying non-source file:", { file, outfile });
-
-      mkdirSync(dirname(outfile), { recursive: true });
-
+      mkdirSync(dirname(emittedFile), { recursive: true });
       writeFileSync(
-        outfile,
+        emittedFile,
         readFileSync(file),
         { encoding: "binary", flag: "w" }
       );
@@ -349,20 +344,32 @@ export const build = async ({
   /**
    * Build project styles.
    */
-  if (existsSync(resolve(inputStyles))) {
+  if (existsSync(resolve(bundleInput))) {
     DEBUG.log("Building styles for production.");
-    const { style: outputStyles = "./dist/bundle.css" } = pkgJson;
+    const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
 
-    const cmd = prepareCssForBuild(
-      inputStyles,
-      outputStyles,
+    /**
+     * If using -b bundle mode, bundle copied styles in-place.
+     */
+    // if (bundle) {
+    //   DEBUG.log("Bundling all styles.");
+    //   const cssFiles = glob.sync("./dist/**/*.css");
+    //   ora("Bundled emitted styles.").succeed();
+    // }
+
+    /**
+     * Build style bundle.
+     */
+    DEBUG.log("Building style bundle.", { bundleInput, bundleOutput, dev, noStandardStyles });
+    await buildCssEntryPoint(
+      bundleInput,
+      bundleOutput,
       dev,
       noStandardStyles
     );
-
-    await shell.run(cmd);
+    ora(`Built style bundles at ${chalk.bold(bundleOutput)}`).succeed();
   } else {
-    log(chalk.grey("Styles not found for this projected. Checked:", { styles: inputStyles }));
+    log(chalk.grey("Bundle styles not found for this projected. Checked:", { styles: bundleInput }));
   }
 
   bannerLog("Running post-build setup.");
