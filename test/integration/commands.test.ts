@@ -110,7 +110,7 @@ test("[build] command", async (t) => {
   t.snapshot(emittedModule, "emitted module should match snapshot");
 });
 
-test("[dev] should copy new non-source files to dist/", async (t) => {
+test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(devTestDir);
   const shell = createShell();
 
