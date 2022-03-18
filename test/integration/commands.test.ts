@@ -319,6 +319,8 @@ test.serial("[build -b] should bundle output", async (t) => {
     "should bundle React projects"
   );
 
+  await sleep(1000);
+
   const bundleCss = readTextFile(resolve(reactTestDir, "dist/bundle.css"));
   t.snapshot(bundleCss, "should bundle CSS in-place");
 
