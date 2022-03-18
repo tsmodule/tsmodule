@@ -66,9 +66,40 @@ const dev = async (shell: Shell) => {
   }
 };
 
-/**
- * Concurrent: React
- */
+const stdin = "import { test } from \"./stdin-import\";\nconsole.log(test);";
+const writeStdinDep = () =>
+  writeFileSync(resolve(defaultTestDir, "src/stdin-import.ts"), "export const test = 42;");
+
+test("[build --no-write] should return transformed code", async (t) => {
+  process.chdir(defaultTestDir);
+  let code;
+
+  writeStdinDep();
+
+  await t.notThrowsAsync(
+    async () => {
+      code = await build({
+        stdin,
+        stdinFile: "src/stdin-nowrite.ts",
+        noWrite: true,
+      });
+    },
+    "[--no-write] should return transformed code"
+  );
+
+  t.snapshot(code, "transformed code should match snapshot");
+});
+
+test("[create --react] should create Next.js component library", async (t) => {
+  process.chdir(reactTestDir);
+
+  const pkgJson = readTextFile(resolve(reactTestDir, "package.json"));
+  const { dependencies } = JSON.parse(pkgJson);
+
+  t.assert("react" in dependencies, "should add react dependency");
+  t.assert("react-dom" in dependencies, "should add react-dom dependency");
+});
+
 test("[create --react] library should build and execute", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
@@ -89,10 +120,7 @@ test("[create --react] library should build and execute", async (t) => {
   );
 });
 
-/**
- * Concurrent: Full Build
- */
-test.serial("[build] command", async (t) => {
+test("[build] command", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
@@ -188,41 +216,6 @@ test.serial("[dev] should notice new file", async (t) => {
   t.pass();
 });
 
-const stdin = "import { test } from \"./stdin-import\";\nconsole.log(test);";
-const writeStdinDep = () =>
-  writeFileSync(resolve(defaultTestDir, "src/stdin-import.ts"), "export const test = 42;");
-
-test("[build --no-write] should return transformed code", async (t) => {
-  process.chdir(defaultTestDir);
-  let code;
-
-  writeStdinDep();
-
-  await t.notThrowsAsync(
-    async () => {
-      code = await build({
-        stdin,
-        stdinFile: "src/stdin-nowrite.ts",
-        noWrite: true,
-      });
-    },
-    "[--no-write] should return transformed code"
-  );
-
-  t.snapshot(code, "transformed code should match snapshot");
-});
-
-test("[create --react] should create Next.js component library", async (t) => {
-  process.chdir(reactTestDir);
-  // const shell = createShell();
-
-  const pkgJson = readTextFile(resolve(reactTestDir, "package.json"));
-  const { dependencies } = JSON.parse(pkgJson);
-
-  t.assert("react" in dependencies, "should add react dependency");
-  t.assert("react-dom" in dependencies, "should add react-dom dependency");
-});
-
 test.serial("[create --react] library should build with Next", async (t) => {
   if (process.platform === "win32") {
     t.pass();
@@ -234,18 +227,6 @@ test.serial("[create --react] library should build with Next", async (t) => {
 
   await shell.run("yarn build");
   t.pass();
-});
-
-test.serial("[build -r] should copy non-source files to dist/", async (t) => {
-  process.chdir(defaultTestDir);
-  const shell = createShell();
-
-  createTestAssets(defaultTest);
-  await shell.run("tsmodule build -r");
-
-  t.assert(existsSync(resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png")));
-  t.snapshot(readTextFile(resolve(defaultTestDir, "dist/index.css")));
-  t.snapshot(readTextFile(resolve(defaultTestDir, "dist/index.css")));
 });
 
 test.serial("[build --stdin] should build source provided via stdin", async (t) => {
@@ -295,6 +276,18 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   }
 });
 
+test.serial("[build -r] should copy non-source files to dist/", async (t) => {
+  process.chdir(defaultTestDir);
+  const shell = createShell();
+
+  createTestAssets(defaultTest);
+  await shell.run("tsmodule build -r");
+
+  t.assert(existsSync(resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png")));
+  t.snapshot(readTextFile(resolve(defaultTestDir, "dist/index.css")));
+  t.snapshot(readTextFile(resolve(defaultTestDir, "dist/index.css")));
+});
+
 test.serial("[build -b] should bundle output", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
@@ -325,6 +318,12 @@ test.serial("[build -b] should bundle output", async (t) => {
     async () => await shell.run("tsmodule build -b"),
     "should bundle React projects"
   );
+
+  const bundleCss = readTextFile(resolve(reactTestDir, "dist/bundle.css"));
+  t.snapshot(bundleCss, "should bundle CSS in-place");
+
+  const componentsCss = readTextFile(resolve(reactTestDir, "dist/components/index.css"));
+  t.snapshot(componentsCss, "components CSS should match snapshot");
 
   const loadComponent = async () => await import(resolve(reactTestDir, "dist/pages/index.js"));
   await t.notThrowsAsync(loadComponent, "bundled component modules should load");
