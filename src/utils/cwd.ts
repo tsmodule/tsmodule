@@ -1,3 +1,4 @@
+import { isTs, isTsxOrJsx } from "./resolve";
 import { resolve } from "path";
 
 export const getWorkingDirs = () => {
@@ -10,4 +11,14 @@ export const getWorkingDirs = () => {
     srcDir,
     outDir,
   };
+};
+
+export const getEmittedFile = (file: string) => {
+  file = resolve(file);
+  const { srcDir, outDir } = getWorkingDirs();
+
+  return file
+    .replace(srcDir, outDir)
+    .replace(isTs, ".js")
+    .replace(isTsxOrJsx, ".js");
 };

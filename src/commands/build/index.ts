@@ -17,8 +17,8 @@ import { createShell } from "await-shell";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { normalizeImportSpecifiers } from "../normalize";
 
+import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
 import { getPackageJsonFile } from "../../utils/pkgJson";
-import { getWorkingDirs } from "../../utils/cwd";
 import { readStdin } from "../../utils/stdin";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
@@ -53,8 +53,8 @@ const singleEntryPointConfig = (
   file: string,
   loader?: Loader
 ) => {
-  const { srcDir, outDir } = getWorkingDirs();
   file = resolvePath(file);
+  const emittedFile = getEmittedFile(file);
 
   const config: BuildOptions = {
     stdin: {
@@ -64,10 +64,33 @@ const singleEntryPointConfig = (
       loader,
     },
     outdir: undefined,
-    outfile: file.replace(isJsOrTs, ".js").replace(srcDir, outDir)
+    outfile: emittedFile
   };
 
   return config;
+};
+
+/**
+ * Generate a Tailwind command that will build the given input stylesheet.
+ * Add an import for standard styles.
+ */
+const prepareCssForBuild = (
+  inputStyles: string,
+  outputStyles: string,
+  dev: boolean
+) => {
+  const twCmd = "npx tailwindcss";
+  const minify = dev ? "" : "-m";
+  const postcss = "--postcss postcss.config.js";
+
+  const inputCss = readFileSync(inputStyles, "utf-8");
+  const outputCss = `@import "@tsmodule/react";\n\n${inputCss}`;
+
+  const rewrittenInput = getEmittedFile(inputStyles);
+  writeFileSync(rewrittenInput, outputCss);
+
+  const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
+  return cmd.join(" ");
 };
 
 interface BuildArgs {
@@ -89,7 +112,7 @@ interface BuildArgs {
  */
 export const build = async ({
   files = "src/**/*",
-  styles = "src/components/index.css",
+  styles: inputStyles = "src/components/index.css",
   bundle = false,
   dev = false,
   target = "esnext",
@@ -319,19 +342,14 @@ export const build = async ({
     return;
   }
 
-  if (existsSync(resolve(styles))) {
+  if (existsSync(resolve(inputStyles))) {
     DEBUG.log("Building styles for production.");
-    const { style = "./dist/bundle.css" } = pkgJson;
+    const { style: outputStyles = "./dist/bundle.css" } = pkgJson;
 
-    const twCmd = "npx tailwindcss";
-    const minify = dev ? "" : "-m";
-    const postcss = "--postcss postcss.config.js";
-
-    const cmd = [twCmd, minify, postcss, `-i ${styles}`, "-o", style];
-
-    await shell.run(cmd.join(" "));
+    const cmd = prepareCssForBuild(inputStyles, outputStyles, dev);
+    await shell.run(cmd);
   } else {
-    DEBUG.log("Styles not found.", { styles });
+    log(chalk.grey("Styles not found for this projected. Checked:", { styles: inputStyles }));
   }
 
   bannerLog("Running post-build setup.");
