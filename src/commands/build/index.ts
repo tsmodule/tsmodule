@@ -77,14 +77,16 @@ const singleEntryPointConfig = (
 const prepareCssForBuild = (
   inputStyles: string,
   outputStyles: string,
-  dev: boolean
+  dev: boolean,
+  noStandardStyles: boolean,
 ) => {
   const twCmd = "npx tailwindcss";
   const minify = dev ? "" : "-m";
   const postcss = "--postcss postcss.config.js";
 
   const inputCss = readFileSync(inputStyles, "utf-8");
-  const outputCss = `@import "@tsmodule/react";\n\n${inputCss}`;
+  const header = noStandardStyles ? "" : "@import \"@tsmodule/react\";\n\n";
+  const outputCss = `${header}${inputCss}`;
 
   const rewrittenInput = getEmittedFile(inputStyles);
   writeFileSync(rewrittenInput, outputCss);
@@ -101,6 +103,7 @@ interface BuildArgs {
   target?: string | string[];
   runtimeOnly?: boolean;
   noWrite?: boolean;
+  noStandardStyles?: boolean;
   stdin?: string;
   stdinFile?: string;
 }
@@ -118,6 +121,7 @@ export const build = async ({
   target = "esnext",
   runtimeOnly = false,
   noWrite = false,
+  noStandardStyles = false,
   stdin,
   stdinFile,
 }: BuildArgs) => {
@@ -342,11 +346,20 @@ export const build = async ({
     return;
   }
 
+  /**
+   * Build project styles.
+   */
   if (existsSync(resolve(inputStyles))) {
     DEBUG.log("Building styles for production.");
     const { style: outputStyles = "./dist/bundle.css" } = pkgJson;
 
-    const cmd = prepareCssForBuild(inputStyles, outputStyles, dev);
+    const cmd = prepareCssForBuild(
+      inputStyles,
+      outputStyles,
+      dev,
+      noStandardStyles
+    );
+
     await shell.run(cmd);
   } else {
     log(chalk.grey("Styles not found for this projected. Checked:", { styles: inputStyles }));
