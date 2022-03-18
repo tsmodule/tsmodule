@@ -100,7 +100,7 @@ test("[create --react] should create Next.js component library", async (t) => {
   t.assert("react-dom" in dependencies, "should add react-dom dependency");
 });
 
-test("[create --react] library should build and execute", async (t) => {
+test.serial("[create --react] library should build and execute", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
 
@@ -120,7 +120,7 @@ test("[create --react] library should build and execute", async (t) => {
   );
 });
 
-test("[build] command", async (t) => {
+test.serial("[build] command", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
