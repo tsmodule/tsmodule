@@ -80,6 +80,10 @@ const buildCssEntryPoint = async (
   dev: boolean,
   noStandardStyles: boolean,
 ) => {
+
+  inputStyles = resolvePath(inputStyles);
+  outputStyles = resolvePath(outputStyles);
+
   const twCmd = "npx tailwindcss";
   const minify = dev ? "" : "-m";
   const postcss = "--postcss postcss.config.js";
@@ -93,7 +97,7 @@ const buildCssEntryPoint = async (
 
   const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
   const shell = createShell({
-    log: false,
+    log: true,
     stdio: "inherit",
   });
 
@@ -318,6 +322,8 @@ export const build = async ({
         .replace(/^(\.\/)?src\//, "dist/")
         .replace(isTs, ".js")
         .replace(isTsxOrJsx, ".js");
+
+    DEBUG.log("Normalizing import specifiers in emitted JS.", { emittedJs });
 
     await normalizeImportSpecifiers(
       emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
