@@ -94,7 +94,7 @@ const buildCssEntryPoint = async (
   const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
   const shell = createShell({
     log: false,
-    stdio: "ignore",
+    stdio: "inherit",
   });
 
   await shell.run(cmd.join(" "));
