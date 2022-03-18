@@ -66,20 +66,20 @@ const dev = async (shell: Shell) => {
   }
 };
 
-const stdin = "import { test } from \"./stdin-import\";\nconsole.log(test);";
-const writeStdinDep = () =>
+const stdinImportStatement = "import { test } from \"./stdin-import\";\nconsole.log(test);";
+const writeStdinImportFile = () =>
   writeFileSync(resolve(defaultTestDir, "src/stdin-import.ts"), "export const test = 42;");
 
-test("[build --no-write] should return transformed code", async (t) => {
+test.serial("[build --no-write] should return transformed code", async (t) => {
   process.chdir(defaultTestDir);
   let code;
 
-  writeStdinDep();
+  writeStdinImportFile();
 
   await t.notThrowsAsync(
     async () => {
       code = await build({
-        stdin,
+        stdin: stdinImportStatement,
         stdinFile: "src/stdin-nowrite.ts",
         noWrite: true,
       });
@@ -233,11 +233,11 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   process.chdir(defaultTestDir);
   const shell = createShell();
 
-  writeStdinDep();
+  writeStdinImportFile();
 
   await t.notThrowsAsync(
     async () => await build({
-      stdin,
+      stdin: stdinImportStatement,
       stdinFile: "src/stdin-nobundle.ts",
     }),
     "[non-bundle] should build source provided programmatically via { stdin } arg"
@@ -245,7 +245,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
 
   await t.notThrowsAsync(
     async () => await build({
-      stdin,
+      stdin: stdinImportStatement,
       stdinFile: "src/stdin-bundle.ts",
       bundle: true,
     }),
