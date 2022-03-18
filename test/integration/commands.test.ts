@@ -299,7 +299,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   }
 });
 
-test.serial("[build -b] should bundle dependencies", async (t) => {
+test.serial("[build -b] should bundle output", async (t) => {
   process.chdir(fullBuildTestDir);
   const shell = createShell();
 

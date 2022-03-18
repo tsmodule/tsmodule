@@ -85,15 +85,18 @@ const buildCssEntryPoint = async (
   const postcss = "--postcss postcss.config.js";
 
   const inputCss = readFileSync(inputStyles, "utf-8");
-  const header = noStandardStyles ? "" : "@import \"@tsmodule/react\";\n\n";
-  const outputCss = `${header}${inputCss}`;
+  const header = "@import \"@tsmodule/react\";\n\n";
+  const outputCss = noStandardStyles ? inputCss : `${header}${inputCss}`;
 
   const rewrittenInput = getEmittedFile(inputStyles);
   writeFileSync(rewrittenInput, outputCss);
 
   const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
+  const shell = createShell({
+    log: true,
+    // stdio: "inherit",
+  });
 
-  const shell = createShell();
   await shell.run(cmd.join(" "));
 };
 
@@ -334,9 +337,6 @@ export const build = async ({
     ora("Forced \"type\": \"module\" in output.").succeed();
   }
 
-  // eslint-disable-next-line no-console
-  console.log();
-
   if (dev || runtimeOnly) {
     return;
   }
@@ -349,15 +349,6 @@ export const build = async ({
     const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
 
     /**
-     * If using -b bundle mode, bundle copied styles in-place.
-     */
-    // if (bundle) {
-    //   DEBUG.log("Bundling all styles.");
-    //   const cssFiles = glob.sync("./dist/**/*.css");
-    //   ora("Bundled emitted styles.").succeed();
-    // }
-
-    /**
      * Build style bundle.
      */
     DEBUG.log("Building style bundle.", { bundleInput, bundleOutput, dev, noStandardStyles });
@@ -367,9 +358,31 @@ export const build = async ({
       dev,
       noStandardStyles
     );
-    ora(`Built style bundles at ${chalk.bold(bundleOutput)}`).succeed();
+
+    /**
+     * If using -b bundle mode, bundle copied styles in-place.
+     */
+    // if (bundle) {
+    //   DEBUG.log("Bundling all styles.");
+    //   const cssFiles = glob.sync(resolve("./dist/**/*.css"));
+
+    //   await Promise.all(
+    //     cssFiles.map(
+    //       async (file) => await buildCssEntryPoint(
+    //         file,
+    //         file,
+    //         dev,
+    //         noStandardStyles,
+    //       )
+    //     )
+    //   );
+
+    //   ora("Bundled emitted styles.").succeed();
+    // }
+
+    // ora(`Built style bundle at ${chalk.bold(bundleOutput)}.`).succeed();
   } else {
-    log(chalk.grey("Bundle styles not found for this projected. Checked:", { styles: bundleInput }));
+    log(chalk.grey("Bundle styles not found for this projected. Checked:"), { styles: bundleInput });
   }
 
   bannerLog("Running post-build setup.");
