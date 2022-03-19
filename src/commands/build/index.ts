@@ -12,13 +12,13 @@ import ora from "ora";
  * internal source (for bootstrap code path).
  */
 import { createDebugLogger, log } from "create-debug-logger";
-import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { createShell } from "await-shell";
-import { emitTsDeclarations } from "./lib/emitTsDeclarations";
-import { normalizeImportSpecifiers } from "../normalize";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
+import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
+import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { getPackageJsonFile } from "../../utils/pkgJson";
+import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
@@ -104,6 +104,30 @@ const buildCssEntryPoint = async (
   await shell.run(cmd.join(" "));
 };
 
+
+const ESM_REQUIRE_SHIM = `
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+/**
+ * Shim entry-point related paths.
+ */
+if (typeof globalThis.__filename === 'undefined') {
+  globalThis.__filename = fileURLToPath(import.meta.url);
+}
+if (typeof globalThis.__dirname === 'undefined') {
+  globalThis.__dirname = dirname(globalThis.__filename);
+}
+/**
+ * Shim require if needed.
+ */
+if (typeof globalThis.require === 'undefined') {
+  const { default: module } = await import('module');
+  globalThis.require = module.createRequire(import.meta.url);
+}
+`;
+
+
 interface BuildArgs {
   files?: string;
   styles?: string;
@@ -171,6 +195,10 @@ export const build = async ({
     target: "esnext",
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
+    external: bundle ? ["esbuild"] : undefined,
+    banner: {
+      "js": ESM_REQUIRE_SHIM,
+    },
   };
 
   let stdinSource = "";

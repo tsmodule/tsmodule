@@ -307,9 +307,8 @@ test.serial("[build -b] should bundle output", async (t) => {
     "should bundle non-React projects"
   );
 
-  t.is(
-    readTextFile(resolve(defaultTestDir, "dist/bundle-a.js")).trim(),
-    "console.log(42);",
+  t.assert(
+    readTextFile(resolve(defaultTestDir, "dist/bundle-a.js")).includes("console.log(42)"),
     "should inline dependencies in emitted bundles"
   );
 
@@ -318,8 +317,6 @@ test.serial("[build -b] should bundle output", async (t) => {
     async () => await shell.run("tsmodule build -b"),
     "should bundle React projects"
   );
-
-  await sleep(1000);
 
   const bundleCss = readTextFile(resolve(reactTestDir, "dist/bundle.css"));
   t.snapshot(bundleCss, "should bundle CSS in-place");
