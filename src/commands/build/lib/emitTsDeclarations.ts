@@ -25,7 +25,9 @@ const D_TS_CONFIG = {
 
 export const emitTsDeclarations = async (files: string[]) => {
   const DEBUG = createDebugLogger(emitTsDeclarations);
-  const shell = createShell();
+  const shell = createShell({
+    log: false,
+  });
 
   const argString =
     Object
