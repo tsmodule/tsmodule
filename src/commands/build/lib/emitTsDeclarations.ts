@@ -3,9 +3,39 @@ import { TS_CONFIG } from "../../normalize/lib/typescriptApi";
 import chalk from "chalk";
 import { createDebugLogger } from "create-debug-logger";
 import ts from "typescript";
+import { createShell } from "await-shell";
 
-export const emitTsDeclarations = (files: string[]) => {
+export const TSC_OPTIONS = {
+  moduleResolution: "node",
+  module: "esnext",
+  target: "esnext",
+  esModuleInterop: true,
+  incremental: false,
+  noEmit: true,
+  rootDir: "src",
+  outDir: "dist",
+};
+
+const D_TS_CONFIG = {
+  ...TSC_OPTIONS,
+  declaration: true,
+  noEmit: false,
+  emitDeclarationOnly: true,
+};
+
+export const emitTsDeclarations = async (files: string[]) => {
   const DEBUG = createDebugLogger(emitTsDeclarations);
+  const shell = createShell();
+
+  const argString =
+    Object
+      .entries(D_TS_CONFIG)
+      .map(([key, value]) => `--${key} ${JSON.stringify(value)}`)
+      .join(" ");
+
+  await shell.run(`tsc ${argString} ${files.join(" ")}`);
+
+  return;
   const program = ts.createProgram(
     files,
     {

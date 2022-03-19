@@ -411,7 +411,7 @@ export const build = async ({
   bannerLog("Running post-build setup.");
 
   log("Generating type declarations.\nThis might take a moment.");
-  emitTsDeclarations(allFiles);
+  await emitTsDeclarations(allFiles);
   ora(`Generated delcarations for ${allFiles.length} files.`).succeed();
 
   log(chalk.green("Build complete."));
