@@ -87,7 +87,8 @@ test.serial("[build --no-write] should return transformed code", async (t) => {
     "[--no-write] should return transformed code"
   );
 
-  t.snapshot(code, "transformed code should match snapshot");
+  t.assert(!existsSync(resolve(defaultTestDir, "dist/stdin-nowrite.js")), "[--no-write] should not write to disk");
+  t.snapshot(code, "build() should return code with { noWrite: true }");
 });
 
 test("[create --react] should create Next.js component library", async (t) => {
@@ -254,7 +255,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
 
   t.snapshot(
     readTextFile(resolve(defaultTestDir, "dist/stdin-nobundle.js")),
-    "[non-bundle] emitted stdin bundle should match snapshot"
+    "[non-bundle] emitted stdin output should match snapshot"
   );
 
   t.snapshot(

@@ -31,7 +31,7 @@ program
 program
   .command("build")
   .description("Builds TS files to output in dist/.")
-  .option("--files <files>", "Entrypoints to compile.", "src/**/*")
+  .option("-i, --input <files>", "Entrypoints to compile.", "src/**/*")
   .option("--styles <styles>", "Specify stylesheet entrypoint.", "src/components/index.css")
   .option("-t, --target <target>", "ECMAScript featureset to target.", "esnext")
   .option("-b, --bundle", "Bundle dependencies into entrypoints.", false)
