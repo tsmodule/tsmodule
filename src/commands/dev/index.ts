@@ -56,7 +56,7 @@ export const dev = async () => {
       clear();
 
       const preTime = Date.now();
-      await build({ dev: true, files: filePath });
+      await build({ dev: true, input: filePath });
       const time = Date.now() - preTime;
 
       ora(

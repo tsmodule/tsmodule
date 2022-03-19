@@ -111,7 +111,7 @@ await(async()=>{let{dirname:e}=await import("path"),{fileURLToPath:i}=await impo
 
 
 interface BuildArgs {
-  files?: string;
+  input?: string;
   styles?: string;
   bundle?: boolean;
   dev?: boolean;
@@ -129,12 +129,12 @@ interface BuildArgs {
  * resolve them for us.
  */
 export const build = async ({
-  files = "src/**/*",
-  styles: bundleInput = "src/components/index.css",
-  bundle = false,
-  dev = false,
+  input = "src/**/*",
+  styles = "src/components/index.css",
   target = "esnext",
-  runtimeOnly = false,
+  dev = false,
+  bundle = false,
+  runtimeOnly = dev,
   noWrite = false,
   noStandardStyles = false,
   stdin,
@@ -142,6 +142,10 @@ export const build = async ({
 }: BuildArgs) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
+
+  if (dev) {
+    runtimeOnly = true;
+  }
 
   const { cwd, srcDir, outDir } = getWorkingDirs();
 
@@ -178,9 +182,7 @@ export const build = async ({
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
     external: bundle ? ["esbuild"] : undefined,
-    banner: {
-      "js": ESM_REQUIRE_SHIM,
-    },
+    banner: bundle ? { "js": ESM_REQUIRE_SHIM } : undefined,
   };
 
   let stdinSource = "";
@@ -211,14 +213,20 @@ export const build = async ({
       return build.code;
     } else {
       const stdinBuildConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
-      return await esbuild({
+      console.log({ ...buildOptions, ...stdinBuildConfig })
+      await esbuild({
         ...buildOptions,
         ...stdinBuildConfig,
       });
+
+      log(chalk.green("Successfully built stdin file to dist/."));
+      log(chalk.grey("Use --no-write to print to stdout instead."));
+
+      return;
     }
   }
 
-  DEBUG.log("Building", { files, dev, runtimeOnly });
+  DEBUG.log("Building", { files: input, dev, runtimeOnly });
   bannerLog(`${chalk.bold("TS Module")} [${env.NODE_ENV}]`);
 
   /**
@@ -226,20 +234,20 @@ export const build = async ({
    */
   const allFiles =
     glob
-      .sync(files, { cwd })
+      .sync(input, { cwd })
       .filter((file) => extname(file) !== ".d.ts")
       .map((file) => resolvePath(file));
 
-  if (isAbsolute(files)) {
+  if (isAbsolute(input)) {
     /**
      * fast-glob won't pick up absolute filepaths on Windows. Windows sucks.
      */
     if (!allFiles.length) {
-      allFiles.push(files);
+      allFiles.push(input);
     }
 
     const outfile =
-      files
+      input
         .replace(srcDir, outDir)
         .replace(isTs, ".js")
         .replace(isTsxOrJsx, ".js");
@@ -274,10 +282,10 @@ export const build = async ({
         const tsxFileContents = readFileSync(tsxFile, "utf-8");
         const runtimeCode = REACT_IMPORTS + tsxFileContents;
 
-        const jsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
+        const tsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
         await esbuild({
           ...buildOptions,
-          ...jsxConfig,
+          ...tsxConfig,
         });
       }
     )
@@ -327,7 +335,7 @@ export const build = async ({
    */
   if (!process.env.NO_REWRITES) {
     const emittedJs =
-      files
+      input
         .replace(srcDir, outDir)
         .replace(/^(\.\/)?src\//, "dist/")
         .replace(isTs, ".js")
@@ -353,23 +361,23 @@ export const build = async ({
     ora("Forced \"type\": \"module\" in output.").succeed();
   }
 
-  if (dev || runtimeOnly) {
+  if (runtimeOnly) {
     return;
   }
 
   /**
    * Build project styles.
    */
-  if (existsSync(resolve(bundleInput))) {
+  if (existsSync(resolve(styles))) {
     DEBUG.log("Building styles for production.");
     const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
 
     /**
      * Build style bundle.
      */
-    DEBUG.log("Building style bundle.", { bundleInput, bundleOutput, dev, noStandardStyles });
+    DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev, noStandardStyles });
     await buildCssEntryPoint(
-      bundleInput,
+      styles,
       bundleOutput,
       dev,
       noStandardStyles
@@ -398,7 +406,7 @@ export const build = async ({
 
     ora(`Bundled all styles to ${chalk.bold(bundleOutput)}.`).succeed();
   } else {
-    log(chalk.grey("Bundle styles not found for this projected. Checked:"), { styles: bundleInput });
+    log(chalk.grey("Bundle styles not found for this projected. Checked:"), { styles: styles });
   }
 
   bannerLog("Running post-build setup.");
