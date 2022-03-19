@@ -213,7 +213,6 @@ export const build = async ({
       return build.code;
     } else {
       const stdinBuildConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
-      console.log({ ...buildOptions, ...stdinBuildConfig })
       await esbuild({
         ...buildOptions,
         ...stdinBuildConfig,
