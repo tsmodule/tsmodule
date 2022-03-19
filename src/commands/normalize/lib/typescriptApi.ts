@@ -15,21 +15,24 @@ export const TS_CONFIG: ts.CompilerOptions = {
 
 export const compilerHost = ts.createCompilerHost(TS_CONFIG);
 
-const typescriptResolve = (specifier: string, entryPoint = process.cwd()) => {
-  const { resolvedModule } = ts.resolveModuleName(
-    specifier,
-    entryPoint,
-    TS_CONFIG,
-    compilerHost
-  );
+const fileExtensions = [".mts", ".ts", ".tsx", ".mjs", ".js", ".jsx", ".json"];
 
-  if (!resolvedModule) {
-    const errorData = JSON.stringify({ specifier, entryPoint }, null, 2);
-    throw new Error(`Could not resolve module: ${errorData}`);
-  }
+// const typescriptResolve = (specifier: string, entryPoint = process.cwd()) => {
+  
+//   const { resolvedModule } = ts.resolveModuleName(
+//     specifier,
+//     entryPoint,
+//     TS_CONFIG,
+//     compilerHost
+//   );
 
-  return resolvedModule;
-};
+//   if (!resolvedModule) {
+//     const errorData = JSON.stringify({ specifier, entryPoint }, null, 2);
+//     throw new Error(`Could not resolve module: ${errorData}`);
+//   }
+
+//   return resolvedModule;
+// };
 
 const getEsmRelativeSpecifier = (from: string, to: string) => {
   const relativePath = path.relative(path.dirname(from), to);
@@ -50,7 +53,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
   const DEBUG = createDebugLogger(getRewrittenSpecifiers);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
 
-  const { resolvedFileName } = typescriptResolve(modulePath);
+  const resolvedFileName = modulePath;
   const sourceFile = compilerHost.getSourceFile(
     resolvedFileName,
     ts.ScriptTarget.ESNext
