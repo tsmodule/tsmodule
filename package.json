@@ -26,10 +26,8 @@
     "prebootload": "node bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
     "prebuild": "yarn bootload && yarn link -f",
-
     "build": "tsmodule build",
     "dev": "tsmodule dev",
-
     "prepare": "yarn build -r",
     "prepublishOnly": "yarn test",
     "pretest": "yarn build -rb",

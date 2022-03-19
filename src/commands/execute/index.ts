@@ -1,18 +1,23 @@
-import { URL } from "url";
 import { createShell } from "await-shell";
+import { pathToFileURL } from "url";
+import { resolve } from "path";
+
+import { PACKAGE_ROOT } from "../../constants";
 
 export const execute = async () => {
   /**
    * This will refer to the built loader regardless of whether it is running
    * from inside `dist/` or `src/`.
    */
-  const __filename = import.meta.url;
-  const loaderUrl = new URL("../../../dist/loader/index.js", __filename);
+  const loaderPath = resolve(
+    PACKAGE_ROOT,
+    "dist/loader/index.js"
+  );
 
   const nodeArgs = [
     "--no-warnings",
     "--loader",
-    loaderUrl.href,
+    pathToFileURL(loaderPath).href,
     ...process.argv.slice(2)
   ];
 
