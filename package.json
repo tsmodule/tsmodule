@@ -23,17 +23,17 @@
     "node": ">=14"
   },
   "scripts": {
-    "bootstrap": "node bootstrap.js",
+    "prebootload": "node bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "yarn bootstrap && yarn bootload && yarn link -f",
+    "prebuild": "yarn bootload && yarn link -f",
     "build": "tsmodule build",
     "dev": "tsmodule dev",
+    "pretest": "yarn build -b",
+    "test": "ava --no-worker-threads",
+    "retest": "SKIP_TEST_SETUP=1 yarn test",
     "lint": "eslint --fix src",
     "prepare": "yarn build -r",
-    "prepublishOnly": "yarn build && yarn test",
-    "pretest": "yarn build -r",
-    "test": "ava --no-worker-threads",
-    "retest": "SKIP_TEST_SETUP=1 yarn test"
+    "prepublishOnly": "yarn test"
   },
   "dependencies": {
     "@types/glob": "^7.2.0",
@@ -74,6 +74,9 @@
   },
   "keywords": [
     "esm",
+    "es module",
+    "ts module",
+    "bundle",
     "loader",
     "typescript",
     "loader hook",

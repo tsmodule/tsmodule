@@ -6,7 +6,7 @@
     "module": "ESNext",
     "target": "ESNext",
     "checkJs": true,
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "rootDir": "src",
     "outDir": "dist",
     "moduleResolution": "node",
