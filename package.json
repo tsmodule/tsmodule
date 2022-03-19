@@ -74,6 +74,9 @@
   },
   "keywords": [
     "esm",
+    "es module",
+    "ts module",
+    "bundle",
     "loader",
     "typescript",
     "loader hook",
