@@ -47,13 +47,11 @@ export const dev = async () => {
       /**
        * Windows-specific stuff.
        */
-      {
-        const stillExists = existsSync(filePath);
-        if (!stillExists) return;
+      const stillExists = existsSync(filePath);
+      if (!stillExists) return;
 
-        const isDir = lstatSync(filePath).isDirectory();
-        if (isDir) return;
-      }
+      const isDir = lstatSync(filePath).isDirectory();
+      if (isDir) return;
 
       clear();
 

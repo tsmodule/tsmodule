@@ -17,8 +17,8 @@ import { createShell } from "await-shell";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { normalizeImportSpecifiers } from "../normalize";
 
+import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
 import { getPackageJsonFile } from "../../utils/pkgJson";
-import { getWorkingDirs } from "../../utils/cwd";
 import { readStdin } from "../../utils/stdin";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
@@ -53,8 +53,8 @@ const singleEntryPointConfig = (
   file: string,
   loader?: Loader
 ) => {
-  const { srcDir, outDir } = getWorkingDirs();
   file = resolvePath(file);
+  const emittedFile = getEmittedFile(file);
 
   const config: BuildOptions = {
     stdin: {
@@ -64,10 +64,44 @@ const singleEntryPointConfig = (
       loader,
     },
     outdir: undefined,
-    outfile: file.replace(isJsOrTs, ".js").replace(srcDir, outDir)
+    outfile: emittedFile
   };
 
   return config;
+};
+
+/**
+ * Generate a Tailwind command that will build the given input stylesheet.
+ * Add an import for standard styles.
+ */
+const buildCssEntryPoint = async (
+  inputStyles: string,
+  outputStyles: string,
+  dev: boolean,
+  noStandardStyles: boolean,
+) => {
+
+  inputStyles = resolvePath(inputStyles);
+  outputStyles = resolvePath(outputStyles);
+
+  const twCmd = "npx tailwindcss";
+  const minify = dev ? "" : "-m";
+  const postcss = "--postcss postcss.config.js";
+
+  const inputCss = readFileSync(inputStyles, "utf-8");
+  const header = "@import \"@tsmodule/react\";\n\n";
+  const outputCss = noStandardStyles ? inputCss : `${header}${inputCss}`;
+
+  const rewrittenInput = getEmittedFile(inputStyles);
+  writeFileSync(rewrittenInput, outputCss);
+
+  const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
+  const shell = createShell({
+    log: false,
+    stdio: "ignore",
+  });
+
+  await shell.run(cmd.join(" "));
 };
 
 interface BuildArgs {
@@ -78,6 +112,7 @@ interface BuildArgs {
   target?: string | string[];
   runtimeOnly?: boolean;
   noWrite?: boolean;
+  noStandardStyles?: boolean;
   stdin?: string;
   stdinFile?: string;
 }
@@ -89,18 +124,18 @@ interface BuildArgs {
  */
 export const build = async ({
   files = "src/**/*",
-  styles = "src/components/index.css",
+  styles: bundleInput = "src/components/index.css",
   bundle = false,
   dev = false,
   target = "esnext",
   runtimeOnly = false,
   noWrite = false,
+  noStandardStyles = false,
   stdin,
   stdinFile,
 }: BuildArgs) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
-  const shell = createShell();
 
   const { cwd, srcDir, outDir } = getWorkingDirs();
 
@@ -265,18 +300,12 @@ export const build = async ({
   DEBUG.log("Copying non-JS/TS files.", { allFiles, nonJsTsFiles });
   await Promise.all(
     nonJsTsFiles.map(async (file) => {
-      const outfile =
-        resolve(cwd, file)
-          .replace(srcDir, outDir)
-          .replace(isTs, ".js")
-          .replace(isTsxOrJsx, ".js");
+      const emittedFile = getEmittedFile(file);
+      DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-      DEBUG.log("Copying non-source file:", { file, outfile });
-
-      mkdirSync(dirname(outfile), { recursive: true });
-
+      mkdirSync(dirname(emittedFile), { recursive: true });
       writeFileSync(
-        outfile,
+        emittedFile,
         readFileSync(file),
         { encoding: "binary", flag: "w" }
       );
@@ -293,6 +322,8 @@ export const build = async ({
         .replace(/^(\.\/)?src\//, "dist/")
         .replace(isTs, ".js")
         .replace(isTsxOrJsx, ".js");
+
+    DEBUG.log("Normalizing import specifiers in emitted JS.", { emittedJs });
 
     await normalizeImportSpecifiers(
       emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
@@ -312,26 +343,52 @@ export const build = async ({
     ora("Forced \"type\": \"module\" in output.").succeed();
   }
 
-  // eslint-disable-next-line no-console
-  console.log();
-
   if (dev || runtimeOnly) {
     return;
   }
 
-  if (existsSync(resolve(styles))) {
+  /**
+   * Build project styles.
+   */
+  if (existsSync(resolve(bundleInput))) {
     DEBUG.log("Building styles for production.");
-    const { style = "./dist/bundle.css" } = pkgJson;
+    const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
 
-    const twCmd = "npx tailwindcss";
-    const minify = dev ? "" : "-m";
-    const postcss = "--postcss postcss.config.js";
+    /**
+     * Build style bundle.
+     */
+    DEBUG.log("Building style bundle.", { bundleInput, bundleOutput, dev, noStandardStyles });
+    await buildCssEntryPoint(
+      bundleInput,
+      bundleOutput,
+      dev,
+      noStandardStyles
+    );
 
-    const cmd = [twCmd, minify, postcss, `-i ${styles}`, "-o", style];
+    /**
+     * If using -b bundle mode, bundle copied styles in-place.
+     */
+    if (bundle) {
+      DEBUG.log("Bundling all styles.");
+      const cssFiles = glob.sync("dist/**/*.css");
 
-    await shell.run(cmd.join(" "));
+      const message = ora("Bundled emitted styles.").start();
+      await Promise.all(
+        cssFiles.map(
+          async (file) => await buildCssEntryPoint(
+            file,
+            file,
+            dev,
+            noStandardStyles,
+          )
+        )
+      );
+      message.succeed();
+    }
+
+    ora(`Bundled all styles to ${chalk.bold(bundleOutput)}.`).succeed();
   } else {
-    DEBUG.log("Styles not found.", { styles });
+    log(chalk.grey("Bundle styles not found for this projected. Checked:"), { styles: bundleInput });
   }
 
   bannerLog("Running post-build setup.");

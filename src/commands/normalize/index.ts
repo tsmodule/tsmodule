@@ -5,10 +5,10 @@
  * with esbuild and then use it to normalize emitted output.
  */
 
-import { readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { isAbsolute, resolve as resolvePath } from "path";
 import glob from "fast-glob";
 import { pathToFileURL } from "url";
-import { resolve as resolvePath } from "path";
 
 import { createDebugLogger } from "create-debug-logger";
 import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
@@ -68,9 +68,11 @@ export const rewriteImportStatement = (
  */
 export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
   const DEBUG = createDebugLogger(normalizeImportSpecifiers);
-  const filesToNormalize = await glob(files, { cwd: process.cwd() });
 
-  DEBUG.log("Normalizing import/require specifiers:", { filesToNormalize });
+  const isSingleFile = isAbsolute(files) && existsSync(files);
+  const filesToNormalize = isSingleFile ? [files] : glob.sync(files);
+
+  DEBUG.log("Normalizing import/require specifiers:", { files, filesToNormalize });
 
   for (const file of filesToNormalize) {
     /**
