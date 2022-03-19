@@ -258,19 +258,15 @@ export const build = async ({
     rmSync(outDir, { force: true, recursive: true });
   }
 
-  // eslint-disable-next-line no-console
-  console.log();
-
-
   /**
-   * TSX files to compile.
+   * TSX/JSX files to compile.
    */
-  const tsxFiles =
+  const tsxJsxInput =
     allFiles
       .filter((file) => isTsxOrJsx.test(file));
 
-  DEBUG.log("Compiling TSX files:", { tsxFiles });
-  const compilableTsxFiles = tsxFiles.filter((file) => !file.endsWith(".d.ts"));
+  DEBUG.log("Compiling TSX files:", { tsxJsxInput });
+  const compilableTsxFiles = tsxJsxInput.filter((file) => !file.endsWith(".d.ts"));
 
   await Promise.all(
     compilableTsxFiles.map(
@@ -296,15 +292,15 @@ export const build = async ({
   /**
    * Compile TS files.
    */
-  const tsFiles =
+  const tsJsInput =
     allFiles
       .filter((file) => isTs.test(file))
       .filter((file) => !isTsxOrJsx.test(file));
 
-  DEBUG.log("Compiling TS files:", { tsFiles });
+  DEBUG.log("Compiling TS files:", { tsJsInput });
   await esbuild({
     ...buildOptions,
-    entryPoints: tsFiles.filter((file) => !file.endsWith(".d.ts")),
+    entryPoints: tsJsInput.filter((file) => !file.endsWith(".d.ts")),
   });
 
   ora("Built TS files.").succeed();
@@ -312,11 +308,11 @@ export const build = async ({
   /**
    * Non JS/TS files.
    */
-  const nonJsTsFiles = allFiles.filter((file) => !isJsOrTs.test(file));
+  const nonTsJsInput = allFiles.filter((file) => !isJsOrTs.test(file));
 
-  DEBUG.log("Copying non-JS/TS files.", { allFiles, nonJsTsFiles });
+  DEBUG.log("Copying non-JS/TS files.", { allFiles, nonTsJsInput });
   await Promise.all(
-    nonJsTsFiles.map(async (file) => {
+    nonTsJsInput.map(async (file) => {
       const emittedFile = getEmittedFile(file);
       DEBUG.log("Copying non-source file:", { file, emittedFile });
 
@@ -410,9 +406,9 @@ export const build = async ({
 
   bannerLog("Running post-build setup.");
 
-  log("Generating type declarations.\nThis might take a moment.");
-  await emitTsDeclarations(allFiles);
-  ora(`Generated delcarations for ${allFiles.length} files.`).succeed();
+  const declarationsProgress = ora("Generating type declarations.").start();
+  await emitTsDeclarations();
+  declarationsProgress.succeed(`Generated delcarations for ${allFiles.length} files.`);
 
   log(chalk.green("Build complete."));
 };
