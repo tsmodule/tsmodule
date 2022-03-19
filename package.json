@@ -34,7 +34,7 @@
     "lint": "eslint --fix src",
     "prepare": "yarn build -rb",
     "prepublishOnly": "yarn test",
-    "release": "release-it -VV"
+    "release": "release-it"
   },
   "dependencies": {
     "@types/glob": "^7.2.0",
