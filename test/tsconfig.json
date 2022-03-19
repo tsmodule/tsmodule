@@ -6,7 +6,6 @@
     "module": "ESNext",
     "target": "ESNext",
     "checkJs": true,
-    "baseUrl": ".",
     "moduleResolution": "node",
     "strictBindCallApply": true,
     "allowSyntheticDefaultImports": true,
