@@ -28,12 +28,12 @@
     "prebuild": "yarn bootload && yarn link -f",
     "build": "tsmodule build",
     "dev": "tsmodule dev",
-    "prepare": "yarn build -r",
-    "prepublishOnly": "yarn test",
-    "pretest": "yarn build -rb",
+    "pretest": "yarn build -b",
     "test": "ava --no-worker-threads",
     "retest": "SKIP_TEST_SETUP=1 yarn test",
-    "lint": "eslint --fix src"
+    "lint": "eslint --fix src",
+    "prepare": "yarn build -r",
+    "prepublishOnly": "yarn test"
   },
   "dependencies": {
     "@types/glob": "^7.2.0",
