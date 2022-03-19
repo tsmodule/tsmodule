@@ -33,7 +33,8 @@
     "retest": "SKIP_TEST_SETUP=1 yarn test",
     "lint": "eslint --fix src",
     "prepare": "yarn build -r",
-    "prepublishOnly": "yarn test"
+    "prepublishOnly": "yarn test",
+    "release": "release-it"
   },
   "dependencies": {
     "@types/glob": "^7.2.0",
