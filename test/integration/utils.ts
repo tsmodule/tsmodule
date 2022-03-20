@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { URL } from "url";
+import { constants, copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "fs";
+import { fileURLToPath, URL } from "url";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
@@ -25,22 +25,20 @@ export const createTestAssets = (testName: string) => {
     console.log("Subdir created.");
   }
 
-  writeFileSync(
-    resolve(testDir, "src/index.css"),
-    "body { color: red; }"
-  );
-  
-  console.log("Wrote file", { file: resolve(testDir, "src/index.css") });
-  console.log("Copying file");
+  const cssFile = resolve(testDir, "src/index.css");
+  writeFileSync(cssFile,"body { color: red; }", "utf-8");
 
+  console.log("Wrote file", { cssFile });
+
+  const pngSource = resolve("../../tsmodule.png", fileURLToPath(import.meta.url));
+  const pngFile = resolve(testDir, "src/path/to/assets/tsmodule.png");
   copyFileSync(
-    new URL("../../tsmodule.png", import.meta.url),
-    resolve(testDir, "src/path/to/assets/tsmodule.png"),
+    pngSource,
+    pngFile,
+    constants.COPYFILE_FICLONE
   );
 
-  console.log("Copied image");
-
-  // await sleep(2500);
+  console.log("Copied image", { pngFile });
   console.log("Created test assets.");
 };
 
