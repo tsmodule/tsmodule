@@ -1,11 +1,14 @@
-import { existsSync, lstatSync } from "fs";
 import { relative, resolve } from "path";
-import { build } from "../build";
+import { existsSync } from "fs";
+import { lstat } from "fs/promises";
+
 import chalk from "chalk";
 import { createShell } from "await-shell";
 import { log } from "create-debug-logger";
 import ora from "ora";
 import watch from "node-watch";
+
+import { build } from "../build";
 
 const clear = () => {
   if (process.env.NODE_ENV !== "test") {
@@ -50,7 +53,8 @@ export const dev = async () => {
       const stillExists = existsSync(filePath);
       if (!stillExists) return;
 
-      const isDir = lstatSync(filePath).isDirectory();
+      const stat = await lstat(filePath);
+      const isDir = stat.isDirectory();
       if (isDir) return;
 
       clear();

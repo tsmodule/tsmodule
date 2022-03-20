@@ -5,7 +5,9 @@
  * with esbuild and then use it to normalize emitted output.
  */
 
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { readFile, writeFile } from "fs/promises";
+import { existsSync } from "fs";
+
 import { isAbsolute, resolve as resolvePath } from "path";
 import glob from "fast-glob";
 import { pathToFileURL } from "url";
@@ -99,7 +101,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
     if (!rewrites) return null;
 
     DEBUG.log("TypeScript API yielded specifiers to rewrite:", { rewrites });
-    let code = readFileSync(resolvedEntryPoint, "utf8");
+    let code = await readFile(resolvedEntryPoint, "utf8");
 
     DEBUG.group();
     for (const { specifierToReplace, specifierReplacement } of rewrites) {
@@ -141,7 +143,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
         );
 
         code = code.replace(importStatement, rewrittenImportStatement);
-        writeFileSync(resolvedEntryPoint, code);
+        await writeFile(resolvedEntryPoint, code);
 
         DEBUG.log("Wrote output file.", { resolvedEntryPoint });
         DEBUG.groupEnd();

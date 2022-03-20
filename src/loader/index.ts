@@ -1,13 +1,14 @@
 import type { GetFormatHook as ModuleGetFormatHook, LoadHook as ModuleLoadHook, ResolveHook as ModuleResolveHook, TransformHook as ModuleTransformSourceHook } from "./types";
 
 import { extname, isAbsolute, join, normalize, resolve as resolvePath } from "path";
-import { fileURLToPath, pathToFileURL, URL } from "url";
-import { createDebugLogger } from "create-debug-logger";
-import { readFileSync } from "fs";
-import { transform } from "esbuild";
-
 import { posix as posixPath } from "path";
 import { win32 as winPath } from "path";
+
+import { fileURLToPath, pathToFileURL, URL } from "url";
+import { readFile } from "fs/promises";
+import { transform } from "esbuild";
+
+import { createDebugLogger } from "create-debug-logger";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.
@@ -147,7 +148,7 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
   }
 
   const path = fileURLToPath(url);
-  const source = readFileSync(path, "utf8");
+  const source = await readFile(path, "utf8");
 
   const result = await transform(
     source.toString(), {
