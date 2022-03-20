@@ -311,19 +311,17 @@ export const build = async ({
   const nonTsJsInput = allFiles.filter((file) => !isJsOrTs.test(file));
 
   DEBUG.log("Copying non-JS/TS files.", { allFiles, nonTsJsInput });
-  await Promise.all(
-    nonTsJsInput.map(async (file) => {
-      const emittedFile = getEmittedFile(file);
-      DEBUG.log("Copying non-source file:", { file, emittedFile });
+  for (const file of nonTsJsInput) {
+    const emittedFile = getEmittedFile(file);
+    DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-      mkdirSync(dirname(emittedFile), { recursive: true });
-      writeFileSync(
-        emittedFile,
-        readFileSync(file),
-        { encoding: "binary", flag: "w" }
-      );
-    })
-  );
+    mkdirSync(dirname(emittedFile), { recursive: true });
+    writeFileSync(
+      emittedFile,
+      readFileSync(file),
+      { encoding: "binary", flag: "w" }
+    );
+  }
 
   /**
    * Rewrite import specifiers in emitted output.
