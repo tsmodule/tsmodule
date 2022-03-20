@@ -651,10 +651,10 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
-await-shell@^34.0.3:
-  version "34.0.3"
-  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-34.0.3.tgz#3d7a45163179309b1aed1b4d06d5b680adcac3ff"
-  integrity sha512-yZ0CS8IIOJi5IdEFvrdyoxaYCKcNZGhC3Qpqdf6pQr8dgp0csABP4NSjPCxY2YWInN7Jt+9MM9nq6XxU+j6rPw==
+await-shell@^34.0.4:
+  version "34.0.4"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-34.0.4.tgz#009b22f58a0917cfdb921d8f1a18173fe5104ba6"
+  integrity sha512-tR5EI5Z1V6MQneFuUuDkQxUD0AX+aXVpb5TghQE49SXoygQaBkCw7cFmxrehoL28hmI2zbrmckBddTm6DAYGJw==
 
 axe-core@^4.3.5:
   version "4.4.1"
