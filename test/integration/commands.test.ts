@@ -169,7 +169,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      writeTestFile(
+      await writeTestFile(
         defaultTest,
         "src/update.ts",
         "export const hello = 'world';"
@@ -191,7 +191,7 @@ test.serial("[dev] should notice new file", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      writeTestFile(
+      await writeTestFile(
         defaultTest,
         "src/path/to/newFile.ts",
         "export const abc = 123;"

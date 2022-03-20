@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { fileURLToPath, URL } from "url";
+import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
 import { tmpdir } from "os";
 
