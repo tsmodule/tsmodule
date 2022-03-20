@@ -1,0 +1,32 @@
+import { createShell } from "await-shell";
+
+const shell = createShell();
+
+const testPackages = [
+  "assert",
+  "ava",
+  "await-shell",
+  "create-debug-logger",
+  "fast-glob",
+];
+
+/**
+ * Build the runtime bundle.
+ */
+await shell.run("yarn build -rb");
+
+/**
+ * Delete node_modules, remove the test packages, and re-add them as regular
+ * dependencies.
+ */
+await shell.run("rm -rf node_modules");
+
+try {
+  await shell.run(`yarn remove ${testPackages.join(" ")}`);
+  await shell.run(`yarn add --production ${testPackages.join(" ")}`);
+  await shell.run("yarn --production");
+  await shell.run("yarn ava --no-worker-threads");
+} catch (e) {}
+
+await shell.run(`yarn remove -f ${testPackages.join(" ")}`);
+await shell.run(`yarn add -D ${testPackages.join(" ")}`);

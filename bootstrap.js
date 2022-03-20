@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import { build as esbuild } from "esbuild";
 import glob from "fast-glob";
+
+import { build as esbuild } from "esbuild";
 import { resolve } from "path";
 import { rm } from "fs/promises";
 

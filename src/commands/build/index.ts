@@ -137,8 +137,8 @@ export const build = async ({
   runtimeOnly = dev,
   noWrite = false,
   noStandardStyles = false,
-  stdin,
-  stdinFile,
+  stdin = undefined,
+  stdinFile = undefined,
 }: BuildArgs) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);

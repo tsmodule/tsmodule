@@ -2,9 +2,10 @@
 import test from "ava";
 
 import { createShell, Shell } from "await-shell";
-import { createTestAssets, cleanTestDir, sleep } from "./utils";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { build } from "../../src/commands/build";
+
+import { createTestAssets, cleanTestDir, sleep } from "./utils";
+import { build } from "../../dist/commands/build/index.js";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
