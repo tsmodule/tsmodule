@@ -22,14 +22,14 @@ export const IMPORT_KEYWORD = "import *\{?";
 export const EXPR_BREAK = "[\n\r;]+";
 export const OLD_EXPR_BREAK = "[^\n\r;]*";
 
-export const IMPORT_STATEMENT = "(^|(?<=[\n\r;] *))import( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|(\"[\n\r; *])+)";
-export const EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))export( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|(\"[\n\r;]))";
-export const IMPORT_OR_EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import|export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|(\"[\n\r;]))";
+export const IMPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
+export const EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
+export const IMPORT_OR_EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import|export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
 
 export const IMPORT_CLAUSE = `(import${OLD_EXPR_BREAK}(from)?)`;
 export const DYNAMIC_IMPORT = `(import|require)${OLD_EXPR_BREAK}\\(`;
 export const EXPORT_CLAUSE = `(export${OLD_EXPR_BREAK}from)`;
-export const IMPORT_SPECIFIER_IN_CLAUSE = "[\"\'][^\n\r]+[\'\"][;\n]?$";
+export const IMPORT_SPECIFIER_IN_CLAUSE = "(?<=[\"\'])([^\n\r]+)(?=[\'\"])";
 
 /**
  * Matches a complete import statement, including the import keyword, as well as
