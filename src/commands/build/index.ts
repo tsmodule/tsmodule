@@ -1,6 +1,6 @@
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions } from "esbuild";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
 import { env } from "process";
 import glob from "fast-glob";
@@ -316,11 +316,12 @@ export const build = async ({
     DEBUG.log("Copying non-source file:", { file, emittedFile });
 
     mkdirSync(dirname(emittedFile), { recursive: true });
-    writeFileSync(
-      emittedFile,
-      readFileSync(file),
-      { encoding: "binary", flag: "w" }
-    );
+    copyFileSync(file, emittedFile, constants.COPYFILE_FICLONE);
+    // constants.COPYFILE_FICLONE_FORCE(
+    //   emittedFile,
+    //   readFileSync(file),
+    //   { encoding: "binary", flag: "w" }
+    // );
   }
 
   /**
