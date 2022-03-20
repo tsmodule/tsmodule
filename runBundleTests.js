@@ -28,5 +28,7 @@ try {
   await shell.run("yarn ava --no-worker-threads");
 } catch (e) {}
 
-await shell.run(`yarn remove -f ${testPackages.join(" ")}`);
-await shell.run(`yarn add -D ${testPackages.join(" ")}`);
+if (!process.env.CI) {
+  await shell.run(`yarn remove -f ${testPackages.join(" ")}`);
+  await shell.run(`yarn add -D ${testPackages.join(" ")}`);
+}
