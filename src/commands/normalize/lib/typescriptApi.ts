@@ -1,13 +1,13 @@
 import { IMPORT_OR_EXPORT_STATEMENT, IMPORT_SPECIFIER_IN_CLAUSE } from "../index.js";
 import { existsSync, readFileSync } from "fs";
+import { dirname, normalize, posix as pathPosix, resolve } from "path";
 import { createDebugLogger } from "create-debug-logger";
-import { posix as pathPosix } from "path";
 
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
 const typescriptResolve = (specifier: string, entryPoint: string) => {
 
-  const resolvedDirectory = pathPosix.dirname(entryPoint);
-  const resolvedPath = pathPosix.resolve(resolvedDirectory, specifier);
+  const resolvedDirectory = dirname(normalize(entryPoint));
+  const resolvedPath = forcePosixPath(resolve(resolvedDirectory, specifier));
   const reducedPath = resolvedPath.replace(pathPosix.extname(resolvedPath), "");
 
   for (const fileExtension of fileExtensions) {
