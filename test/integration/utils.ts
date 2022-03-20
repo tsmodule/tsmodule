@@ -29,12 +29,12 @@ export const createTestAssets = (testName: string) => {
     resolve(testDir, "src/index.css"),
     "body { color: red; }"
   );
+  
   console.log("Wrote file", { file: resolve(testDir, "src/index.css") });
-
   console.log("Copying file");
-  const file = readFileSync(new URL("../../tsmodule.png", import.meta.url));
+
   copyFileSync(
-    file,
+    new URL("../../tsmodule.png", import.meta.url),
     resolve(testDir, "src/path/to/assets/tsmodule.png"),
   );
 
