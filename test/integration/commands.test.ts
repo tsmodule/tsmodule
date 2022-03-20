@@ -149,14 +149,15 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   await Promise.all([
     dev(shell),
     (async () => {
-      await sleep(1000);
+      await sleep(2500);
       createTestAssets(defaultTestDir);
-      await sleep(2000);
+      await sleep(2500);
       console.log("Created test assets.");
       shell.kill();
-      await sleep(1000);
     })(),
   ]);
+
+  await sleep(2500);
 
   const emittedPng = resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png");
   const emittedCss = readTextFile(resolve(defaultTestDir, "dist/index.css"));
