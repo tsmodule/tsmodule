@@ -134,6 +134,11 @@ test.serial("[build] command", async (t) => {
   const emittedModule = readTextFile(emittedFile);
 
   t.snapshot(emittedModule, "emitted module should match snapshot");
+
+  t.assert(
+    existsSync(resolve(defaultTestDir, "dist/index.d.ts")),
+    "should generate .d.ts files"
+  );
 });
 
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {

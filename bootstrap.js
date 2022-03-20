@@ -1,8 +1,15 @@
 /* eslint-disable no-console */
 import { build as esbuild } from "esbuild";
 import glob from "fast-glob";
+import { resolve } from "path";
+import { rm } from "fs/promises";
 
 // process.env.NODE_ENV = "production";
+
+/**
+ * Clean dist.
+ */
+await rm(resolve(process.cwd(), "dist"), { recursive: true, force: true });
 
 const BOOTSTRAP_FILES = glob.sync("src/**/*.ts");
 console.log("BOOTSTRAP: Building with esbuild...");

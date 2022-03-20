@@ -1,37 +1,33 @@
-import { TS_CONFIG } from "../../normalize/lib/typescriptApi";
-
-import chalk from "chalk";
 import { createDebugLogger } from "create-debug-logger";
-import ts from "typescript";
+import { createShell } from "await-shell";
 
-export const emitTsDeclarations = (files: string[]) => {
+export const D_TS_CONFIG = {
+  moduleResolution: "node",
+  module: "esnext",
+  target: "esnext",
+  esModuleInterop: true,
+  incremental: false,
+  rootDir: "src",
+  outDir: "dist",
+  declaration: true,
+  noEmit: false,
+  emitDeclarationOnly: true,
+};
+
+export const emitTsDeclarations = async () => {
   const DEBUG = createDebugLogger(emitTsDeclarations);
-  const program = ts.createProgram(
-    files,
-    {
-      ...TS_CONFIG,
-      declaration: true,
-      noEmit: false,
-      emitDeclarationOnly: true,
-    },
-  );
-
-  const emitResult = program.emit();
-
-  const allDiagnostics = ts
-    .getPreEmitDiagnostics(program)
-    .concat(emitResult.diagnostics);
-
-  allDiagnostics.forEach(diagnostic => {
-    if (diagnostic.file) {
-      const { line, character } = ts.getLineAndCharacterOfPosition(
-        diagnostic.file,
-        diagnostic.start ?? 0
-      );
-      const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
-      DEBUG.log(chalk.red(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`));
-    } else {
-      DEBUG.log(chalk.red(ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")));
-    }
+  const shell = createShell({
+    log: false,
   });
+
+  const argString =
+    Object
+      .entries(D_TS_CONFIG)
+      .map(([key, value]) => `--${key} ${value}`)
+      .join(" ");
+
+  const cmd = `tsc -p tsconfig.json ${argString}`;
+  DEBUG.log(`Calling: ${cmd}`);
+
+  await shell.run(`tsc -p tsconfig.json ${argString}`);
 };

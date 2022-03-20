@@ -1,5 +1,7 @@
-import { isTs, isTsxOrJsx } from "./resolve";
-import { resolve } from "path";
+import { extname, resolve } from "path";
+import { isTs, isTsxOrJsx } from "./resolve.js";
+import {  existsSync } from "fs";
+import chalk from "chalk";
 
 export const getWorkingDirs = () => {
   const cwd = process.cwd();
@@ -21,4 +23,34 @@ export const getEmittedFile = (file: string) => {
     .replace(srcDir, outDir)
     .replace(isTs, ".js")
     .replace(isTsxOrJsx, ".js");
+};
+
+const tsExtensions = [".mts", ".ts", ".tsx"];
+
+export const getSourceFile = (file: string) => {
+  file = resolve(file);
+  const { srcDir, outDir } = getWorkingDirs();
+
+  const reducedPath = file.replace(extname(file), "");
+  const sourcePath = reducedPath.replace(outDir, srcDir);
+
+  let resolvedSourceFile;
+
+  for (const ext of tsExtensions) {
+    const fileDotTs = `${sourcePath}${ext}`;
+    if (existsSync(fileDotTs)) {
+      resolvedSourceFile = fileDotTs;
+    }
+
+    const indexDotTs = resolve(sourcePath, `index${ext}`);
+    if (existsSync(indexDotTs)) {
+      resolvedSourceFile = indexDotTs;
+    }
+  }
+
+  if (!resolvedSourceFile) {
+    throw new Error(`Could not find source file for: ${chalk.bold(file)}`);
+  }
+
+  return resolvedSourceFile;
 };

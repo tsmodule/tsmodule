@@ -1,38 +1,40 @@
+import { IMPORT_OR_EXPORT_STATEMENT, IMPORT_SPECIFIER_IN_CLAUSE } from "../index.js";
+import { dirname, normalize, posix as pathPosix, resolve } from "path";
+import { existsSync, readFileSync } from "fs";
 import { createDebugLogger } from "create-debug-logger";
-import { posix as path } from "path";
-import ts from "typescript";
 
-export const TS_CONFIG: ts.CompilerOptions = {
-  moduleResolution: ts.ModuleResolutionKind.NodeJs,
-  module: ts.ModuleKind.ESNext,
-  target: ts.ScriptTarget.ESNext,
-  esModuleInterop: true,
-  incremental: false,
-  noEmit: true,
-  rootDir: "src",
-  outDir: "dist",
-};
+const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
+const typescriptResolve = (specifier: string, entryPoint: string) => {
 
-export const compilerHost = ts.createCompilerHost(TS_CONFIG);
+  const resolvedDirectory = dirname(normalize(entryPoint));
+  const resolvedPath = forcePosixPath(resolve(resolvedDirectory, specifier));
+  const reducedPath = resolvedPath.replace(pathPosix.extname(resolvedPath), "");
 
-const typescriptResolve = (specifier: string, entryPoint = process.cwd()) => {
-  const { resolvedModule } = ts.resolveModuleName(
-    specifier,
-    entryPoint,
-    TS_CONFIG,
-    compilerHost
-  );
+  for (const fileExtension of fileExtensions) {
+    const dotTsFile = `${reducedPath}${fileExtension}`;
+    const indexDotTsFile = `${reducedPath}/index${fileExtension}`;
 
-  if (!resolvedModule) {
-    const errorData = JSON.stringify({ specifier, entryPoint }, null, 2);
-    throw new Error(`Could not resolve module: ${errorData}`);
+    if (existsSync(dotTsFile)) {
+      return dotTsFile;
+    }
+
+    if (existsSync(indexDotTsFile)) {
+      return indexDotTsFile;
+    }
   }
-
-  return resolvedModule;
 };
 
+const forcePosixPath = (path: string) => path.replace(/\\/g, "/");
+
+/**
+ * Get a POSIX-like ESM relative path from one file to another.
+ */
 const getEsmRelativeSpecifier = (from: string, to: string) => {
-  const relativePath = path.relative(path.dirname(from), to);
+
+  from = forcePosixPath(from);
+  to = forcePosixPath(to);
+
+  const relativePath = pathPosix.relative(pathPosix.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
   return specifier;
 };
@@ -49,103 +51,49 @@ interface SpecifierReplacement {
 export const getRewrittenSpecifiers = (modulePath: string) => {
   const DEBUG = createDebugLogger(getRewrittenSpecifiers);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
+  modulePath = forcePosixPath(modulePath);
 
-  const { resolvedFileName } = typescriptResolve(modulePath);
-  const sourceFile = compilerHost.getSourceFile(
-    resolvedFileName,
-    ts.ScriptTarget.ESNext
-  );
-
-  if (!sourceFile) {
-    throw new Error(`Could not read source file: ${resolvedFileName}`);
-  }
-
-  const { statements, fileName: entryPoint } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
+  const importExportRegex = new RegExp(IMPORT_OR_EXPORT_STATEMENT, "g");
 
-  /**
-   * Traverse the statements in this sourcefile.
-   */
-  statements.forEach(
-    (statement) => {
-      /**
-       * Whether this is an export statement.
-       */
-      const isEsmExport = ts.isExportDeclaration(statement);
+  const code = readFileSync(modulePath, "utf8");
+  const importStatements = code.match(importExportRegex);
 
-      /**
-       * Whether this is a non-type-only import statement.
-       */
-      const isEsmImport =
-        ts.isImportDeclaration(statement) &&
-        !statement?.importClause?.isTypeOnly;
-
-      /**
-       * Skip non-import/export statements completely.
-       */
-      if (!isEsmImport && !isEsmExport) {
-        return;
+  if (importStatements) {
+    for (const importStatement of importStatements) {
+      const specifierPattern = new RegExp(IMPORT_SPECIFIER_IN_CLAUSE);
+      const specifierMatch = importStatement.match(specifierPattern);
+      if (!specifierMatch) {
+        DEBUG.log("No specifier match", { importStatement, specifierPattern });
+        throw new Error(`Could not identify specifier in import statement: ${importStatement}`);
       }
 
-      /**
-       * Skip export statements without a module specifier, throw if we somehow
-       * encounter an import statement without a module specifier (would be a
-       * SyntaxError).
+      const specifier = specifierMatch[0];
+
+      /**,
+       * If this is a non-relative specifier, or it has a file extension, do
+       * try to resolve it.
        */
-      const { moduleSpecifier } = statement;
-      if (!moduleSpecifier) {
-        if (isEsmExport) {
-          return;
-        } else {
-          throw new Error(`Could not find module specifier in: ${JSON.stringify(statement)}`);
-        }
+      if (!specifier.startsWith(".") || pathPosix.extname(specifier)) {
+        continue;
       }
 
-      if (ts.isStringLiteral(moduleSpecifier)) {
-        const { text: specifier } = moduleSpecifier;
-        /**
-         * If this is a non-relative specifier, or it has a file extension, do
-         * try to resolve it.
-         */
-        if (!specifier.startsWith(".") || path.extname(specifier)) {
-          return;
-        }
-
-        DEBUG.log("Using TypeScript API to resolve specifier", { specifier });
-        const { resolvedModule } = ts.resolveModuleName(
-          specifier,
-          entryPoint,
-          {
-            ...TS_CONFIG,
-            allowJs: true,
-            checkJs: true,
-          },
-          compilerHost
-        );
-
-        if (!resolvedModule) {
-          throw new Error(`Could not resolve module: ${specifier}`);
-        }
-
-        /**
-         * Convert the resolved module filepath to a relative specifier
-         * (relative to the entry-point).
-         *
-         * This is an ESM specifier, so force POSIX path separators.
-         */
-        const { resolvedFileName } = resolvedModule;
-        const relativeSpecifier = getEsmRelativeSpecifier(
-          entryPoint,
-          resolvedFileName
-        );
-
-        rewrittenSpecifiers.push({
-          specifierToReplace: specifier,
-          specifierReplacement: relativeSpecifier,
-        });
+      const resolvedSpecifier = typescriptResolve(specifier, modulePath);
+      if (!resolvedSpecifier) {
+        throw new Error(`Could not resolve specifier "${specifier}" from "${modulePath}"`);
       }
+
+      const specifierReplacement = getEsmRelativeSpecifier(
+        modulePath,
+        resolvedSpecifier
+      );
+
+      rewrittenSpecifiers.push({
+        specifierToReplace: specifier,
+        specifierReplacement
+      });
     }
-  );
+  }
 
   return rewrittenSpecifiers;
 };
