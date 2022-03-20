@@ -25,8 +25,8 @@ const getEsmRelativeSpecifier = (from: string, to: string) => {
   // eslint-disable-next-line no-console
   console.log({ from, to });
 
-  // from = from.replace("\\", "/");
-  // to = to.replace("\\", "/");
+  from = from.replace("\\", "/");
+  to = to.replace("\\", "/");
 
   const relativePath = pathPosix.relative(pathPosix.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
