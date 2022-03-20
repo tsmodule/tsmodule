@@ -47,7 +47,7 @@ export const createTestAssets = async (testName: string) => {
 
   const cssFile = resolve(testDir, "src/index.css");
   writeFileSync(cssFile,"body { color: red; }", "utf-8");
-  
+
   console.log("Wrote file", { cssFile });
   await sleep(1000);
 
