@@ -22,11 +22,12 @@ const fileExtensions = [".mts", ".ts", ".tsx", ".mjs", ".js", ".jsx", ".json"];
  * Get a POSIX-like ESM relative path from one file to another.
  */
 const getEsmRelativeSpecifier = (from: string, to: string) => {
-  // eslint-disable-next-line no-console
-  console.log({ from, to });
 
   from = from.replace("\\", "/");
   to = to.replace("\\", "/");
+
+  // eslint-disable-next-line no-console
+  console.log({ from, to });
 
   const relativePath = pathPosix.relative(pathPosix.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
@@ -58,7 +59,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
   const { statements, fileName } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
   // eslint-disable-next-line no-console
-  console.log({ modulePath });
+  console.log({ modulePath, fileName });
 
   /**
    * Traverse the statements in this sourcefile.
