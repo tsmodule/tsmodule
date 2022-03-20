@@ -33,11 +33,6 @@ test.before("[create] should create all template types", async () => {
     dirsToCopyDevInto.map(async (dirToCopyInto) => {
       const shell = createShell();
       await shell.run(`cp -rf ${defaultTestDir} ${dirToCopyInto}`);
-      // if (process.platform === "win32") {
-      //   await shell.run(`xcopy /E /Y /F /Q ${defaultTestDir} ${dirToCopyInto}\\`);
-      // } else {
-      //   await shell.run(`cp -rf ${defaultTestDir} ${dirToCopyInto}`);
-      // }
     })
   );
 
