@@ -196,7 +196,7 @@ test.serial("[dev] should notice new file", async (t) => {
         "src/path/to/newFile.ts",
         "export const abc = 123;"
       );
-  
+
       shell.kill();
 
       const emittedDevFile = resolve(defaultTestDir, "dist/path/to/newFile.js");
