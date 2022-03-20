@@ -1,4 +1,6 @@
-import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { constants, existsSync } from "fs";
+import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
+
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions } from "esbuild";
 import chalk from "chalk";
@@ -32,10 +34,10 @@ export const bannerLog = (msg: string) => {
   );
 };
 
-const forceTypeModuleInDist = () => {
+const forceTypeModuleInDist = async () => {
   let distPkgJson;
   if (existsSync("dist/package.json")) {
-    distPkgJson = JSON.parse(readFileSync("dist/package.json", "utf-8"));
+    distPkgJson = JSON.parse(await readFile("dist/package.json", "utf-8"));
   } else {
     distPkgJson = {};
   }
@@ -45,7 +47,7 @@ const forceTypeModuleInDist = () => {
   }
 
   distPkgJson.type = "module";
-  writeFileSync("dist/package.json", JSON.stringify(distPkgJson, null, 2));
+  await writeFile("dist/package.json", JSON.stringify(distPkgJson, null, 2));
 };
 
 const singleEntryPointConfig = (
@@ -88,12 +90,12 @@ const buildCssEntryPoint = async (
   const minify = dev ? "" : "-m";
   const postcss = "--postcss postcss.config.js";
 
-  const inputCss = readFileSync(inputStyles, "utf-8");
+  const inputCss = await readFile(inputStyles, "utf-8");
   const header = "@import \"@tsmodule/react\";\n\n";
   const outputCss = noStandardStyles ? inputCss : `${header}${inputCss}`;
 
   const rewrittenInput = getEmittedFile(inputStyles);
-  writeFileSync(rewrittenInput, outputCss);
+  await writeFile(rewrittenInput, outputCss);
 
   const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
   const shell = createShell({
@@ -252,10 +254,10 @@ export const build = async ({
         .replace(isTsxOrJsx, ".js");
 
     DEBUG.log("Cleaning emitted file:", { outfile });
-    rmSync(outfile, { force: true });
+    await rm(outfile, { force: true });
   } else {
     DEBUG.log("Cleaning old output:", { outDir });
-    rmSync(outDir, { force: true, recursive: true });
+    await rm(outDir, { force: true, recursive: true });
   }
 
   /**
@@ -274,7 +276,7 @@ export const build = async ({
         /**
         * Prepend the necessary createElement import to the TSX source.
         */
-        const tsxFileContents = readFileSync(tsxFile, "utf-8");
+        const tsxFileContents = await readFile(tsxFile, "utf-8");
         const runtimeCode = REACT_IMPORTS + tsxFileContents;
 
         const tsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
@@ -315,13 +317,8 @@ export const build = async ({
     const emittedFile = getEmittedFile(file);
     DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-    mkdirSync(dirname(emittedFile), { recursive: true });
-    copyFileSync(file, emittedFile, constants.COPYFILE_FICLONE);
-    // constants.COPYFILE_FICLONE_FORCE(
-    //   emittedFile,
-    //   readFileSync(file),
-    //   { encoding: "binary", flag: "w" }
-    // );
+    await mkdir(dirname(emittedFile), { recursive: true });
+    await copyFile(file, emittedFile, constants.COPYFILE_FICLONE);
   }
 
   /**
@@ -350,7 +347,7 @@ export const build = async ({
    * @see https://github.com/vercel/next.js/pull/33637
    * @see https://github.com/timneutkens/next.js/blob/99dceb60faae6b00faed75db795ef24107934227/packages/next/build/index.ts#L537-L540
    */
-  const rewrotePkgJson = forceTypeModuleInDist();
+  const rewrotePkgJson = await forceTypeModuleInDist();
   if (rewrotePkgJson) {
     ora("Forced \"type\": \"module\" in output.").succeed();
   }
