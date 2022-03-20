@@ -50,7 +50,7 @@
     "@typescript-eslint/parser": "^5.14.0",
     "assert": "^2.0.0",
     "ava": "^4.1.0",
-    "await-shell": "^34.0.7",
+    "await-shell": "^34.0.8",
     "chalk": "^5.0.1",
     "commander": "^9.0.0",
     "create-debug-logger": "^3.0.0",
