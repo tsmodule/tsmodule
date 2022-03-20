@@ -95,7 +95,7 @@ export const normalizeImportSpecifiers = async (files = "dist/**/*.js") => {
     const resolvedEntryPoint = resolvePath(file);
     const entryPointURL = pathToFileURL(resolvedEntryPoint).href;
 
-    const rewrites = getRewrittenSpecifiers(resolvedEntryPoint);
+    const rewrites = await getRewrittenSpecifiers(resolvedEntryPoint);
     if (!rewrites) return null;
 
     DEBUG.log("TypeScript API yielded specifiers to rewrite:", { rewrites });
