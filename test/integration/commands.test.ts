@@ -147,7 +147,10 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   const shell = createShell();
 
   await Promise.all([
-    dev(shell),
+    (async () => {
+      await dev(shell);
+      console.log("DEV PROCESS TERMINATED.");
+    })(),
     (async () => {
       await sleep(2500);
       createTestAssets(defaultTestDir);
@@ -290,7 +293,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
-  createTestAssets(defaultTest);
+  await createTestAssets(defaultTest);
   await shell.run("tsmodule build -r");
 
   t.assert(existsSync(resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png")));

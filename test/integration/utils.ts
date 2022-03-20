@@ -13,7 +13,7 @@ export const sleep = async (ms = 1000) => {
 
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
-export const createTestAssets = (testName: string) => {
+export const createTestAssets = async (testName: string) => {
   console.log("Creating test assets for", { testName });
 
   const testDir = getTestDir(testName);
@@ -27,8 +27,9 @@ export const createTestAssets = (testName: string) => {
 
   const cssFile = resolve(testDir, "src/index.css");
   writeFileSync(cssFile,"body { color: red; }", "utf-8");
-
+  
   console.log("Wrote file", { cssFile });
+  await sleep(1000);
 
   const pngSource = resolve(fileURLToPath(import.meta.url), "../../../tsmodule.png");
   const pngFile = resolve(testDir, "src/path/to/assets/tsmodule.png");
