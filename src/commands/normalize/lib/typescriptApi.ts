@@ -1,7 +1,9 @@
 import { posix as pathPosix } from "path";
 import { createDebugLogger } from "create-debug-logger";
 import ts from "typescript";
-import { getSourceFile } from "../../../utils/cwd.js";
+// import { getSourceFile } from "../../../utils/cwd.js";
+import { EXPORT_CLAUSE, IMPORT_CLAUSE, IMPORT_OR_EXPORT_STATEMENT, IMPORT_STATEMENT } from "../index.js";
+import { readFileSync } from "fs";
 
 export const TS_CONFIG: ts.CompilerOptions = {
   moduleResolution: ts.ModuleResolutionKind.NodeJs,
@@ -27,9 +29,6 @@ const getEsmRelativeSpecifier = (from: string, to: string) => {
 
   from = forcePosixPath(from);
   to = forcePosixPath(to);
-
-  // eslint-disable-next-line no-console
-  console.log({ from, to });
 
   const relativePath = pathPosix.relative(pathPosix.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
@@ -62,6 +61,12 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
 
   const { statements } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
+
+  const importOrExportStatement = `(${IMPORT_CLAUSE}|${EXPORT_CLAUSE})`;
+  const importExportRegex = new RegExp(IMPORT_OR_EXPORT_STATEMENT, "g");
+
+  const code = readFileSync(modulePath, "utf8");
+  console.log(code.match(importExportRegex));
 
   /**
    * Traverse the statements in this sourcefile.
