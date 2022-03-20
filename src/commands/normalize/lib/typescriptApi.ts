@@ -18,13 +18,15 @@ export const compilerHost = ts.createCompilerHost(TS_CONFIG);
 
 const fileExtensions = [".mts", ".ts", ".tsx", ".mjs", ".js", ".jsx", ".json"];
 
+const forcePosixPath = (path: string) => path.replace(/\\/g, "/");
+
 /**
  * Get a POSIX-like ESM relative path from one file to another.
  */
 const getEsmRelativeSpecifier = (from: string, to: string) => {
 
-  from = from.replace("\\", "/");
-  to = to.replace("\\", "/");
+  from = forcePosixPath(from);
+  to = forcePosixPath(to);
 
   // eslint-disable-next-line no-console
   console.log({ from, to });
@@ -56,10 +58,12 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
     throw new Error(`Could not read source file: ${modulePath}`);
   }
 
-  const { statements, fileName } = sourceFile;
+  const { statements } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
+
   // eslint-disable-next-line no-console
-  console.log({ modulePath, fileName });
+  modulePath = forcePosixPath(modulePath);
+  console.log({ modulePath });
 
   /**
    * Traverse the statements in this sourcefile.
@@ -112,7 +116,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
         DEBUG.log("Using TypeScript API to resolve specifier", { specifier });
         const { resolvedModule } = ts.resolveModuleName(
           specifier,
-          fileName,
+          modulePath,
           {
             ...TS_CONFIG,
             allowJs: true,
@@ -133,7 +137,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
          */
         const { resolvedFileName } = resolvedModule;
         const relativeSpecifier = getEsmRelativeSpecifier(
-          fileName,
+          modulePath,
           resolvedFileName
         );
 
