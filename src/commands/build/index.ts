@@ -167,7 +167,6 @@ export const build = async ({
     charset: "utf8",
     logLevel: dev ? "warning" : "error",
     define: {
-      PACKAGE_JSON: pkgJsonFile,
       "process.env.NODE_ENV": dev ? JSON.stringify("development") : JSON.stringify("production"),
     },
   };

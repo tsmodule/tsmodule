@@ -8,9 +8,10 @@ import { build } from "./commands/build";
 import { create } from "./commands/create";
 import { dev } from "./commands/dev";
 import { execute } from "./commands/execute";
+import { localPackageJson } from "./constants";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
-const { version } = PACKAGE_JSON;
+const { version } = await localPackageJson();
 const program = new Command();
 
 program
