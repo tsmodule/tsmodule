@@ -13,11 +13,23 @@ import { pathToFileURL } from "url";
 import { createDebugLogger } from "create-debug-logger";
 import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
 
-const EXPR_BREAK = "[^\n\r;]*";
-const IMPORT_SPECIFIER = `[\"\']${EXPR_BREAK}[\'\"][;\n]?$`;
-const IMPORT_CLAUSE = `(import${EXPR_BREAK}(from)?)`;
-const DYNAMIC_IMPORT = `(import|require)${EXPR_BREAK}\\(`;
-const EXPORT_FROM = `(export${EXPR_BREAK}from)`;
+/**
+ * Any number of chars that are not newlines or semicolons.
+ */
+export const IMPORT_KEYWORD_END = "( )*(\{?)";
+export const NON_EXPR_BREAK = "[^\n\r;]+";
+export const IMPORT_KEYWORD = "import *\{?";
+export const EXPR_BREAK = "[\n\r;]+";
+export const OLD_EXPR_BREAK = "[^\n\r;]*";
+
+export const IMPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
+export const EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
+export const IMPORT_OR_EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import|export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
+
+export const IMPORT_CLAUSE = `(import${OLD_EXPR_BREAK}(from)?)`;
+export const DYNAMIC_IMPORT = `(import|require)${OLD_EXPR_BREAK}\\(`;
+export const EXPORT_CLAUSE = `(export${OLD_EXPR_BREAK}from)`;
+export const IMPORT_SPECIFIER_IN_CLAUSE = "(?<=[\"\'])([^\n\r]+)(?=[\'\"])";
 
 /**
  * Matches a complete import statement, including the import keyword, as well as
@@ -25,10 +37,10 @@ const EXPORT_FROM = `(export${EXPR_BREAK}from)`;
  */
 export const generateImportPattern = (importSource: string) => {
   const escaped = importSource.replace(".", "\\.").replace("/", "\\/");
-  const padded = `${EXPR_BREAK}["']${escaped}["']${EXPR_BREAK}`;
+  const padded = `${OLD_EXPR_BREAK}["']${escaped}["']${OLD_EXPR_BREAK}`;
 
   return new RegExp(
-    `(${IMPORT_CLAUSE}|${DYNAMIC_IMPORT}|${EXPORT_FROM})${padded}`,
+    `(${IMPORT_CLAUSE}|${DYNAMIC_IMPORT}|${EXPORT_CLAUSE})${padded}`,
     "g",
   );
 };
@@ -47,7 +59,7 @@ export const rewriteImportStatement = (
     { importStatement, specifierToReplace, specifierReplacement }
   );
 
-  const specifierPattern = new RegExp(IMPORT_SPECIFIER);
+  const specifierPattern = new RegExp(IMPORT_SPECIFIER_IN_CLAUSE);
   const specifierMatch = importStatement.match(specifierPattern);
   if (!specifierMatch) {
     DEBUG.log("No specifier match", { importStatement, specifierPattern });
