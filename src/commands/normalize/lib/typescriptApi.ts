@@ -49,6 +49,8 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
   const DEBUG = createDebugLogger(getRewrittenSpecifiers);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
 
+  modulePath = forcePosixPath(modulePath);
+
   const sourceFile = compilerHost.getSourceFile(
     modulePath,
     ts.ScriptTarget.ESNext
@@ -60,10 +62,6 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
 
   const { statements } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
-
-  // eslint-disable-next-line no-console
-  modulePath = forcePosixPath(modulePath);
-  console.log({ modulePath });
 
   /**
    * Traverse the statements in this sourcefile.
