@@ -14,21 +14,23 @@ import { createDebugLogger } from "create-debug-logger";
 import { getRewrittenSpecifiers } from "./lib/typescriptApi.js";
 
 /**
- * Any number of chars that are not newlines or semicolons.
+ * These are lazy hacks.
  */
-export const IMPORT_KEYWORD_END = "( )*(\{?)";
-export const NON_EXPR_BREAK = "[^\n\r;]+";
+
+export const EXPRESSION_BREAK = "[\n\r;]+";
+export const EXPRESSION_CHAR = "[^\n\r;]*";
 export const IMPORT_KEYWORD = "import *\{?";
-export const EXPR_BREAK = "[\n\r;]+";
-export const OLD_EXPR_BREAK = "[^\n\r;]*";
+export const IMPORT_CLAUSE = `(import${EXPRESSION_CHAR}(from)?)`;
+export const DYNAMIC_IMPORT = `(import|require)${EXPRESSION_CHAR}\\(`;
+export const EXPORT_CLAUSE = `(export${EXPRESSION_CHAR}from)`;
+
+/**
+ * These are reliable.
+ */
 
 export const IMPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
 export const EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
 export const IMPORT_OR_EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import|export)( )*(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
-
-export const IMPORT_CLAUSE = `(import${OLD_EXPR_BREAK}(from)?)`;
-export const DYNAMIC_IMPORT = `(import|require)${OLD_EXPR_BREAK}\\(`;
-export const EXPORT_CLAUSE = `(export${OLD_EXPR_BREAK}from)`;
 export const IMPORT_SPECIFIER_IN_CLAUSE = "(?<=[\"\'])([^\n\r]+)(?=[\'\"])";
 
 /**
@@ -37,7 +39,7 @@ export const IMPORT_SPECIFIER_IN_CLAUSE = "(?<=[\"\'])([^\n\r]+)(?=[\'\"])";
  */
 export const generateImportPattern = (importSource: string) => {
   const escaped = importSource.replace(".", "\\.").replace("/", "\\/");
-  const padded = `${OLD_EXPR_BREAK}["']${escaped}["']${OLD_EXPR_BREAK}`;
+  const padded = `${EXPRESSION_CHAR}["']${escaped}["']${EXPRESSION_CHAR}`;
 
   return new RegExp(
     `(${IMPORT_CLAUSE}|${DYNAMIC_IMPORT}|${EXPORT_CLAUSE})${padded}`,
