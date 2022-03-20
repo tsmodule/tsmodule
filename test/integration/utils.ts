@@ -30,7 +30,7 @@ export const createTestAssets = (testName: string) => {
 
   console.log("Wrote file", { cssFile });
 
-  const pngSource = resolve("../../tsmodule.png", fileURLToPath(import.meta.url));
+  const pngSource = resolve(fileURLToPath(import.meta.url), "../../../tsmodule.png");
   const pngFile = resolve(testDir, "src/path/to/assets/tsmodule.png");
   copyFileSync(
     pngSource,
