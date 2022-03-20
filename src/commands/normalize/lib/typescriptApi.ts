@@ -1,6 +1,7 @@
+import { posix as pathPosix } from "path";
 import { createDebugLogger } from "create-debug-logger";
-import { posix as path } from "path";
 import ts from "typescript";
+import { getSourceFile } from "../../../utils/cwd.js";
 
 export const TS_CONFIG: ts.CompilerOptions = {
   moduleResolution: ts.ModuleResolutionKind.NodeJs,
@@ -17,25 +18,17 @@ export const compilerHost = ts.createCompilerHost(TS_CONFIG);
 
 const fileExtensions = [".mts", ".ts", ".tsx", ".mjs", ".js", ".jsx", ".json"];
 
-// const typescriptResolve = (specifier: string, entryPoint = process.cwd()) => {
-  
-//   const { resolvedModule } = ts.resolveModuleName(
-//     specifier,
-//     entryPoint,
-//     TS_CONFIG,
-//     compilerHost
-//   );
-
-//   if (!resolvedModule) {
-//     const errorData = JSON.stringify({ specifier, entryPoint }, null, 2);
-//     throw new Error(`Could not resolve module: ${errorData}`);
-//   }
-
-//   return resolvedModule;
-// };
-
+/**
+ * Get a POSIX-like ESM relative path from one file to another.
+ */
 const getEsmRelativeSpecifier = (from: string, to: string) => {
-  const relativePath = path.relative(path.dirname(from), to);
+  // eslint-disable-next-line no-console
+  console.log({ from, to });
+
+  // from = from.replace("\\", "/");
+  // to = to.replace("\\", "/");
+
+  const relativePath = pathPosix.relative(pathPosix.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
   return specifier;
 };
@@ -53,18 +46,19 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
   const DEBUG = createDebugLogger(getRewrittenSpecifiers);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
 
-  const resolvedFileName = modulePath;
   const sourceFile = compilerHost.getSourceFile(
-    resolvedFileName,
+    modulePath,
     ts.ScriptTarget.ESNext
   );
 
   if (!sourceFile) {
-    throw new Error(`Could not read source file: ${resolvedFileName}`);
+    throw new Error(`Could not read source file: ${modulePath}`);
   }
 
-  const { statements, fileName: entryPoint } = sourceFile;
+  const { statements, fileName } = sourceFile;
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
+  // eslint-disable-next-line no-console
+  console.log({ modulePath });
 
   /**
    * Traverse the statements in this sourcefile.
@@ -110,14 +104,14 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
          * If this is a non-relative specifier, or it has a file extension, do
          * try to resolve it.
          */
-        if (!specifier.startsWith(".") || path.extname(specifier)) {
+        if (!specifier.startsWith(".") || pathPosix.extname(specifier)) {
           return;
         }
 
         DEBUG.log("Using TypeScript API to resolve specifier", { specifier });
         const { resolvedModule } = ts.resolveModuleName(
           specifier,
-          entryPoint,
+          fileName,
           {
             ...TS_CONFIG,
             allowJs: true,
@@ -138,7 +132,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
          */
         const { resolvedFileName } = resolvedModule;
         const relativeSpecifier = getEsmRelativeSpecifier(
-          entryPoint,
+          fileName,
           resolvedFileName
         );
 
