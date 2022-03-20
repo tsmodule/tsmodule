@@ -1,6 +1,6 @@
 import { IMPORT_OR_EXPORT_STATEMENT, IMPORT_SPECIFIER_IN_CLAUSE } from "../index.js";
-import { existsSync, readFileSync } from "fs";
 import { dirname, normalize, posix as pathPosix, resolve } from "path";
+import { existsSync, readFileSync } from "fs";
 import { createDebugLogger } from "create-debug-logger";
 
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
