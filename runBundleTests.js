@@ -21,14 +21,22 @@ await shell.run("yarn build -rb");
  */
 await shell.run("rm -rf node_modules");
 
+let error;
+
 try {
   await shell.run(`yarn remove ${testPackages.join(" ")}`);
   await shell.run(`yarn add --production ${testPackages.join(" ")}`);
   await shell.run("yarn --production");
   await shell.run("yarn ava --no-worker-threads");
-} catch (e) {}
+} catch (e) {
+  error = e;
+}
 
 if (!process.env.CI) {
   await shell.run(`yarn remove -f ${testPackages.join(" ")}`);
   await shell.run(`yarn add -D ${testPackages.join(" ")}`);
+}
+
+if (error) {
+  throw error;
 }
