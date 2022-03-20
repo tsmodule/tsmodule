@@ -1,7 +1,8 @@
-import { createDebugLogger, log } from "create-debug-logger";
 import type { Stream } from "stream";
-import chalk from "chalk";
 import { readFileSync } from "fs";
+
+import { createDebugLogger, log } from "create-debug-logger";
+import chalk from "chalk";
 
 function streamToPromise(stream: Stream) {
   return new Promise<Buffer>((resolve, reject) => {

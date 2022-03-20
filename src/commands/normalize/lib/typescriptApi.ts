@@ -1,6 +1,8 @@
+import { existsSync } from "fs";
+import { readFile } from "fs/promises";
+
 import { IMPORT_OR_EXPORT_STATEMENT, IMPORT_SPECIFIER_IN_CLAUSE } from "../index.js";
 import { dirname, normalize, posix as pathPosix, resolve } from "path";
-import { existsSync, readFileSync } from "fs";
 import { createDebugLogger } from "create-debug-logger";
 
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
@@ -56,7 +58,7 @@ export const getRewrittenSpecifiers = async (modulePath: string) => {
   const rewrittenSpecifiers: SpecifierReplacement[]  = [];
   const importExportRegex = new RegExp(IMPORT_OR_EXPORT_STATEMENT, "g");
 
-  const code = readFileSync(modulePath, "utf8");
+  const code = await readFile(modulePath, "utf8");
   const importStatements = code.match(importExportRegex);
 
   if (importStatements) {

@@ -1,16 +1,17 @@
 /* eslint-disable no-console */
-import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { fileURLToPath } from "url";
+import { constants, existsSync } from "fs";
+import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
 import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
 import { tmpdir } from "os";
 
-export const readTextFile = (file: string) => {
-  return readFileSync(file, "utf-8");
+export const readTextFile = async (file: string) => {
+  return await readFile(file, "utf-8");
 };
 
-export const mkdirp = (dir: string) => {
+export const mkdirp = async (dir: string) => {
   if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
+    await mkdir(dir, { recursive: true });
   }
 };
 
@@ -23,13 +24,17 @@ export const sleep = async (ms = 1000) => {
 
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
-export const writeTestFile = async (testName: string, path: string, content: string) => {
+export const writeTestFile = async (
+  testName: string,
+  path: string,
+  content: string
+) => {
   const testDir = getTestDir(testName);
   const testFile = resolve(testDir, path);
 
   await sleep(1000);
-  mkdirSync(dirname(testFile), { recursive: true });
-  writeFileSync(testFile, content, { encoding: "utf-8" });
+  await mkdir(dirname(testFile), { recursive: true });
+  await writeFile(testFile, content, { encoding: "utf-8" });
   await sleep(1000);
 };
 
@@ -41,19 +46,19 @@ export const createTestAssets = async (testName: string) => {
 
   if (!existsSync(subdir)) {
     console.log("Creating subdir", { subdir });
-    mkdirSync(subdir, { recursive: true });
+    await mkdir(subdir, { recursive: true });
     console.log("Subdir created.");
   }
 
   const cssFile = resolve(testDir, "src/index.css");
-  writeFileSync(cssFile,"body { color: red; }", "utf-8");
-  
+  await writeFile(cssFile,"body { color: red; }", "utf-8");
+
   console.log("Wrote file", { cssFile });
   await sleep(1000);
 
   const pngSource = resolve(fileURLToPath(import.meta.url), "../../../tsmodule.png");
   const pngFile = resolve(testDir, "src/path/to/assets/tsmodule.png");
-  copyFileSync(
+  await copyFile(
     pngSource,
     pngFile,
     constants.COPYFILE_FICLONE
@@ -70,7 +75,7 @@ export const cleanTestDir = async (testName: string) => {
 
   if (existsSync(testDir)) {
     if (!process.env.SKIP_TEST_SETUP) {
-      rmSync(testDir, { recursive: true, force: true });
+      await rm(testDir, { recursive: true, force: true });
     }
   }
 
@@ -82,7 +87,7 @@ export const cleanTestDir = async (testName: string) => {
 
 export const createTestDir = async (testName: string) => {
   const { testDir } = await cleanTestDir(testName);
-  mkdirSync(testDir, { recursive: true });
+  await mkdir(testDir, { recursive: true });
 
   return {
     testName,
