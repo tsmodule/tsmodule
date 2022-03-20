@@ -16,9 +16,6 @@ import { createDebugLogger } from "create-debug-logger";
  * internal source (for bootstrap code path).
  */
 import { checkExtensions, checkTsExtensions, fileExists, isJs, isTs, MODULE_LOADERS } from "../utils/resolve.js";
-import { getPackageJsonFile } from "../utils/pkgJson.js";
-
-const packageJsonFile = await getPackageJsonFile();
 
 export const resolve: ModuleResolveHook = async (
   specifier,
@@ -155,9 +152,6 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
       ...options,
       sourcefile: path,
       format: "esm",
-      define: {
-        PACKAGE_JSON: packageJsonFile,
-      },
     }
   );
 
@@ -214,9 +208,6 @@ export const transformSource: ModuleTransformSourceHook = async (
       target: "esnext",
       sourcefile: context.url,
       format: context.format === "module" ? "esm" : "cjs",
-      define: {
-        PACKAGE_JSON: packageJsonFile,
-      },
     }
   );
 

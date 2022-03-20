@@ -41,25 +41,23 @@ const getEsmRelativeSpecifier = (from: string, to: string) => {
   return specifier;
 };
 
-interface SpecifierReplacement {
-  specifierToReplace: string;
-  specifierReplacement: string;
-}
-
 /**
- * Get the rewritten specifiers for a given module. Import/export specifiers
- * will be resolved ahead-of-time by the TypeScript compiler and returned.
+ * Load the given module and resolve specifiers in its import statements,
+ * replacing them.
+ *
+ * @returns The module's source code with all specifiers replaced.
  */
-export const getRewrittenSpecifiers = async (modulePath: string) => {
-  const DEBUG = createDebugLogger(getRewrittenSpecifiers);
+export const rewriteStatements = async (modulePath: string) => {
+  const DEBUG = createDebugLogger(rewriteStatements);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
   modulePath = forcePosixPath(modulePath);
 
-  const rewrittenSpecifiers: SpecifierReplacement[]  = [];
+  // const rewrittenStatements: StatementReplacement[]  = [];
   const importExportRegex = new RegExp(IMPORT_OR_EXPORT_STATEMENT, "g");
 
-  const code = await readFile(modulePath, "utf8");
+  let code = await readFile(modulePath, "utf8");
   const importStatements = code.match(importExportRegex);
+  DEBUG.log("Found import statements:", { importStatements });
 
   if (importStatements) {
     for (const importStatement of importStatements) {
@@ -71,6 +69,7 @@ export const getRewrittenSpecifiers = async (modulePath: string) => {
       }
 
       const specifier = specifierMatch[0];
+      DEBUG.log("Found specifier:", { specifier });
 
       /**,
        * If this is a non-relative specifier, or it has a file extension, do
@@ -85,17 +84,25 @@ export const getRewrittenSpecifiers = async (modulePath: string) => {
         throw new Error(`Could not resolve specifier "${specifier}" from "${modulePath}"`);
       }
 
+      DEBUG.log("Resolved specifier:", { resolvedSpecifier });
+
       const specifierReplacement = getEsmRelativeSpecifier(
         modulePath,
         resolvedSpecifier
       );
 
-      rewrittenSpecifiers.push({
-        specifierToReplace: specifier,
+      DEBUG.log("Specifier replacement:", { specifierReplacement });
+
+      const importStatementReplacement = importStatement.replace(
+        specifier,
         specifierReplacement
-      });
+      );
+
+      DEBUG.log("Import statement replacement:", { importStatementReplacement });
+
+      code = code.replace(importStatement, importStatementReplacement);
     }
   }
 
-  return rewrittenSpecifiers;
+  return code;
 };
