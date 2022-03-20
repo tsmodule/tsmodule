@@ -149,10 +149,12 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   await Promise.all([
     dev(shell),
     (async () => {
+      await sleep(500);
       createTestAssets(defaultTestDir);
+      await sleep(2000);
       console.log("Created test assets.");
-      await sleep(2500);
       shell.kill();
+      await sleep(500);
     })(),
   ]);
 
