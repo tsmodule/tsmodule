@@ -2,22 +2,12 @@
 import test from "ava";
 
 import { createShell, Shell } from "await-shell";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync } from "fs";
 
-import { createTestAssets, cleanTestDir, sleep } from "./utils";
+import { createTestAssets, cleanTestDir, writeTestFile, readTextFile } from "./utils";
 import { build } from "../../dist/commands/build/index.js";
 import { resolve } from "path";
 import { tmpdir } from "os";
-
-const readTextFile = (file: string) => {
-  return readFileSync(file, "utf-8");
-};
-
-const mkdirp = (dir: string) => {
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-};
 
 const { testName: defaultTest, testDir: defaultTestDir } = await cleanTestDir("test-default");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
@@ -179,14 +169,11 @@ test.serial("[dev] should watch for file changes", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      const testFile = resolve(defaultTestDir, "src/update.ts");
-
-      await sleep(2500);
-      writeFileSync(
-        testFile,
+      writeTestFile(
+        defaultTest,
+        "src/update.ts",
         "export const hello = 'world';"
       );
-      await sleep(2500);
       shell.kill();
     })(),
   ]);
@@ -204,15 +191,12 @@ test.serial("[dev] should notice new file", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      const testFile = resolve(defaultTestDir, "src/path/to/newFile.ts");
-      mkdirp(resolve(defaultTestDir, "src/path/to"));
-
-      await sleep(2500);
-      writeFileSync(
-        testFile,
+      writeTestFile(
+        defaultTest,
+        "src/path/to/newFile.ts",
         "export const abc = 123;"
       );
-      await sleep(2500);
+  
       shell.kill();
 
       const emittedDevFile = resolve(defaultTestDir, "dist/path/to/newFile.js");

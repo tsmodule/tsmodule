@@ -1,8 +1,18 @@
 /* eslint-disable no-console */
-import { constants, copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "fs";
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { fileURLToPath, URL } from "url";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
 import { tmpdir } from "os";
+
+export const readTextFile = (file: string) => {
+  return readFileSync(file, "utf-8");
+};
+
+export const mkdirp = (dir: string) => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+};
 
 /**
  * Sleep for a given number of ms (default 250ms).
@@ -12,6 +22,16 @@ export const sleep = async (ms = 1000) => {
 };
 
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
+
+export const writeTestFile = async (testName: string, path: string, content: string) => {
+  const testDir = getTestDir(testName);
+  const testFile = resolve(testDir, path);
+
+  await sleep(1000);
+  mkdirSync(dirname(testFile), { recursive: true });
+  writeFileSync(testFile, content, { encoding: "utf-8" });
+  await sleep(1000);
+};
 
 export const createTestAssets = async (testName: string) => {
   console.log("Creating test assets for", { testName });
