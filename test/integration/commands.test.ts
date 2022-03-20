@@ -2,21 +2,12 @@
 import test from "ava";
 
 import { createShell, Shell } from "await-shell";
-import { createTestAssets, cleanTestDir, sleep } from "./utils";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { build } from "../../src/commands/build";
+import { existsSync, writeFileSync } from "fs";
+
+import { createTestAssets, cleanTestDir, writeTestFile, readTextFile } from "./utils";
+import { build } from "../../dist/commands/build/index.js";
 import { resolve } from "path";
 import { tmpdir } from "os";
-
-const readTextFile = (file: string) => {
-  return readFileSync(file, "utf-8");
-};
-
-const mkdirp = (dir: string) => {
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-};
 
 const { testName: defaultTest, testDir: defaultTestDir } = await cleanTestDir("test-default");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
@@ -146,11 +137,13 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   const shell = createShell();
 
   await Promise.all([
-    dev(shell),
     (async () => {
-      createTestAssets(defaultTestDir);
+      await dev(shell);
+      console.log("DEV PROCESS TERMINATED.");
+    })(),
+    (async () => {
+      await createTestAssets(defaultTestDir);
       console.log("Created test assets.");
-      await sleep(2500);
       shell.kill();
     })(),
   ]);
@@ -176,14 +169,11 @@ test.serial("[dev] should watch for file changes", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      const testFile = resolve(defaultTestDir, "src/update.ts");
-
-      await sleep(2500);
-      writeFileSync(
-        testFile,
+      await writeTestFile(
+        defaultTest,
+        "src/update.ts",
         "export const hello = 'world';"
       );
-      await sleep(2500);
       shell.kill();
     })(),
   ]);
@@ -201,15 +191,12 @@ test.serial("[dev] should notice new file", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      const testFile = resolve(defaultTestDir, "src/path/to/newFile.ts");
-      mkdirp(resolve(defaultTestDir, "src/path/to"));
-
-      await sleep(2500);
-      writeFileSync(
-        testFile,
+      await writeTestFile(
+        defaultTest,
+        "src/path/to/newFile.ts",
         "export const abc = 123;"
       );
-      await sleep(2500);
+  
       shell.kill();
 
       const emittedDevFile = resolve(defaultTestDir, "dist/path/to/newFile.js");
@@ -286,7 +273,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
-  createTestAssets(defaultTest);
+  await createTestAssets(defaultTest);
   await shell.run("tsmodule build -r");
 
   t.assert(existsSync(resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png")));

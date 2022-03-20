@@ -1,8 +1,18 @@
 /* eslint-disable no-console */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { URL } from "url";
-import { resolve } from "path";
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
 import { tmpdir } from "os";
+
+export const readTextFile = (file: string) => {
+  return readFileSync(file, "utf-8");
+};
+
+export const mkdirp = (dir: string) => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+};
 
 /**
  * Sleep for a given number of ms (default 250ms).
@@ -13,7 +23,17 @@ export const sleep = async (ms = 1000) => {
 
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
 
-export const createTestAssets = (testName: string) => {
+export const writeTestFile = async (testName: string, path: string, content: string) => {
+  const testDir = getTestDir(testName);
+  const testFile = resolve(testDir, path);
+
+  await sleep(1000);
+  mkdirSync(dirname(testFile), { recursive: true });
+  writeFileSync(testFile, content, { encoding: "utf-8" });
+  await sleep(1000);
+};
+
+export const createTestAssets = async (testName: string) => {
   console.log("Creating test assets for", { testName });
 
   const testDir = getTestDir(testName);
@@ -25,23 +45,23 @@ export const createTestAssets = (testName: string) => {
     console.log("Subdir created.");
   }
 
-  writeFileSync(
-    resolve(testDir, "src/index.css"),
-    "body { color: red; }"
-  );
-  console.log("Wrote file", { file: resolve(testDir, "src/index.css") });
+  const cssFile = resolve(testDir, "src/index.css");
+  writeFileSync(cssFile,"body { color: red; }", "utf-8");
+  
+  console.log("Wrote file", { cssFile });
+  await sleep(1000);
 
-  console.log("Copying file");
-  const file = readFileSync(new URL("../../tsmodule.png", import.meta.url));
-  writeFileSync(
-    resolve(testDir, "src/path/to/assets/tsmodule.png"),
-    file,
-    { encoding: "binary", flag: "w" }
+  const pngSource = resolve(fileURLToPath(import.meta.url), "../../../tsmodule.png");
+  const pngFile = resolve(testDir, "src/path/to/assets/tsmodule.png");
+  copyFileSync(
+    pngSource,
+    pngFile,
+    constants.COPYFILE_FICLONE
   );
-  console.log("Copied image");
 
-  // await sleep(2500);
+  console.log("Copied image", { pngFile });
   console.log("Created test assets.");
+  await sleep(1000);
 };
 
 export const cleanTestDir = async (testName: string) => {

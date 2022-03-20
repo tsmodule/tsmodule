@@ -1,4 +1,4 @@
-import { build } from "../../src/commands/build";
+import { build } from "../../dist/commands/build/index.js";
 import { createShell } from "await-shell";
 import test from "ava";
 

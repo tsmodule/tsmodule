@@ -1,6 +1,6 @@
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions } from "esbuild";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import chalk from "chalk";
 import { env } from "process";
 import glob from "fast-glob";
@@ -137,8 +137,8 @@ export const build = async ({
   runtimeOnly = dev,
   noWrite = false,
   noStandardStyles = false,
-  stdin,
-  stdinFile,
+  stdin = undefined,
+  stdinFile = undefined,
 }: BuildArgs) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
@@ -311,19 +311,18 @@ export const build = async ({
   const nonTsJsInput = allFiles.filter((file) => !isJsOrTs.test(file));
 
   DEBUG.log("Copying non-JS/TS files.", { allFiles, nonTsJsInput });
-  await Promise.all(
-    nonTsJsInput.map(async (file) => {
-      const emittedFile = getEmittedFile(file);
-      DEBUG.log("Copying non-source file:", { file, emittedFile });
+  for (const file of nonTsJsInput) {
+    const emittedFile = getEmittedFile(file);
+    DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-      mkdirSync(dirname(emittedFile), { recursive: true });
-      writeFileSync(
-        emittedFile,
-        readFileSync(file),
-        { encoding: "binary", flag: "w" }
-      );
-    })
-  );
+    mkdirSync(dirname(emittedFile), { recursive: true });
+    copyFileSync(file, emittedFile, constants.COPYFILE_FICLONE);
+    // constants.COPYFILE_FICLONE_FORCE(
+    //   emittedFile,
+    //   readFileSync(file),
+    //   { encoding: "binary", flag: "w" }
+    // );
+  }
 
   /**
    * Rewrite import specifiers in emitted output.

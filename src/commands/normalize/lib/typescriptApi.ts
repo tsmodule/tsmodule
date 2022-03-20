@@ -4,8 +4,8 @@ import { existsSync, readFileSync } from "fs";
 import { createDebugLogger } from "create-debug-logger";
 
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
-const typescriptResolve = (specifier: string, entryPoint: string) => {
 
+const typescriptResolve = async (specifier: string, entryPoint: string) => {
   const resolvedDirectory = dirname(normalize(entryPoint));
   const resolvedPath = forcePosixPath(resolve(resolvedDirectory, specifier));
   const reducedPath = resolvedPath.replace(pathPosix.extname(resolvedPath), "");
@@ -48,7 +48,7 @@ interface SpecifierReplacement {
  * Get the rewritten specifiers for a given module. Import/export specifiers
  * will be resolved ahead-of-time by the TypeScript compiler and returned.
  */
-export const getRewrittenSpecifiers = (modulePath: string) => {
+export const getRewrittenSpecifiers = async (modulePath: string) => {
   const DEBUG = createDebugLogger(getRewrittenSpecifiers);
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
   modulePath = forcePosixPath(modulePath);
@@ -78,7 +78,7 @@ export const getRewrittenSpecifiers = (modulePath: string) => {
         continue;
       }
 
-      const resolvedSpecifier = typescriptResolve(specifier, modulePath);
+      const resolvedSpecifier = await typescriptResolve(specifier, modulePath);
       if (!resolvedSpecifier) {
         throw new Error(`Could not resolve specifier "${specifier}" from "${modulePath}"`);
       }
