@@ -152,15 +152,11 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
       console.log("DEV PROCESS TERMINATED.");
     })(),
     (async () => {
-      await sleep(2500);
-      createTestAssets(defaultTestDir);
-      await sleep(2500);
+      await createTestAssets(defaultTestDir);
       console.log("Created test assets.");
       shell.kill();
     })(),
   ]);
-
-  await sleep(2500);
 
   const emittedPng = resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png");
   const emittedCss = readTextFile(resolve(defaultTestDir, "dist/index.css"));

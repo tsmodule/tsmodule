@@ -41,6 +41,7 @@ export const createTestAssets = async (testName: string) => {
 
   console.log("Copied image", { pngFile });
   console.log("Created test assets.");
+  await sleep(1000);
 };
 
 export const cleanTestDir = async (testName: string) => {
