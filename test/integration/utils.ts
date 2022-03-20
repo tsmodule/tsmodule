@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { URL } from "url";
 import { resolve } from "path";
 import { tmpdir } from "os";
@@ -33,11 +33,11 @@ export const createTestAssets = (testName: string) => {
 
   console.log("Copying file");
   const file = readFileSync(new URL("../../tsmodule.png", import.meta.url));
-  writeFileSync(
-    resolve(testDir, "src/path/to/assets/tsmodule.png"),
+  copyFileSync(
     file,
-    { encoding: "binary", flag: "w" }
+    resolve(testDir, "src/path/to/assets/tsmodule.png"),
   );
+
   console.log("Copied image");
 
   // await sleep(2500);
