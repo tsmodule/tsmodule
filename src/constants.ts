@@ -11,6 +11,7 @@ export const devDependencies = {
   react: [
     "next",
 
+    "@types/node",
     "@types/react",
     "@types/react-dom",
 
