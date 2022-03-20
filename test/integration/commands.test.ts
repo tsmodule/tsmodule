@@ -2,7 +2,8 @@
 import test from "ava";
 
 import { createShell, Shell } from "await-shell";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync } from "fs";
+import { writeFile } from "fs/promises";
 
 import { createTestAssets, cleanTestDir, writeTestFile, readTextFile } from "./utils";
 import { build } from "../../dist/commands/build/index.js";
@@ -58,8 +59,8 @@ const dev = async (shell: Shell) => {
 };
 
 const stdinImportStatement = "import { test } from \"./stdin-import\";\nconsole.log(test);";
-const writeStdinImportFile = () =>
-  writeFileSync(resolve(defaultTestDir, "src/stdin-import.ts"), "export const test = 42;");
+const writeStdinImportFile = async () =>
+  await writeFile(resolve(defaultTestDir, "src/stdin-import.ts"), "export const test = 42;");
 
 test.serial("[build --no-write] should return transformed code", async (t) => {
   process.chdir(defaultTestDir);
@@ -226,7 +227,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   process.chdir(defaultTestDir);
   const shell = createShell();
 
-  writeStdinImportFile();
+  await writeStdinImportFile();
 
   await t.notThrowsAsync(
     async () => await build({
@@ -285,12 +286,12 @@ test.serial("[build -b] should bundle output", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
-  writeFileSync(
+  await writeFile(
     resolve(defaultTestDir, "src/bundle-a.ts"),
     "import { b } from \"./bundle-b\";\nconsole.log(b);"
   );
 
-  writeFileSync(
+  await writeFile(
     resolve(defaultTestDir, "src/bundle-b.ts"),
     "export const b = 42;"
   );
