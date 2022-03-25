@@ -40,13 +40,13 @@
   },
   "dependencies": {
     "esbuild": "^0.14.25",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.3"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
-    "@types/node": "^17.0.21",
-    "@typescript-eslint/eslint-plugin": "^5.14.0",
-    "@typescript-eslint/parser": "^5.14.0",
+    "@types/node": "^17.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
     "assert": "^2.0.0",
     "ava": "^4.1.0",
     "await-shell": "^34.1.1",
@@ -54,13 +54,13 @@
     "commander": "^9.0.0",
     "create-debug-logger": "^3.0.0",
     "eslint": "^8.11.0",
-    "eslint-config-next": "^12.1.0",
+    "eslint-config-next": "^12.1.1",
     "fast-glob": "^3.2.11",
     "glob": "^7.2.0",
     "node-watch": "^0.7.3",
     "ora": "^6.1.0",
     "path": "^0.12.7",
-    "release-it": "^14.12.5"
+    "release-it": "^14.13.1"
   },
   "release-it": {
     "git": {
