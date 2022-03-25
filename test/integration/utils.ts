@@ -16,9 +16,9 @@ export const mkdirp = async (dir: string) => {
 };
 
 /**
- * Sleep for a given number of ms (default 250ms).
+ * Sleep for a given number of ms.
  */
-export const sleep = async (ms = 1000) => {
+export const sleep = async (ms = 2000) => {
   await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
 };
 
@@ -32,10 +32,10 @@ export const writeTestFile = async (
   const testDir = getTestDir(testName);
   const testFile = resolve(testDir, path);
 
-  await sleep(1000);
+  await sleep();
   await mkdir(dirname(testFile), { recursive: true });
   await writeFile(testFile, content, { encoding: "utf-8" });
-  await sleep(1000);
+  await sleep();
 };
 
 export const createTestAssets = async (testName: string) => {
@@ -54,7 +54,7 @@ export const createTestAssets = async (testName: string) => {
   await writeFile(cssFile,"body { color: red; }", "utf-8");
 
   console.log("Wrote file", { cssFile });
-  await sleep(1000);
+  await sleep();
 
   const pngSource = resolve(fileURLToPath(import.meta.url), "../../../tsmodule.png");
   const pngFile = resolve(testDir, "src/path/to/assets/tsmodule.png");
@@ -66,7 +66,7 @@ export const createTestAssets = async (testName: string) => {
 
   console.log("Copied image", { pngFile });
   console.log("Created test assets.");
-  await sleep(1000);
+  await sleep();
 };
 
 export const cleanTestDir = async (testName: string) => {

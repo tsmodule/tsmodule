@@ -233,7 +233,7 @@ test.serial("[build -b] should bundle output", async (t) => {
     "export const b = 42;"
   );
 
-  await sleep(1000);
+  await sleep();
 
   await t.notThrowsAsync(
     async () => await shell.run("tsmodule build -b"),
