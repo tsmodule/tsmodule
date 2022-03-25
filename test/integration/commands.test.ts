@@ -93,7 +93,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
   t.snapshot(emittedDevModule);
 });
 
-test.serial("[dev] should notice new file", async (t) => {
+test("[dev] should notice new file", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
