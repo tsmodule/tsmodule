@@ -3,9 +3,9 @@ import test from "ava";
 
 import { createShell, Shell } from "await-shell";
 import { existsSync } from "fs";
-import { writeFile } from "fs/promises";
+import { rm, writeFile } from "fs/promises";
 
-import { createTestAssets, cleanTestDir, writeTestFile, readTextFile } from "./utils";
+import { createTestAssets, cleanTestDir, writeTestFile, readTextFile, sleep } from "./utils";
 import { build } from "../../dist/commands/build/index.js";
 import { resolve } from "path";
 import { tmpdir } from "os";
@@ -58,7 +58,7 @@ const stdinImportStatement = "import { test } from \"./stdin-import\";\nconsole.
 const writeStdinImportFile = async () =>
   await writeFile(resolve(defaultTestDir, "src/stdin-import.ts"), "export const test = 42;");
 
-test("[create --react] should create Next.js component library", async (t) => {
+test.serial("[create --react] should create Next.js component library", async (t) => {
   process.chdir(reactTestDir);
 
   const pkgJson = await readTextFile(resolve(reactTestDir, "package.json"));
@@ -66,9 +66,12 @@ test("[create --react] should create Next.js component library", async (t) => {
 
   t.assert("react" in dependencies, "should add react dependency");
   t.assert("react-dom" in dependencies, "should add react-dom dependency");
+
+  t.assert(existsSync(resolve(reactTestDir, ".gitignore")), "should create gitignore");
+  t.assert(existsSync(resolve(reactTestDir, ".eslintrc")), "should create eslintrc");
 });
 
-test("[dev] should watch for file changes", async (t) => {
+test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
@@ -90,7 +93,7 @@ test("[dev] should watch for file changes", async (t) => {
   t.snapshot(emittedDevModule);
 });
 
-test("[dev] should notice new file", async (t) => {
+test.serial("[dev] should notice new file", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
@@ -115,7 +118,7 @@ test("[dev] should notice new file", async (t) => {
   t.pass();
 });
 
-test("[dev] should copy new non-source files to dist/", async (t) => {
+test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
@@ -144,7 +147,7 @@ test("[dev] should copy new non-source files to dist/", async (t) => {
   );
 });
 
-test("[create --react] library should build with Next", async (t) => {
+test.serial("[create --react] library should build with Next", async (t) => {
   if (process.platform === "win32") {
     t.pass();
     return;
@@ -230,6 +233,8 @@ test.serial("[build -b] should bundle output", async (t) => {
     "export const b = 42;"
   );
 
+  await sleep(1000);
+
   await t.notThrowsAsync(
     async () => await shell.run("tsmodule build -b"),
     "should bundle non-React projects"
@@ -262,23 +267,23 @@ test.serial("[build -b] should bundle output", async (t) => {
 
 test.serial("[build --no-write] should return transformed code", async (t) => {
   process.chdir(defaultTestDir);
-  let code;
+  let sourceCode;
 
   writeStdinImportFile();
 
   await t.notThrowsAsync(
     async () => {
-      code = await build({
+      sourceCode = await build({
         stdin: stdinImportStatement,
         stdinFile: "src/stdin-nowrite.ts",
         noWrite: true,
       });
     },
-    "[--no-write] should return transformed code"
+    "[--no-write] should return transformed source code"
   );
 
   t.assert(!existsSync(resolve(defaultTestDir, "dist/stdin-nowrite.js")), "[--no-write] should not write to disk");
-  t.snapshot(code, "build() should return code with { noWrite: true }");
+  t.snapshot({ sourceCode }, "build() should return source code with { noWrite: true }");
 });
 
 test.serial("[create --react] library should build and execute", async (t) => {
