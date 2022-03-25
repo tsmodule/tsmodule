@@ -60,8 +60,6 @@ export const create = async (name: string, { react = false }) => {
   spinner.succeed("Dependencies installed.");
 
   await shell.run("git init");
-  await shell.run("git stage --all");
-  await shell.run("git commit -m \"chore: initial commit\"");
 
   spinner.succeed("Set up as Git repository.");
 };
