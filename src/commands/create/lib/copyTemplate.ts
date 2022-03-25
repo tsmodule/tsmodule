@@ -2,7 +2,6 @@ import { PACKAGE_ROOT } from "../../../constants";
 import { createShell } from "await-shell";
 import { mkdir } from "fs/promises";
 import { resolve } from "path";
-import { existsSync } from "fs";
 
 export const copyTemplate = async (template: string, projectName: string) => {
   const shell = createShell();

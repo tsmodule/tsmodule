@@ -4,7 +4,7 @@ import { createShell } from "await-shell";
 import ora from "ora";
 
 import { dependencies, devDependencies } from "../../constants";
-import { copyTemplate } from "./lib/createTemplate";
+import { copyTemplate } from "./lib/copyTemplate";
 import { rewritePkgJson } from "./lib/rewritePkgJson";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
