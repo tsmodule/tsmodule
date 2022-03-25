@@ -103,7 +103,10 @@ const buildCssEntryPoint = async (
     stdio: "ignore",
   });
 
-  await shell.run(cmd.join(" "));
+  const { code, stderr } = await shell.run(cmd.join(" "));
+  if (code !== 0) {
+    throw new Error(`Error building CSS bundle: ${stderr}`);
+  }
 };
 
 
