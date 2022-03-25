@@ -40,6 +40,7 @@
     "release": "release-it"
   },
   "dependencies": {
+    "@tsmodule/react": "^5.0.0",
     "esbuild": "^0.14.25",
     "typescript": "^4.6.3"
   },
