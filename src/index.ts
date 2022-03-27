@@ -70,3 +70,6 @@ program
   .action(execute);
 
 program.parse(process.argv);
+
+export * from "./commands";
+export * from "./types";
