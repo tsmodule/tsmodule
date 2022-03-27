@@ -1,3 +1,12 @@
+/**
+ * IMPORTANT!
+ *
+ * If this file is modified, copy the minified output in dist/utils/require.js
+ * to the `build` command.
+ *
+ * {@link ../commands/build/index.ts}
+ */
+
 // @ts-ignore - Don't type-check `document`, runs in browser.
 if (typeof document === "undefined") {
   await (async () => {
