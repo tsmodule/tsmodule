@@ -41,7 +41,7 @@ program
   .option("--stdin [source]", "Read from a string or stdin.")
   .option("--stdin-file [file]", "File path to mock for stdin.")
   .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.", false)
-  .option("--no-standard-styles", "Do not add standard styles to bundled CSS.", false)
+  // .option("--no-standard-styles", "Do not add standard styles to bundled CSS.", false)
   .action(async (options) => {
     await build(options);
   });

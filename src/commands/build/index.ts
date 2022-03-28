@@ -80,7 +80,7 @@ const buildCssEntryPoint = async (
   inputStyles: string,
   outputStyles: string,
   dev: boolean,
-  noStandardStyles: boolean,
+  // noStandardStyles: boolean,
 ) => {
 
   inputStyles = resolvePath(inputStyles);
@@ -90,22 +90,23 @@ const buildCssEntryPoint = async (
   const minify = dev ? "" : "-m";
   const postcss = "--postcss postcss.config.js";
 
-  const inputCss = await readFile(inputStyles, "utf-8");
-  const header = "@import \"@tsmodule/react\";\n\n";
-  const outputCss = noStandardStyles ? inputCss : `${header}${inputCss}`;
+  // const inputCss = await readFile(inputStyles, "utf-8");
+  // const header = "@import \"@tsmodule/react\";\n\n";
+  // const outputCss = noStandardStyles ? inputCss : `${header}${inputCss}`;
 
-  const rewrittenInput = getEmittedFile(inputStyles);
-  await writeFile(rewrittenInput, outputCss);
+  // const rewrittenInput = getEmittedFile(inputStyles);
+  // await writeFile(rewrittenInput, outputCss);
 
-  const cmd = [twCmd, minify, postcss, `-i ${rewrittenInput}`, "-o", outputStyles];
+  const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, "-o", outputStyles];
   const shell = createShell({
     log: false,
     stdio: "ignore",
   });
 
-  const { code, stderr } = await shell.run(cmd.join(" "));
+  const cmdString = cmd.join(" ");
+  const { code, stdout, stderr } = await shell.run(cmdString);
   if (code !== 0) {
-    throw new Error(`Error building CSS bundle: ${stderr}`);
+    throw new Error(`Building CSS bundle exited with code ${code} for ${inputStyles}.\n\rTried running: ${cmdString}.\n\rError: ${stdout + stderr}`);
   }
 };
 
@@ -123,7 +124,7 @@ interface BuildArgs {
   target?: string | string[];
   runtimeOnly?: boolean;
   noWrite?: boolean;
-  noStandardStyles?: boolean;
+  // noStandardStyles?: boolean;
   stdin?: string;
   stdinFile?: string;
 }
@@ -141,7 +142,7 @@ export const build = async ({
   bundle = false,
   runtimeOnly = dev,
   noWrite = false,
-  noStandardStyles = false,
+  // noStandardStyles = false,
   stdin = undefined,
   stdinFile = undefined,
 }: BuildArgs) => {
@@ -368,12 +369,12 @@ export const build = async ({
     /**
      * Build style bundle.
      */
-    DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev, noStandardStyles });
+    DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev });
     await buildCssEntryPoint(
       styles,
       bundleOutput,
       dev,
-      noStandardStyles
+      // noStandardStyles
     );
 
     /**
@@ -390,7 +391,7 @@ export const build = async ({
             file,
             file,
             dev,
-            noStandardStyles,
+            // noStandardStyles,
           )
         )
       );
