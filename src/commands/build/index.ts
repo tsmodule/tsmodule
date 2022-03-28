@@ -383,7 +383,7 @@ export const build = async ({
       DEBUG.log("Bundling all styles.");
       const cssFiles = glob.sync("dist/**/*.css");
 
-      const message = ora("Bundled emitted styles.").start();
+      const message = ora("Bundling emitted styles.").start();
       await Promise.all(
         cssFiles.map(
           async (file) => await buildCssEntryPoint(
@@ -394,12 +394,10 @@ export const build = async ({
           )
         )
       );
-      message.succeed();
+      message.succeed(`Bundled all styles to ${chalk.bold(bundleOutput)}.`);
     }
-
-    ora(`Bundled all styles to ${chalk.bold(bundleOutput)}.`).succeed();
   } else {
-    log(chalk.grey("Bundle styles not found for this projected. Checked:"), { styles: styles });
+    log(chalk.grey("Bundle styles not found for this project.\n\rChecked: " + chalk.bold(styles)));
   }
 
   bannerLog("Running post-build setup.");
