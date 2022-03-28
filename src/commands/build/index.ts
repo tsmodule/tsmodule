@@ -175,6 +175,8 @@ export const build = async ({
     },
   };
 
+  const defaultExterns = ["esbuild", "*.png"];
+
   const buildOptions: BuildOptions = {
     ...commonOptions,
     bundle,
@@ -186,7 +188,7 @@ export const build = async ({
     target: "esnext",
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
-    external: bundle ? ["esbuild"] : undefined,
+    external: bundle ? defaultExterns : undefined,
     banner: bundle ? { "js": ESM_REQUIRE_SHIM } : undefined,
   };
 
