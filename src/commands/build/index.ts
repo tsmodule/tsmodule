@@ -87,17 +87,15 @@ const buildCssEntryPoint = async (
   outputStyles = resolvePath(outputStyles);
 
   const twCmd = "npx tailwindcss";
-  const minify = dev ? "" : "-m";
+  const minify = dev ? "" : "--minify";
   const postcss = "--postcss postcss.config.js";
 
-  // const inputCss = await readFile(inputStyles, "utf-8");
-  // const header = "@import \"@tsmodule/react\";\n\n";
-  // const outputCss = noStandardStyles ? inputCss : `${header}${inputCss}`;
+  const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, `-o ${outputStyles}`];
 
-  // const rewrittenInput = getEmittedFile(inputStyles);
-  // await writeFile(rewrittenInput, outputCss);
+  if (existsSync(resolvePath(process.cwd(), "tailwind.config.js"))) {
+    cmd.push("--config tailwind.config.js");
+  }
 
-  const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, "-o", outputStyles];
   const shell = createShell({
     log: false,
     stdio: "ignore",
