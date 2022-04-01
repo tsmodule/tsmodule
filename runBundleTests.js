@@ -13,7 +13,7 @@ const testPackages = [
 /**
  * Build the runtime bundle.
  */
-await shell.run("yarn build -rb");
+await shell.run("yarn build -r");
 
 /**
  * Delete node_modules, remove the test packages, and re-add them as regular
