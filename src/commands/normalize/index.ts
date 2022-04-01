@@ -14,11 +14,6 @@ import glob from "fast-glob";
 import { createDebugLogger } from "create-debug-logger";
 import { rewriteStatements } from "./lib/typescriptApi.js";
 
-export const IMPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import) *(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
-export const EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(export) *(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
-export const IMPORT_OR_EXPORT_STATEMENT = "(^|(?<=[\n\r;] *))(import|export) *(\{?)[^\n\r;]+(((from)[\n\r; *]+)|([\"'][\n\r;]))";
-export const IMPORT_SPECIFIER_IN_CLAUSE = "(?<=[\"\'])([^\n\r]+)(?=[\'\"])";
-
 /**
  * Rewrite imports in the emitted JS to ESM-compliant paths.
  */

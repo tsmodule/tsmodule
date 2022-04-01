@@ -1,9 +1,14 @@
+import { dirname, normalize, posix as pathPosix, resolve } from "path";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 
-import { IMPORT_OR_EXPORT_STATEMENT, IMPORT_SPECIFIER_IN_CLAUSE } from "../index.js";
-import { dirname, normalize, posix as pathPosix, resolve } from "path";
+import { init, parse } from "es-module-lexer";
 import { createDebugLogger } from "create-debug-logger";
+
+/**
+ * Await es-module-lexer's WASM initialization.
+ */
+await init;
 
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
 
@@ -52,56 +57,62 @@ export const rewriteStatements = async (modulePath: string) => {
   DEBUG.log("Getting rewritten specifiers:", { modulePath });
   modulePath = forcePosixPath(modulePath);
 
-  // const rewrittenStatements: StatementReplacement[]  = [];
-  const importExportRegex = new RegExp(IMPORT_OR_EXPORT_STATEMENT, "g");
+  const originalCode = await readFile(modulePath, "utf8");
+  const [importExportSpecifiers] = await parse(originalCode);
+  const namedImportExportSpecifiers = importExportSpecifiers.filter(
+    (specifier) => typeof specifier.n !== "undefined"
+  );
 
-  let code = await readFile(modulePath, "utf8");
-  const importStatements = code.match(importExportRegex);
-  DEBUG.log("Found import statements:", { importStatements });
+  DEBUG.log("Found import statements:", { namedImportExportSpecifiers });
 
-  if (importStatements) {
-    for (const importStatement of importStatements) {
-      const specifierPattern = new RegExp(IMPORT_SPECIFIER_IN_CLAUSE);
-      const specifierMatch = importStatement.match(specifierPattern);
-      if (!specifierMatch) {
-        DEBUG.log("No specifier match", { importStatement, specifierPattern });
-        throw new Error(`Could not identify specifier in import statement: ${importStatement}`);
-      }
+  let code = originalCode.slice(0);
+  for (const importExportSpecifier of namedImportExportSpecifiers) {
+    const specifier = importExportSpecifier.n;
+    DEBUG.log("Found specifier:", { specifier });
 
-      const specifier = specifierMatch[0];
-      DEBUG.log("Found specifier:", { specifier });
+    const importStatement = originalCode.substring(
+      importExportSpecifier.ss,
+      importExportSpecifier.se
+    );
 
-      /**,
+    if (!specifier) {
+      throw new Error(`Could not find specifier in import statement: "${importStatement}"`);
+    }
+
+    /**,
        * If this is a non-relative specifier, or it has a file extension, do
        * try to resolve it.
        */
-      if (!specifier.startsWith(".") || pathPosix.extname(specifier)) {
-        continue;
-      }
-
-      const resolvedSpecifier = await typescriptResolve(specifier, modulePath);
-      if (!resolvedSpecifier) {
-        throw new Error(`Could not resolve specifier "${specifier}" from "${modulePath}"`);
-      }
-
-      DEBUG.log("Resolved specifier:", { resolvedSpecifier });
-
-      const specifierReplacement = getEsmRelativeSpecifier(
-        modulePath,
-        resolvedSpecifier
-      );
-
-      DEBUG.log("Specifier replacement:", { specifierReplacement });
-
-      const importStatementReplacement = importStatement.replace(
-        specifier,
-        specifierReplacement
-      );
-
-      DEBUG.log("Import statement replacement:", { importStatementReplacement });
-
-      code = code.replace(importStatement, importStatementReplacement);
+    if (!specifier.startsWith(".") || pathPosix.extname(specifier)) {
+      continue;
     }
+
+    const resolvedSpecifier = await typescriptResolve(specifier, modulePath);
+    if (!resolvedSpecifier) {
+      throw new Error(`Could not resolve specifier "${specifier}" from "${modulePath}"`);
+    }
+
+    DEBUG.log("Resolved specifier:", { resolvedSpecifier });
+
+    const specifierReplacement = getEsmRelativeSpecifier(
+      modulePath,
+      resolvedSpecifier
+    );
+
+    DEBUG.log("Specifier replacement:", { specifierReplacement });
+
+    const importStatementReplacement = importStatement.replace(
+      specifier,
+      specifierReplacement
+    );
+
+    DEBUG.log("Replacing import statement:", {
+      specifier,
+      importStatement,
+      importStatementReplacement
+    });
+
+    code = code.replace(importStatement, importStatementReplacement);
   }
 
   return code;
