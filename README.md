@@ -87,11 +87,11 @@ $ tsmodule file.ts
 
 ## Installation
 
-#### Requirements
+### Requirements
 
 Because TS modules are pure ESM environments, **Node 14+** is required.
 
-#### Existing projects
+### Existing projects
 
 Add TSModule with:
 
@@ -109,7 +109,7 @@ Then add a build script to your package.json, and call it with `yarn build`:
 
 Source will be compiled from `src/` to `dist/`.
 
-#### New projects
+### New projects
 
 Use `tsmodule create [--react] project-name` to create a new project.
 
