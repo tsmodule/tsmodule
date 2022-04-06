@@ -32,16 +32,15 @@ program
 program
   .command("build")
   .description("Builds TS files to output in dist/.")
-  .option("-i, --input <files>", "Entrypoints to compile.", "src/**/*")
-  .option("--styles <styles>", "Specify stylesheet entrypoint.", "src/components/index.css")
-  .option("-t, --target <target>", "ECMAScript featureset to target.", "esnext")
-  .option("-b, --bundle", "Bundle dependencies into entrypoints.", false)
-  .option("-d, --dev", "Build development runtime.", false)
-  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime.", false)
+  .option("-i, --input <files>", "Entrypoints to compile.")
+  .option("--styles <styles>", "Specify stylesheet entrypoint.")
+  .option("-t, --target <target>", "ECMAScript featureset to target.")
+  .option("-b, --bundle", "Bundle dependencies into entrypoints.")
+  .option("-d, --dev", "Build development runtime.")
+  .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime.")
   .option("--stdin [source]", "Read from a string or stdin.")
   .option("--stdin-file [file]", "File path to mock for stdin.")
-  .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.", false)
-  // .option("--no-standard-styles", "Do not add standard styles to bundled CSS.", false)
+  .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.")
   .action(async (options) => {
     await build(options);
   });

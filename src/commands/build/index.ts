@@ -140,7 +140,6 @@ export const build = async ({
   bundle = false,
   runtimeOnly = dev,
   noWrite = false,
-  // noStandardStyles = false,
   stdin = undefined,
   stdinFile = undefined,
 }: BuildArgs) => {
