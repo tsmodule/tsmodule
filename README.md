@@ -1,31 +1,117 @@
 <div align="center">
   <img src="tsmodule.png">
-  <h4>TypeScript Module Toolkit</h4>
+  <h1>TypeScript Module Toolkit</h1>
 </div>
 
----
+TSModule is a toolkit for developing pure ESM TypeScript packages that target any platform (browser, Node, etc.). 
 
-#### Quickly create TypeScript projects with **`tsmodule create`**
+**Table of contents**
 
-Supports React via TSX/JSX. Ready with zero config:
+<!-- toc -->
+
+- [Purpose](#purpose)
+  * [Create ESM packages using TypeScript](#create-esm-packages-using-typescript)
+  * [Develop projects in real-time](#develop-projects-in-real-time)
+  * [Build to optimized ES modules](#build-to-optimized-es-modules)
+    + [Optimizing NPM dependencies with `-b, --bundle`](#optimizing-npm-dependencies-with--b---bundle)
+  * [Run TypeScript directly](#run-typescript-directly)
+- [Installation](#installation)
+    + [Requirements](#requirements)
+    + [Existing projects](#existing-projects)
+    + [New projects](#new-projects)
+- [Use Cases](#use-cases)
+  * [Generic TypeScript library](#generic-typescript-library)
+  * [React component library (using Next.js)](#react-component-library-using-nextjs)
+- [Footnotes](#footnotes)
+  * [Module configuration](#module-configuration)
+    + [Package.json export](#packagejson-export)
+- [License](#license)
+
+<!-- tocstop -->
+
+## Purpose
+
+### Create ESM packages using TypeScript
+
+```shell
+$ tsmodule create [--react]
+```
+
+**Rady out of the box:**
 
   - package.json scripts
-  - ESLint + TypeScript configs
+  - TypeScript, ESLint, Tailwind configs
   - CI/CD with GitHub Actions
 
-#### Build TypeScript to pure ESM with **`tsmodule build`**
+### Develop projects in real-time
 
-  - No more polyfilling to CJS or older featuresets
-  - Use latest syntax in source, leave backporting to downstream consumers
+Build in dev mode and watch for changes:
 
-#### Dev mode with **`tsmodule dev`**
+```shell
+$ tsmodule dev
+```
 
-  - Build and watch for changes
+### Build to optimized ES modules
 
-#### Run TypeScript directly with **`tsmodule <file>`**
+```shell
+$ tsmodule build [--bundle]
+```
+
+**All projects:**
+
+  - Emit pure ESM, no polyfilling to CJS
+  - Emit ESNext by default, no polyfilling to older feature sets
+
+**React projects created with `create --react`:**
+
+  - Bundle CSS by default
+  - Use Tailwind by default
+
+#### Optimizing NPM dependencies with `-b, --bundle`
+
+With `-b, --bundle` mode, all entry points are compiled "in-place" and runtime NPM dependencies will generally not be needed as they will be inlined. If you build in bundle mode, you can move your dependencies to devDependencies, as the only thing that will be needed to run any/all compiled-in-place entry point(s) in your module are the bundles themselves.
+
+TSModule itself builds with `-b, --bundle` flag, and requires only two runtime NPM dependencies:
+
+1. `esbuild`, which does the heavy lifting for the build process, does not allow itself to be bundled
+2. `typescript`, so TSModule can use the built `tsc` binary to generate `.d.ts` type declarations during builds
+
+### Run TypeScript directly
+
+```shell
+$ tsmodule file.ts
+```
 
   - Uses Node module loader to resolve TS at runtime
   - Executable TypeScript files with `#!/usr/bin/env tsmodule`
+
+## Installation
+
+### Requirements
+
+Because TS modules are pure ESM environments, **Node 14+** is required.
+
+### Existing projects
+
+Add TSModule with:
+
+```shell
+$ yarn add -D @tsmodule/tsmodule
+```
+
+Then add a build script to your package.json, and call it with `yarn build`:
+
+```json
+"scripts": {
+  "build": "tsmodule build"
+}
+```
+
+Source will be compiled from `src/` to `dist/`.
+
+### New projects
+
+Use `tsmodule create [--react] project-name` to create a new project.
 
 ## Use Cases
 
@@ -38,65 +124,54 @@ exports in `src/**/index.ts`, e.g.
 [`await-shell`](https://github.com/ctjlewis/await-shell), a Promise wrapper
 around `child_process.spawn` that's used in tsmodule itself.
 
-This library contains only one export at `src/index.ts`, a function called
-`shell`. It has one test at `test/errors.test.ts`.
+This library contains only one export, at `src/index.ts` (a function called
+`shell`), but you could import e.g. `import { test } from "my-package/path/to/export"` by exporting that identifier at `src/path/to/export/index.ts`.
 
-### Next.js component library
+### React component library (using Next.js)
 
-It's often necessary to compile libraries of TSX components to valid JS that can
-be consumed by a bundler downstream.  This is handled by tsmodule out of the
-box.
+`tsmodule create --react` creates a TS module which is also a Next app; pages are in `src/pages`, and components are in `src/components`. Tailwind, PostCSS, and `postcss-import` are all supported by default.
 
-The following configuration can be used to export a library of TSX components in
-`src/components/**/index.tsx` that is also consumed in a Next.js demo from pages
-in `src/pages`:
+CSS will be bundled from `src/components/index.css` and exported at `my-package/styles`, which the package.json `style` field also points to (for `postcss-import` support), so that components packages are modular.
 
-- In `next.config.js`, allow for ESM externals (our exported components will be
-  ESM):
 
-    ```js
-    { 
-      experiments: { 
-        esmExternals: true 
-      } 
-    }
-    ```
+  ```json
+  {
+    "style": "./dist/bundle.css",
+    "exports": {
+      ".": "./dist/index.js",
+      "./*": "./dist/components/*/index.js",
+      "./styles": "./dist/bundle.css",
+      "./styles/*": "./dist/styles/*/index.css",
+      "./package.json": "./package.json"
+    },
+  }
+  ```
 
-- In package.json, configure the package to export from `dist/components`:
+To use a component downstream, import the styles into the page, e.g.:
 
-    ```json
-    {
-      "exports": {
-        ".": "./dist/index.js",
-        "./*": "./dist/components/*/index.js",
-        "./styles": "./dist/styles/index.css",
-        "./styles/*": "./dist/styles/*/index.css",
-        "./package.json": "./package.json"
-      },
-    }
-    ```
-
-## Requirements
-
-Because TS modules are pure ESM environments, **Node 14+** is required.
-
-## Installation
-
-Install `tsmodule` in your project (or globally) to run or build your module:
-
-```shell
-yarn add @tsmodule/tsmodule
+```tsx
+// src/pages/_app.tsx
+import "my-package/styles";
 ```
 
-You can build your TS module to ESM with the `build` CLI command:
+Or in CSS (resolved by `postcss-import` using `"style"` field in package.json):
 
-```shell
-tsmodule build
+```css
+@import "my-package";
 ```
 
-Source will be compiled from `src/` to `dist/` and will contain only
-ESM-compliant import specifiers as resolved by the tsmodule loader. It can then
-be executed with Node, e.g. `node dist/index.js`.
+And render your component:
+
+```tsx
+// src/pages/test.tsx
+import { MyComponent } from "my-package";
+
+export default function TestPage() {
+  return (
+    <MyComponent />
+  );
+}
+```
 
 ## Footnotes
 
