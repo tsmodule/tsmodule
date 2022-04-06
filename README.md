@@ -141,7 +141,7 @@ CSS will be bundled from `src/components/index.css` and exported at `my-package/
       ".": "./dist/index.js",
       "./*": "./dist/components/*/index.js",
       "./styles": "./dist/bundle.css",
-      "./styles/*": "./dist/styles/*/index.css",
+      "./styles/*": "./dist/components/*/index.css",
       "./package.json": "./package.json"
     },
   }
