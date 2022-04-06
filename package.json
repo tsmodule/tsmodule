@@ -36,7 +36,7 @@
     "retest-bundle": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "lint": "eslint --fix src",
     "prepare": "yarn build",
-    "prepublishOnly": "yarn test",
+    "prepublishOnly": "yarn test-bundle",
     "release": "release-it"
   },
   "dependencies": {
