@@ -19,7 +19,12 @@ export const mkdirp = async (dir: string) => {
  * Sleep for a given number of ms.
  */
 export const sleep = async (ms = 2500) => {
-  await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+  /**
+   * Only sleep in CI/CD environments.
+   */
+  if (process.env.CI) {
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+  }
 };
 
 export const getTestDir = (testName: string) => resolve(tmpdir(), testName);
