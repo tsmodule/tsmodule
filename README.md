@@ -129,27 +129,49 @@ This library contains only one export, at `src/index.ts` (a function called
 
 ### React component library (using Next.js)
 
-It's often necessary to compile libraries of TSX components to valid JS that can
-be consumed by a bundler downstream.  This is handled by tsmodule out of the
-box.
+`tsmodule create --react` creates a TS module which is also a Next app; pages are in `src/pages`, and components are in `src/components`. Tailwind, PostCSS, and `postcss-import` are all supported by default.
 
-The following configuration can be used to export a library of TSX components in
-`src/components/**/index.tsx` that is also consumed in a Next.js demo from pages
-in `src/pages`:
+CSS will be bundled from `src/components/index.css` and exported at `my-package/styles`, which the package.json `style` field also points to (for `postcss-import` support), so that components packages are modular.
 
-- In package.json, configure the package to export from `dist/components`:
 
-    ```json
-    {
-      "exports": {
-        ".": "./dist/index.js",
-        "./*": "./dist/components/*/index.js",
-        "./styles": "./dist/styles/index.css",
-        "./styles/*": "./dist/styles/*/index.css",
-        "./package.json": "./package.json"
-      },
-    }
-    ```
+  ```json
+  {
+    "style": "./dist/bundle.css",
+    "exports": {
+      ".": "./dist/index.js",
+      "./*": "./dist/components/*/index.js",
+      "./styles": "./dist/bundle.css",
+      "./styles/*": "./dist/styles/*/index.css",
+      "./package.json": "./package.json"
+    },
+  }
+  ```
+
+To use a component downstream, import the styles into the page, e.g.:
+
+```tsx
+// src/pages/_app.tsx
+import "my-package/styles";
+```
+
+Or in CSS (resolved by `postcss-import` using `"style"` field in package.json):
+
+```css
+@import "my-package";
+```
+
+And render your component:
+
+```tsx
+// src/pages/test.tsx
+import { MyComponent } from "my-package";
+
+export default function TestPage() {
+  return (
+    <MyComponent />
+  );
+}
+```
 
 ## Footnotes
 
