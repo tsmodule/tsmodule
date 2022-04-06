@@ -12,9 +12,8 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
+      "ESNext",
+      "DOM"
     ],
     "jsx": "preserve",
     "rootDir": "src",

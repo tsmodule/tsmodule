@@ -8,7 +8,13 @@ export const dependencies = {
 };
 
 export const devDependencies = {
-  default: ["@types/node", "@typescript-eslint/eslint-plugin"],
+  default: [
+    "@types/node",
+    "ava",
+    "eslint",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser"
+  ],
   react: [
     "next",
 
