@@ -47,6 +47,19 @@ const getEsmRelativeSpecifier = (from: string, to: string) => {
 };
 
 /**
+ * Resolve only non-relative named specifiers. Also resolve conditional exports
+ * (contains "/").
+ */
+const shouldResolveSpecifier = (specifier?: string) => {
+  if (!specifier) return false;
+  return (
+    specifier.startsWith(".") ||
+    specifier.includes("/") ||
+    pathPosix.extname(specifier)
+  );
+};
+
+/**
  * Load the given module and resolve specifiers in its import statements,
  * replacing them.
  *
@@ -76,20 +89,23 @@ export const rewriteStatements = async (modulePath: string) => {
     );
 
     if (!specifier) {
-      throw new Error(`Could not find specifier in import statement: "${importStatement}"`);
+      DEBUG.log(`Could not find specifier in import statement: "${importStatement}"`);
+      continue;
     }
 
     /**,
-       * If this is a non-relative specifier, or it has a file extension, do
-       * try to resolve it.
-       */
-    if (!specifier.startsWith(".") || pathPosix.extname(specifier)) {
+     * If this is a non-relative specifier, or it has a file extension, do
+     * try to resolve it.
+     */
+    if (!shouldResolveSpecifier(specifier)) {
+      DEBUG.log("Not resolving relative or non-named specifier:", { specifier });
       continue;
     }
 
     const resolvedSpecifier = await typescriptResolve(specifier, modulePath);
     if (!resolvedSpecifier) {
-      throw new Error(`Could not resolve specifier "${specifier}" from "${modulePath}"`);
+      DEBUG.log(`Could not resolve specifier "${specifier}" from "${modulePath}". Assuming external.`);
+      continue;
     }
 
     DEBUG.log("Resolved specifier:", { resolvedSpecifier });
