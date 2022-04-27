@@ -266,7 +266,7 @@ test.serial("[build -b] should bundle output", async (t) => {
 });
 
 test.serial("[build --js-only] should not build styles", async (t) => {
-  process.chdir(defaultTestDir);
+  process.chdir(reactTestDir);
 
   await t.notThrowsAsync(
     async () => await build({
