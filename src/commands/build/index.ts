@@ -363,43 +363,45 @@ export const build = async ({
   /**
    * Build project styles.
    */
-  if (!jsOnly && existsSync(resolve(styles))) {
-    DEBUG.log("Building styles for production.");
-    const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
+  if (!jsOnly) {
+    if (existsSync(resolve(styles))) {
+      DEBUG.log("Building styles for production.");
+      const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
 
-    /**
-     * Build style bundle.
-     */
-    DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev });
-    await buildCssEntryPoint(
-      styles,
-      bundleOutput,
-      dev,
+      /**
+       * Build style bundle.
+       */
+      DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev });
+      await buildCssEntryPoint(
+        styles,
+        bundleOutput,
+        dev,
       // noStandardStyles
-    );
+      );
 
-    /**
+      /**
      * If using -b bundle mode, bundle copied styles in-place.
      */
-    if (bundle) {
-      DEBUG.log("Bundling all styles.");
-      const cssFiles = glob.sync("dist/**/*.css");
+      if (bundle) {
+        DEBUG.log("Bundling all styles.");
+        const cssFiles = glob.sync("dist/**/*.css");
 
-      const message = ora("Bundling emitted styles.").start();
-      await Promise.all(
-        cssFiles.map(
-          async (file) => await buildCssEntryPoint(
-            file,
-            file,
-            dev,
+        const message = ora("Bundling emitted styles.").start();
+        await Promise.all(
+          cssFiles.map(
+            async (file) => await buildCssEntryPoint(
+              file,
+              file,
+              dev,
             // noStandardStyles,
+            )
           )
-        )
-      );
-      message.succeed(`Bundled all styles to ${chalk.bold(bundleOutput)}.`);
+        );
+        message.succeed(`Bundled all styles to ${chalk.bold(bundleOutput)}.`);
+      }
+    } else {
+      log(chalk.grey("Bundle styles not found for this project.\n\rChecked: " + chalk.bold(styles)));
     }
-  } else {
-    log(chalk.grey("Bundle styles not found for this project.\n\rChecked: " + chalk.bold(styles)));
   }
 
   bannerLog("Running post-build setup.");
