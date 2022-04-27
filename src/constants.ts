@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 export const dependencies = {
   default: [],
-  react: ["@tsmodule/react", "react", "react-dom"],
+  react: ["@tsmodule/react", "react@^17.0.0", "react-dom@^17.0.0"],
 };
 
 export const devDependencies = {
