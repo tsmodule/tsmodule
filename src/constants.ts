@@ -9,7 +9,7 @@ export const dependencies = {
 
 export const devDependencies = {
   default: [
-    "@types/node",
+    "@types/node@^17.0.0",
     "ava",
     "eslint",
     "@typescript-eslint/eslint-plugin",
@@ -19,8 +19,8 @@ export const devDependencies = {
     "next",
 
     "@types/node",
-    "@types/react",
-    "@types/react-dom",
+    "@types/react@^17.0.0",
+    "@types/react-dom@^17.0.0",
 
     "eslint",
     "eslint-config-next",
