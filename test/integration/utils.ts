@@ -18,7 +18,8 @@ export const mkdirp = async (dir: string) => {
 /**
  * Sleep for a given number of ms.
  */
-export const sleep = async (ms = process.env.CI ? 3000 : 1000) => {
+export const sleep = async (ms = process.env.CI ? 3000 : 1500) => {
+  console.log(`Sleeping for ${ms}ms.`);
   await new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
 };
 
