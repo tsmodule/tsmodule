@@ -121,6 +121,7 @@ interface BuildArgs {
   dev?: boolean;
   target?: string | string[];
   runtimeOnly?: boolean;
+  jsOnly?: boolean;
   noWrite?: boolean;
   // noStandardStyles?: boolean;
   stdin?: string;
@@ -139,6 +140,7 @@ export const build = async ({
   dev = false,
   bundle = false,
   runtimeOnly = dev,
+  jsOnly = false,
   noWrite = false,
   stdin = undefined,
   stdinFile = undefined,
@@ -361,7 +363,7 @@ export const build = async ({
   /**
    * Build project styles.
    */
-  if (existsSync(resolve(styles))) {
+  if (!jsOnly && existsSync(resolve(styles))) {
     DEBUG.log("Building styles for production.");
     const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
 
