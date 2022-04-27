@@ -262,7 +262,8 @@ test.serial("[build -b] should bundle output", async (t) => {
   await t.notThrowsAsync(loadComponent, "bundled component modules should load");
 
   const { default: bundledComponent } = await loadComponent();
-  t.snapshot(bundledComponent(), "bundled component should render");
+  const renderedComponent = bundledComponent();
+  t.snapshot(renderedComponent["$$typeof"], "bundled component should render");
 });
 
 test.serial("[build --js-only] should not build styles", async (t) => {
