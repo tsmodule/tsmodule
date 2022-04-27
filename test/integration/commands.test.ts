@@ -265,6 +265,18 @@ test.serial("[build -b] should bundle output", async (t) => {
   t.snapshot(bundledComponent(), "bundled component should render");
 });
 
+test.serial("[build --js-only] should not build styles", async (t) => {
+  process.chdir(defaultTestDir);
+
+  await t.notThrowsAsync(
+    async () => await build({
+      jsOnly: true,
+    }),
+  );
+
+  t.assert(!existsSync(resolve(defaultTestDir, "dist/bundle.css")));
+});
+
 test.serial("[build --no-write] should return transformed code", async (t) => {
   process.chdir(defaultTestDir);
   let sourceCode;

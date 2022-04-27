@@ -121,6 +121,7 @@ interface BuildArgs {
   dev?: boolean;
   target?: string | string[];
   runtimeOnly?: boolean;
+  jsOnly?: boolean;
   noWrite?: boolean;
   // noStandardStyles?: boolean;
   stdin?: string;
@@ -139,6 +140,7 @@ export const build = async ({
   dev = false,
   bundle = false,
   runtimeOnly = dev,
+  jsOnly: noStyles = false,
   noWrite = false,
   stdin = undefined,
   stdinFile = undefined,
