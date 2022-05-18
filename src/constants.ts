@@ -4,17 +4,18 @@ import { fileURLToPath } from "url";
 
 export const dependencies = {
   default: [],
-  react: ["@tsmodule/react", "react@^17.0.2", "react-dom@^17.0.2"],
+  react: ["react@^17.0.2", "react-dom@^17.0.2"],
 };
 
 export const devDependencies = {
   default: [
     "@types/node",
+    "@tsmodule/tsmodule",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
     "ava",
     "eslint",
     "typescript",
-    "@typescript-eslint/eslint-plugin",
-    "@typescript-eslint/parser"
   ],
   react: [
     "next",
