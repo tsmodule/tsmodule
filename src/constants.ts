@@ -22,6 +22,7 @@ export const devDependencies = {
 
     "@types/react@^17.0.39",
     "@types/react-dom@^17.0.11",
+    "@tsmodule/react",
 
     "eslint",
     "eslint-config-next",
