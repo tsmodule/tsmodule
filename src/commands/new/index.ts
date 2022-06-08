@@ -42,7 +42,7 @@ export const newCommand = async () => {
     type: "text",
     name: "name",
     message: `What's the name of the new ${type}?`,
-    validate: (value: string) => /[^A-Za-z\-_]/.test(value) ? "Alphanumeric and -_ only" : true
+    validate: (value: string) => /[^A-Za-z0-9\-_]/.test(value) ? "Alphanumeric and -_ only" : true
   });
 
   if (!name) {
