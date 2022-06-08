@@ -1,9 +1,18 @@
 export const NewCommandTypes = ["component", "feature", "fix", "refactor"] as const;
 export type NewCommandType = typeof NewCommandTypes[number];
 
+import { createShell } from "await-shell";
 import prompts from "prompts";
 
 export const newCommand = async () => {
+  const shell = createShell();
+
+  const { stdout: gitStatus } = await shell.run("git status --short");
+  if (gitStatus.trim()) {
+    // eslint-disable-next-line no-console
+    console.error("Cannot create a new feature with a dirty workspace.");
+    process.exit(1);
+  }
 
   const { type } = await prompts({
     type: "select",
