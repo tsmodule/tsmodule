@@ -57,12 +57,7 @@ program
 
 program
   .command("new")
-  .description(
-    "Create a new feature, fix, or refactor.\n" +
-    "(usage: tsmodule new feature)"
-  )
-  .argument("<type>", NewCommandTypes.join(" | "))
-  .usage("feature")
+  .description("Create a new feature, fix, or refactor.")
   .action(newCommand);
 
 program
