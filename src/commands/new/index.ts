@@ -5,6 +5,13 @@ import { createShell } from "await-shell";
 import { errorLog } from "../../utils/log";
 import prompts from "prompts";
 
+const FeatureAbbreviations = {
+  "feature": "feat",
+  "fix": "fix",
+  "refactor": "ref",
+  "component": "comp"
+};
+
 export const newCommand = async () => {
   const shell = createShell();
 
@@ -42,4 +49,8 @@ export const newCommand = async () => {
 
   // eslint-disable-next-line no-console
   console.log({ type, name });
+  const abbreviation = FeatureAbbreviations[type as NewCommandType];
+  const branchName = `${abbreviation}-${name}`;
+  // console.log({ branchName });
+  await shell.run(`git checkout -b ${branchName}`);
 };
