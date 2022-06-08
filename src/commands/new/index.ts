@@ -34,6 +34,8 @@ export const newCommand = async () => {
 
   if (!type) {
     errorLog("No type selected.", true);
+  } else if (!NewCommandTypes.includes(type)) {
+    errorLog(`Unknown new command type: ${type}. Acceptable values: ${NewCommandTypes.join(", ")}`, true);
   }
 
   const { name } = await prompts({
@@ -53,4 +55,5 @@ export const newCommand = async () => {
   const branchName = `${abbreviation}-${name}`;
   // console.log({ branchName });
   await shell.run(`git checkout -b ${branchName}`);
+  await shell.run(`git tag ${type}`);
 };
