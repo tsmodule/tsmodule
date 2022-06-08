@@ -55,6 +55,11 @@ export const newCommand = async () => {
   const branchName = `${abbreviation}-${name}`;
   // console.log({ branchName });
   await shell.run(`git checkout -b ${branchName}`);
-  await shell.run(`git tag ${type}`);
-  await shell.run(`git push -u origin ${branchName}`);
+  try {
+    await shell.run(`git tag ${type}`);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+  await shell.run(`git push --tags -u origin ${branchName}`);
 };
