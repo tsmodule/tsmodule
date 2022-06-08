@@ -11,11 +11,14 @@ import { execute } from "./commands/execute";
 import { localPackageJson } from "./constants";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
+import { newCommand, NewCommandTypes } from "./commands/new";
+import { ship, ShipTypes } from "./commands/ship";
+
 const { version } = await localPackageJson();
 const program = new Command();
 
 program
-  .name(chalk.white(chalk.bold("tsmodule")))
+  .name(chalk.blue(chalk.bold("tsmodule")))
   .usage(chalk.white(chalk.bold("<file | command> [options]")))
   .description(chalk.blueBright(
     "A tool for building TypeScript modules.\n\n" +
@@ -48,9 +51,29 @@ program
 
 program
   .command("create <name>")
-  .option("--react", "Create React component library with Next.js")
   .description("Create a new project.")
+  .option("--react", "Create React component library with Next.js")
   .action(create);
+
+program
+  .command("new")
+  .description(
+    "Create a new feature, fix, or refactor.\n" +
+    "(usage: tsmodule new feature)"
+  )
+  .argument("<type>", NewCommandTypes.join(" | "))
+  .usage("feature")
+  .action(newCommand);
+
+program
+  .command("ship")
+  .description(
+    "Ship a new feature to a branch.\n" +
+    "(usage: tsmodule ship development)"
+  )
+  .argument("[branch]", ShipTypes.join(" | "), "development")
+  .usage("production")
+  .action(ship);
 
 program
   .command("normalize [files]")
