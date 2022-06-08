@@ -2,6 +2,7 @@ export const NewCommandTypes = ["component", "feature", "fix", "refactor"] as co
 export type NewCommandType = typeof NewCommandTypes[number];
 
 import { createShell } from "await-shell";
+import { errorLog } from "../../utils/log";
 import prompts from "prompts";
 
 export const newCommand = async () => {
@@ -9,9 +10,7 @@ export const newCommand = async () => {
 
   const { stdout: gitStatus } = await shell.run("git status --short");
   if (gitStatus.trim()) {
-    // eslint-disable-next-line no-console
-    console.error("Cannot create a new feature with a dirty workspace.");
-    process.exit(1);
+    errorLog("Cannot create a new feature with a dirty workspace.", true);
   }
 
   const { type } = await prompts({
@@ -27,7 +26,7 @@ export const newCommand = async () => {
   });
 
   if (!type) {
-    throw new Error("No type selected");
+    errorLog("No type selected.", true);
   }
 
   const { name } = await prompts({
@@ -38,7 +37,7 @@ export const newCommand = async () => {
   });
 
   if (!name) {
-    throw new Error("No name selected");
+    errorLog("No name selected", true);
   }
 
   // eslint-disable-next-line no-console
