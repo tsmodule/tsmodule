@@ -72,4 +72,5 @@ program
 program.parse(process.argv);
 
 export * from "./commands";
+export * from "./specification";
 export * from "./types";

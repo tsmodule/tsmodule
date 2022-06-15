@@ -1,39 +1,6 @@
-import { readFile } from "fs/promises";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-
-export const dependencies = {
-  default: [],
-  react: ["react@^17.0.2", "react-dom@^17.0.2"],
-};
-
-export const devDependencies = {
-  default: [
-    "@types/node",
-    "@tsmodule/tsmodule",
-    "@typescript-eslint/eslint-plugin",
-    "@typescript-eslint/parser",
-    "ava",
-    "eslint",
-    "typescript",
-  ],
-  react: [
-    "next",
-
-    "@types/react@^17.0.39",
-    "@types/react-dom@^17.0.11",
-    "@tsmodule/react",
-
-    "eslint",
-    "eslint-config-next",
-
-    "tailwindcss",
-    "autoprefixer",
-    "cssnano",
-    "postcss",
-    "postcss-import",
-  ],
-};
+import { readFile } from "fs/promises";
 
 export const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 

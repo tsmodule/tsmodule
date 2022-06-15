@@ -3,9 +3,9 @@ import chalk from "chalk";
 import { createShell } from "await-shell";
 import ora from "ora";
 
-import { dependencies, devDependencies } from "../../constants";
 import { copyTemplate } from "./lib/copyTemplate";
 import { rewritePkgJson } from "./lib/rewritePkgJson";
+import { specification } from "../../specification";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
 globalThis.SHELL_OPTIONS = {
@@ -37,12 +37,12 @@ export const create = async (name: string, { react = false }) => {
    */
   process.chdir(name);
 
-  const depsToInstall: string[] = [...dependencies.default];
-  const devDepsToInstall: string[] = [...devDependencies.default];
+  const depsToInstall = [...specification.default.dependencies];
+  const devDepsToInstall = [...specification.default.devDependencies];
 
   if (react) {
-    depsToInstall.push(...dependencies.react);
-    devDepsToInstall.push(...devDependencies.react);
+    depsToInstall.push(...specification.react.dependencies);
+    devDepsToInstall.push(...specification.react.devDependencies);
   }
 
   if (depsToInstall.length) {
