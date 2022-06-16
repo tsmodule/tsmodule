@@ -1,9 +1,9 @@
-import { ProjectConfiguration, TsmoduleSpecification } from "./types";
+import { TsModuleProjectConfig, TsmoduleSpecification } from "./types";
 
 /**
  * Default configuration is always applied to a project first.
  */
-const defaultSettings: ProjectConfiguration = {
+const defaultSettings: TsModuleProjectConfig = {
   packageJson: {
     /**
      * TS modules are ESM packages.
@@ -43,9 +43,9 @@ const defaultSettings: ProjectConfiguration = {
       "dev": "tsmodule dev",
       "build": "tsmodule build",
       "test": "ava",
+      "pretest": "tsmodule build --runtime-only",
+      "prepublishOnly": "yarn build && yarn test",
       "lint": "eslint src --fix",
-      "pretest": "tsmodule build -r",
-      "prepublishOnly": "yarn build && yarn test"
     },
     /**
      * Set Ava config for testing.
@@ -99,13 +99,26 @@ export const specification: TsmoduleSpecification = {
   default: defaultSettings,
   react: {
     /**
-     * No additional package.json settings required.
+     * Next-specific package.json settings.
      */
-    packageJson: {},
+    packageJson: {
+      scripts: {
+        "export": "tsmodule build",
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint --fix",
+        "pretest": "tsmodule build --runtime-only",
+        "test": "ava",
+        "prepublishOnly": "yarn export && yarn test"
+      },
+    },
     /**
      * Ensure Next, PostCSS, and Tailwind configs are available.
      */
     files: [
+      ".eslintrc",
+      "next-env.d.ts",
       "next.config.js",
       "postcss.config.js",
       "tailwind.config.js",

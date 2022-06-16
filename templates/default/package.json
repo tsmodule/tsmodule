@@ -16,9 +16,9 @@
   "scripts": {
     "dev": "tsmodule dev",
     "build": "tsmodule build",
+    "pretest": "tsmodule build -r",
     "test": "ava",
     "lint": "eslint src --fix",
-    "pretest": "tsmodule build -r",
     "prepublishOnly": "yarn build && yarn test"
   },
   "ava": {

@@ -21,8 +21,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
+    "pretest": "tsmodule build --runtime-only",
     "test": "ava",
-    "prepublishOnly": "yarn build && yarn test"
+    "prepublishOnly": "yarn export && yarn test"
   },
   "ava": {
     "timout": 240000,

@@ -3,7 +3,7 @@ import chalk from "chalk";
 import { createShell } from "await-shell";
 import ora from "ora";
 
-import { copyTemplate } from "./lib/copyTemplate";
+import { copyTemplate } from "./lib/templates";
 import { rewritePkgJson } from "./lib/rewritePkgJson";
 import { specification } from "../../specification";
 

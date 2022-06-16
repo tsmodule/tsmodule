@@ -1,10 +1,10 @@
-export type ProjectType = "default" | "react";
-
-export type PackageJsonSettings = {
+type PackageJsonSettings = {
   [key: string]: string | number | boolean | object;
 };
 
-export interface ProjectConfiguration {
+export type TsmoduleProjectType = "default" | "react";
+
+export interface TsModuleProjectConfig {
   files: string[];
   packageJson: PackageJsonSettings;
   dependencies: string[];
@@ -12,5 +12,5 @@ export interface ProjectConfiguration {
 }
 
 export type TsmoduleSpecification = {
-  [key in ProjectType]: ProjectConfiguration;
+  [key in TsmoduleProjectType]: TsModuleProjectConfig;
 };
