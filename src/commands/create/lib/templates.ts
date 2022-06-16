@@ -1,55 +1,53 @@
-import { PACKAGE_ROOT } from "../../../constants";
 import { specification, TsmoduleProjectType } from "../../../specification";
+import { PACKAGE_ROOT } from "../../../constants";
 
 import glob from "fast-glob";
 
-import { createShell } from "await-shell";
 import { copyFile, mkdir } from "fs/promises";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
+import { createDebugLogger } from "create-debug-logger";
+import { createShell } from "await-shell";
 
 const getTemplateDir = (template: string) => {
   return resolve(PACKAGE_ROOT, `./templates/${template}`);
 };
 
 /**
- * Copy the given `files` from the given `template` into `targetDir`.
+ * Copy the specified files from the given `template` into `targetDir`.
  */
 export const copyTemplateFiles = async (
-  template: string,
-  /**
-   * An array of globs or file paths to copy, relative to `targetDir`.
-   */
-  filePatterns: string[],
+  template: TsmoduleProjectType,
   /**
    * The directory to copy into.
    */
   targetDir: string
 ) => {
+  const DEBUG = createDebugLogger(copyTemplateFiles);
+  DEBUG.log("Copying template files", { template, targetDir });
+
   const templatePath = getTemplateDir(template);
   const targetPath = resolve(targetDir);
 
   await mkdir(targetPath, { recursive: true });
 
-  for (const filePattern of filePatterns) {
-    const templateFiles = await glob(
-      filePattern,
-      {
-        cwd: templatePath,
-        absolute: true,
-        dot: true,
-      }
-    );
+  // for (const filePattern of filePatterns) {
+  const templateFiles = await glob(
+    specification[template].files,
+    {
+      cwd: templatePath,
+      // absolute: true,
+      dot: true,
+    }
+  );
 
-    // eslint-disable-next-line no-console
-    console.log(templateFiles);
+  if (templateFiles.length) {
+    for (const templateFile of templateFiles) {
+      const sourcePath = resolve(templatePath, templateFile);
+      const replacementPath = resolve(targetPath, templateFile);
+      DEBUG.log({ sourcePath, replacementPath });
 
-    if (templateFiles.length) {
-      for (const templateFile of templateFiles) {
-        await copyFile(
-          templateFile,
-          resolve(targetPath, templateFile.replace(templatePath, ""))
-        );
-      }
+      await mkdir(dirname(replacementPath), { recursive: true });
+      await copyFile(sourcePath, replacementPath);
     }
   }
 };
@@ -72,4 +70,4 @@ export const copyTemplate = async (
   });
 };
 
-// await copyTemplateFiles("default", ["**"], "./");
+// await copyTemplateFiles("default", "../new-project");
