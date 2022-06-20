@@ -4,7 +4,7 @@ import { createShell } from "await-shell";
 import ora from "ora";
 import { resolve } from "path";
 
-import { applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
+import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
 import { setPackageJsonFields } from "../../utils/packageJson";
 import { specification } from "../../specification";
 
@@ -49,22 +49,16 @@ export const create = async (name: string, { react = false }) => {
   /**
    * Install dependencies in the created directory.
    */
-  process.chdir(name);
-
-  const depsToInstall = [...specification.default.dependencies];
-  const devDepsToInstall = [...specification.default.devDependencies];
+  await applyDependenciesSpec({
+    template: "default",
+    targetDir: name,
+  });
 
   if (react) {
-    depsToInstall.push(...specification.react.dependencies);
-    devDepsToInstall.push(...specification.react.devDependencies);
-  }
-
-  if (depsToInstall.length) {
-    await shell.run(`yarn add ${depsToInstall.join(" ")}`);
-  }
-
-  if (devDepsToInstall.length) {
-    await shell.run(`yarn add -D ${devDepsToInstall.join(" ")}`);
+    await applyDependenciesSpec({
+      template: "react",
+      targetDir: name,
+    });
   }
 
   spinner.succeed("Dependencies installed.");
