@@ -8,6 +8,8 @@ import { build } from "./commands/build";
 import { create } from "./commands/create";
 import { dev } from "./commands/dev";
 import { execute } from "./commands/execute";
+import { convert } from "./commands/convert";
+
 import { localPackageJson } from "./constants";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
@@ -53,6 +55,11 @@ program
   .action(create);
 
 program
+  .command("convert")
+  .description("Convert an existing project to a TS module.")
+  .action(convert);
+
+program
   .command("normalize [files]")
   .description(
     "Rewrites import specifiers in files to ESM-compliant paths.\n" +
@@ -72,4 +79,5 @@ program
 program.parse(process.argv);
 
 export * from "./commands";
+export * from "./specification";
 export * from "./types";

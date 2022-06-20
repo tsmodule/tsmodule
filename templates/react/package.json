@@ -1,43 +1,5 @@
 {
   "name": "template",
-  "platform": "browser",
   "version": "0.0.1",
-  "license": "MIT",
-  "types": "dist/index.d.ts",
-  "style": "dist/bundle.css",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": "./dist/index.js",
-    "./styles": "./dist/bundle.css",
-    "./styles/*": "./dist/components/*/index.css",
-    "./package.json": "./package.json",
-    "./*": "./dist/components/*/index.js"
-  },
-  "scripts": {
-    "export": "tsmodule build",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint --fix",
-    "test": "ava",
-    "prepublishOnly": "yarn build && yarn test"
-  },
-  "ava": {
-    "timout": 240000,
-    "files": [
-      "test/**/*.test.ts"
-    ],
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--no-warnings",
-      "--loader=@tsmodule/tsmodule"
-    ]
-  },
-  "resolutions": {
-    "@types/react": "^17.0.38"
-  }
+  "license": "MIT"
 }

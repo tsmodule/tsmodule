@@ -2,10 +2,11 @@
 import chalk from "chalk";
 import { createShell } from "await-shell";
 import ora from "ora";
+import { resolve } from "path";
 
-import { dependencies, devDependencies } from "../../constants";
-import { copyTemplate } from "./lib/copyTemplate";
-import { rewritePkgJson } from "./lib/rewritePkgJson";
+import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
+import { setPackageJsonFields } from "../../utils/packageJson";
+import { specification } from "../../specification";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
 globalThis.SHELL_OPTIONS = {
@@ -15,47 +16,52 @@ globalThis.SHELL_OPTIONS = {
 export const create = async (name: string, { react = false }) => {
   const shell = createShell();
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
-
   /**
    * Always copy default template.
    */
-  await copyTemplate("default", name);
-
+  const defaultSettings: ApplyTemplateParams = {
+    template: "default",
+    targetDir: name
+  };
+  await copyTemplate(defaultSettings);
+  await applyPackageJsonSpec(defaultSettings);
   /**
    * Copy other template files as needed.
    */
   if (react) {
-    await copyTemplate("react", name);
+    const reactSettings: ApplyTemplateParams = {
+      template: "react",
+      targetDir: name
+    };
+    await copyTemplate(reactSettings);
+    await applyPackageJsonSpec(reactSettings);
   }
 
-  await rewritePkgJson(name);
+  await setPackageJsonFields(
+    resolve(process.cwd(), name),
+    {
+      "name": name,
+    }
+  );
 
   spinner.succeed("Project created.");
 
   /**
    * Install dependencies in the created directory.
    */
-  process.chdir(name);
-
-  const depsToInstall: string[] = [...dependencies.default];
-  const devDepsToInstall: string[] = [...devDependencies.default];
+  await applyDependenciesSpec({
+    template: "default",
+    targetDir: name,
+  });
 
   if (react) {
-    depsToInstall.push(...dependencies.react);
-    devDepsToInstall.push(...devDependencies.react);
-  }
-
-  if (depsToInstall.length) {
-    await shell.run(`yarn add ${depsToInstall.join(" ")}`);
-  }
-
-  if (devDepsToInstall.length) {
-    await shell.run(`yarn add -D ${devDepsToInstall.join(" ")}`);
+    await applyDependenciesSpec({
+      template: "react",
+      targetDir: name,
+    });
   }
 
   spinner.succeed("Dependencies installed.");
-
   await shell.run("git init");
-
   spinner.succeed("Set up as Git repository.");
 };
