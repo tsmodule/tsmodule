@@ -126,4 +126,35 @@ export const applyDependenciesSpec = async ({
   }
 };
 
+export const applySpecification = async ({
+  template,
+  targetDir = process.cwd()
+}: ApplyTemplateParams) => {
+  const defaultSettings: ApplyTemplateParams = {
+    template: "default",
+    targetDir,
+  };
+
+  await applyTemplateFileSpec(defaultSettings);
+  await applyPackageJsonSpec(defaultSettings);
+
+  if (template !== "default") {
+    const templateSettings: ApplyTemplateParams = {
+      template,
+      targetDir,
+    };
+
+    await applyTemplateFileSpec(templateSettings);
+    await applyPackageJsonSpec(templateSettings);
+  }
+
+  /**
+   * Dependencies will install default and template dependencies.
+   */
+  await applyDependenciesSpec({
+    template,
+    targetDir,
+  });
+};
+
 // await copyTemplateFiles("default", "../new-project");

@@ -8,6 +8,8 @@ import { build } from "./commands/build";
 import { create } from "./commands/create";
 import { dev } from "./commands/dev";
 import { execute } from "./commands/execute";
+import { convert } from "./commands/convert";
+
 import { localPackageJson } from "./constants";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 
@@ -51,6 +53,11 @@ program
   .option("--react", "Create React component library with Next.js")
   .description("Create a new project.")
   .action(create);
+
+program
+  .command("convert")
+  .description("Convert an existing project to a TS module.")
+  .action(convert);
 
 program
   .command("normalize [files]")
