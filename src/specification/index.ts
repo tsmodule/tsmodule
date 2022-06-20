@@ -138,7 +138,8 @@ export const specification: TsmoduleSpecification = {
        * Lock React types to v17.
        */
       "resolutions": {
-        "@types/react": "^17.0.38"
+        "@types/react": "^17.0.38",
+        "@types/react-dom": "^17.0.11"
       },
     },
     /**
