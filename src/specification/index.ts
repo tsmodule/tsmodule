@@ -134,6 +134,12 @@ export const specification: TsmoduleSpecification = {
         "test": "ava",
         "prepublishOnly": "yarn export && yarn test"
       },
+      /**
+       * Lock React types to v17.
+       */
+      "resolutions": {
+        "@types/react": "^17.0.38"
+      },
     },
     /**
      * Ensure Next, PostCSS, and Tailwind configs are available.
@@ -147,15 +153,15 @@ export const specification: TsmoduleSpecification = {
     ],
     "dependencies": ["react@^17.0.2", "react-dom@^17.0.2"],
     "devDependencies": [
+      ...defaultSettings.devDependencies,
       /**
        * React TS typings.
        */
       "@types/react@^17.0.39",
       "@types/react-dom@^17.0.11",
       /**
-       * ESLint.
+       * ESLint for Next.
        */
-      "eslint",
       "eslint-config-next",
       /**
        * Build-time dependencies.
