@@ -77,8 +77,8 @@ Ready out of the box:
 
 Build in dev mode and watch for changes:
 
-```shell
-$ tsmodule dev
+```
+tsmodule dev
 ```
 
 ### Build to optimized ES modules
@@ -86,8 +86,8 @@ $ tsmodule dev
 Production builds are minified ESM, with support for `my-package/a/b/c` path
 resolution (see [Module configuration](#module-configuration) below).
 
-```shell
-$ tsmodule build [--bundle]
+```
+tsmodule build [--bundle]
 ```
 
 **All projects:**
@@ -116,8 +116,8 @@ is more appropriate.</sub>
 
 ### Run TypeScript directly
 
-```shell
-$ tsmodule file.ts
+```
+tsmodule file.ts
 ```
 
   - Uses Node module loader to resolve TS at runtime
