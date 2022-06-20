@@ -103,6 +103,15 @@ export const specification: TsmoduleSpecification = {
      */
     packageJson: {
       /**
+       * Target browser.
+       */
+      "platform": "browser",
+      /**
+       * PostCSS-specific package.json support. Import with `@import
+       * "my-package"`.
+       */
+      "style": "dist/bundle.css",
+      /**
        * Export styles and components.
        */
       "exports": {
@@ -112,6 +121,9 @@ export const specification: TsmoduleSpecification = {
         "./styles/*": "./dist/components/*/index.css",
         "./*": "./dist/components/*/index.js",
       },
+      /**
+       * React-specific build scripts.
+       */
       "scripts": {
         "export": "tsmodule build",
         "dev": "next dev",
