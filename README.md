@@ -3,22 +3,23 @@
   <h1>TypeScript Module Toolkit</h1>
 </div>
 
-TSModule is a toolkit for developing pure ESM TypeScript packages that target any platform (browser, Node, etc.). 
+tsmodule is a toolkit for developing **standardized, pure ESM TypeScript
+modules** that target any platform. 
 
 **Table of contents**
 
 <!-- toc -->
 
+- [Installation](#installation)
+    + [Requirements](#requirements)
+    + [Existing projects](#existing-projects)
+    + [New projects](#new-projects)
 - [Purpose](#purpose)
   * [Create ESM packages using TypeScript](#create-esm-packages-using-typescript)
   * [Develop projects in real-time](#develop-projects-in-real-time)
   * [Build to optimized ES modules](#build-to-optimized-es-modules)
     + [Optimizing NPM dependencies with `-b, --bundle`](#optimizing-npm-dependencies-with--b---bundle)
   * [Run TypeScript directly](#run-typescript-directly)
-- [Installation](#installation)
-    + [Requirements](#requirements)
-    + [Existing projects](#existing-projects)
-    + [New projects](#new-projects)
 - [Use Cases](#use-cases)
   * [Generic TypeScript library](#generic-typescript-library)
   * [React component library (using Next.js)](#react-component-library-using-nextjs)
@@ -28,62 +29,6 @@ TSModule is a toolkit for developing pure ESM TypeScript packages that target an
 - [License](#license)
 
 <!-- tocstop -->
-
-## Purpose
-
-### Create ESM packages using TypeScript
-
-```shell
-$ tsmodule create [--react]
-```
-
-**Rady out of the box:**
-
-  - package.json scripts
-  - TypeScript, ESLint, Tailwind configs
-  - CI/CD with GitHub Actions
-
-### Develop projects in real-time
-
-Build in dev mode and watch for changes:
-
-```shell
-$ tsmodule dev
-```
-
-### Build to optimized ES modules
-
-```shell
-$ tsmodule build [--bundle]
-```
-
-**All projects:**
-
-  - Emit pure ESM, no polyfilling to CJS
-  - Emit ESNext by default, no polyfilling to older feature sets
-
-**React projects created with `create --react`:**
-
-  - Bundle CSS by default
-  - Use Tailwind by default
-
-#### Optimizing NPM dependencies with `-b, --bundle`
-
-With `-b, --bundle` mode, all entry points are compiled "in-place" and runtime NPM dependencies will generally not be needed as they will be inlined. If you build in bundle mode, you can move your dependencies to devDependencies, as the only thing that will be needed to run any/all compiled-in-place entry point(s) in your module are the bundles themselves.
-
-TSModule itself builds with `-b, --bundle` flag, and requires only two runtime NPM dependencies:
-
-1. `esbuild`, which does the heavy lifting for the build process, does not allow itself to be bundled
-2. `typescript`, so TSModule can use the built `tsc` binary to generate `.d.ts` type declarations during builds
-
-### Run TypeScript directly
-
-```shell
-$ tsmodule file.ts
-```
-
-  - Uses Node module loader to resolve TS at runtime
-  - Executable TypeScript files with `#!/usr/bin/env tsmodule`
 
 ## Installation
 
@@ -101,13 +46,82 @@ dependencies, and config files), run this in your project directory:
 tsmodule convert
 ```
 
-**You will need to move all source files to `src/`. Ensure you read the [module
+<sub>You will need to move all TS source files to `src/` if they are not there
+already. Ensure you read the [module
 configuration notes](#module-configuration) regarding "index exports" as it
-relates to importing downstream.**
+relates to importing downstream.</sub>
 
 ### New projects
 
-Use `tsmodule create [--react] project-name` to create a new project.
+Create a new package with:
+
+```
+tsmodule create [--react] project-name
+```
+
+## Purpose
+
+### Create ESM packages using TypeScript
+
+`tsmodule create` exists to bootstrap a Node or React project in as little time
+as possible. The created packages are modular, and `tsmodule create --react`
+will create a modular Next.js project with [importable components and styles](#react-component-library-using-nextjs).
+
+Ready out of the box:
+
+  - package.json scripts
+  - TypeScript, ESLint configs (Tailwind, PostCSS for React)
+  - CI/CD with GitHub Actions
+
+### Develop projects in real-time
+
+Build in dev mode and watch for changes:
+
+```shell
+$ tsmodule dev
+```
+
+### Build to optimized ES modules
+
+Production builds are minified ESM, with support for `my-package/a/b/c` path
+resolution (see [Module configuration](#module-configuration) below).
+
+```shell
+$ tsmodule build [--bundle]
+```
+
+**All projects:**
+
+  - Emit pure ESM, no polyfilling to CJS
+  - Emit ESNext by default, no polyfilling to older feature sets
+
+**React projects created with `create --react`:**
+
+  - Bundle CSS by default
+  - Use Tailwind by default
+
+### Optimize NPM dependencies with `-b, --bundle`
+
+With `-b, --bundle` mode, all entry points are compiled "in-place" and runtime NPM dependencies will generally not be needed as they will be inlined. If you build in bundle mode, you can move your dependencies to devDependencies, as the only thing that will be needed to run any/all compiled-in-place entry point(s) in your module are the bundles themselves.
+
+TSModule itself builds with `-b, --bundle` flag, and requires only two runtime NPM dependencies:
+
+1. `esbuild`, which does the heavy lifting for the build process, does not allow itself to be bundled
+2. `typescript`, so TSModule can use the built `tsc` binary to generate `.d.ts`
+   type declarations during builds
+
+<sub>Note: Bundling every entry point in place may not be what you want, i.e. if you
+only have a single entrypoint. In these cases, `tsmodule build -b src/index.ts`
+is more appropriate.</sub>
+
+### Run TypeScript directly
+
+```shell
+$ tsmodule file.ts
+```
+
+  - Uses Node module loader to resolve TS at runtime
+  - Executable TypeScript files with `#!/usr/bin/env tsmodule`
 
 ## Use Cases
 
