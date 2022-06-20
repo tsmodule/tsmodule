@@ -87,27 +87,23 @@ $ tsmodule file.ts
 
 ## Installation
 
-### Requirements
+### Requirements (global)
 
-Because TS modules are pure ESM environments, **Node 14+** is required.
+- Node v14+ (for ESM support)
+- Yarn (for `resolutions` package.json field)
 
 ### Existing projects
 
-Add TSModule with:
+To convert an existing project (and install standardized package.json settings,
+dependencies, and config files), run this in your project directory:
 
-```shell
-$ yarn add -D @tsmodule/tsmodule
+```bash
+tsmodule convert
 ```
 
-Then add a build script to your package.json, and call it with `yarn build`:
-
-```json
-"scripts": {
-  "build": "tsmodule build"
-}
-```
-
-Source will be compiled from `src/` to `dist/`.
+**You will need to move all source files to `src/`. Ensure you read the [module
+configuration notes](#module-configuration) regarding "index exports" as it
+relates to importing downstream.**
 
 ### New projects
 
