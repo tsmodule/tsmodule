@@ -1,14 +1,13 @@
-type PackageJsonSettings = {
-  [key: string]: string | number | boolean | object;
-};
+import { PackageJsonSettings } from "../utils/pkgJson";
+
 
 export type TsmoduleProjectType = "default" | "react";
 
 export interface TsModuleProjectConfig {
   files: string[];
-  packageJson: PackageJsonSettings;
   dependencies: string[];
   devDependencies: string[];
+  packageJson: PackageJsonSettings;
 }
 
 export type TsmoduleSpecification = {

@@ -1,11 +1,10 @@
-import fs from "fs/promises";
+import { getPackageJson, writePackageJson } from "../../../utils/pkgJson";
 import { resolve } from "path";
 
 export const rewritePkgJson = async (projectName: string) => {
-  const packageJsonPath = resolve(process.cwd(), projectName, "package.json");
-  const packageJsonFile = await fs.readFile(packageJsonPath, "utf-8");
-  const packageJson = JSON.parse(packageJsonFile);
+  const projectDir = resolve(process.cwd(), projectName);
+  const packageJson = await getPackageJson(projectDir);
 
   packageJson.name = projectName;
-  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  await writePackageJson(packageJson, projectDir);
 };

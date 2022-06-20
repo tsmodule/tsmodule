@@ -1,3 +1,4 @@
+import { getPackageJson, writePackageJson } from "../../../utils/pkgJson";
 import { specification, TsmoduleProjectType } from "../../../specification";
 import { PACKAGE_ROOT } from "../../../constants";
 
@@ -10,6 +11,24 @@ import { createShell } from "await-shell";
 
 const getTemplateDir = (template: string) => {
   return resolve(PACKAGE_ROOT, `./templates/${template}`);
+};
+
+/**
+ * Copy the files for a given `template` into `targetDir`.
+ */
+export const copyTemplate = async (
+  template: TsmoduleProjectType,
+  targetDir: string
+) => {
+  const shell = createShell();
+  const templatePath = getTemplateDir(template);
+  const targetPath = resolve(targetDir);
+
+  await mkdir(targetPath, { recursive: true });
+  await shell.run({
+    posix: `cp -rf ${templatePath}/. ${targetPath}`,
+    win32: `xcopy /E /I /Q /Y ${templatePath}\\ ${targetPath}\\`,
+  });
 };
 
 /**
@@ -52,22 +71,17 @@ export const copyTemplateFiles = async (
   }
 };
 
-/**
- * Copy the files for a given `template` into `targetDir`.
- */
-export const copyTemplate = async (
+export const patchPackageJson = async (
   template: TsmoduleProjectType,
   targetDir: string
 ) => {
-  const shell = createShell();
-  const templatePath = getTemplateDir(template);
   const targetPath = resolve(targetDir);
+  const packageJson = await getPackageJson(targetPath);
 
-  await mkdir(targetPath, { recursive: true });
-  await shell.run({
-    posix: `cp -rf ${templatePath}/. ${targetPath}`,
-    win32: `xcopy /E /I /Q /Y ${templatePath}\\ ${targetPath}\\`,
-  });
+  const packageJsonSpec = specification[template].packageJson;
+  Object.assign(packageJson, packageJsonSpec);
+
+  await writePackageJson(packageJson, targetPath);
 };
 
 // await copyTemplateFiles("default", "../new-project");
