@@ -1,4 +1,4 @@
-import { PackageJsonSettings } from "../utils/pkgJson";
+import { PackageJsonSettings } from "../utils/packageJson";
 
 
 export type TsmoduleProjectType = "default" | "react";

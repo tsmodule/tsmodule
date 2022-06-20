@@ -19,7 +19,7 @@ import { createShell } from "await-shell";
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
-import { getPackageJsonFile } from "../../utils/pkgJson";
+import { getPackageJsonFile } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 

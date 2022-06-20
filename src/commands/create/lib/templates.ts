@@ -1,7 +1,3 @@
-import { getPackageJson, writePackageJson } from "../../../utils/pkgJson";
-import { specification, TsmoduleProjectType } from "../../../specification";
-import { PACKAGE_ROOT } from "../../../constants";
-
 import glob from "fast-glob";
 
 import { copyFile, mkdir } from "fs/promises";
@@ -9,12 +5,16 @@ import { dirname, resolve } from "path";
 import { createDebugLogger } from "create-debug-logger";
 import { createShell } from "await-shell";
 
+import { specification, TsmoduleProjectType } from "../../../specification";
+import { PACKAGE_ROOT } from "../../../constants";
+import { setPackageJsonFields } from "../../../utils/packageJson";
+
 const getTemplateDir = (template: string) => {
   return resolve(PACKAGE_ROOT, `./templates/${template}`);
 };
 
 /**
- * Copy the files for a given `template` into `targetDir`.
+ * Copy all of the files for a given `template` into `targetDir`.
  */
 export const copyTemplate = async (
   template: TsmoduleProjectType,
@@ -33,12 +33,12 @@ export const copyTemplate = async (
 
 /**
  * Copy the specified files from the given `template` into `targetDir`.
+ *
+ * @param template The template to copy files from.
+ * @param targetDir The directory to copy files into.
  */
 export const copyTemplateFiles = async (
   template: TsmoduleProjectType,
-  /**
-   * The directory to copy into.
-   */
   targetDir: string
 ) => {
   const DEBUG = createDebugLogger(copyTemplateFiles);
@@ -71,17 +71,21 @@ export const copyTemplateFiles = async (
   }
 };
 
-export const patchPackageJson = async (
+/**
+ * Set fields for the package.json in `targetDir`.
+ *
+ * @param template The project type to load the package.json spec for.
+ * @param targetDir The target directory containing the package.json to rewrite.
+ * @returns The updated package.json.
+ */
+export const applyPackageJsonSpec = async (
   template: TsmoduleProjectType,
   targetDir: string
 ) => {
   const targetPath = resolve(targetDir);
-  const packageJson = await getPackageJson(targetPath);
-
   const packageJsonSpec = specification[template].packageJson;
-  Object.assign(packageJson, packageJsonSpec);
 
-  await writePackageJson(packageJson, targetPath);
+  return await setPackageJsonFields(targetPath, packageJsonSpec);
 };
 
 // await copyTemplateFiles("default", "../new-project");

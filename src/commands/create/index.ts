@@ -5,7 +5,7 @@ import ora from "ora";
 import { resolve } from "path";
 
 import { copyTemplate } from "./lib/templates";
-import { rewritePackageJson } from "../../utils/pkgJson";
+import { setPackageJsonFields } from "../../utils/packageJson";
 import { specification } from "../../specification";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
@@ -27,7 +27,7 @@ export const create = async (name: string, { react = false }) => {
     await copyTemplate("react", name);
   }
 
-  await rewritePackageJson(
+  await setPackageJsonFields(
     resolve(process.cwd(), name),
     {
       "name": name,
