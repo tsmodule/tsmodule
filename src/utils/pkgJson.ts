@@ -26,3 +26,13 @@ export const writePackageJson = async (
     "utf-8"
   );
 };
+
+export const rewritePackageJson = async (
+  cwd = process.cwd(),
+  settings: PackageJsonSettings,
+) => {
+  const packageJson = await getPackageJson(cwd);
+
+  Object.assign(packageJson, settings);
+  await writePackageJson(packageJson, cwd);
+};

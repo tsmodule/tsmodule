@@ -2,9 +2,10 @@
 import chalk from "chalk";
 import { createShell } from "await-shell";
 import ora from "ora";
+import { resolve } from "path";
 
 import { copyTemplate } from "./lib/templates";
-import { rewritePkgJson } from "./lib/rewritePkgJson";
+import { rewritePackageJson } from "../../utils/pkgJson";
 import { specification } from "../../specification";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
@@ -15,12 +16,10 @@ globalThis.SHELL_OPTIONS = {
 export const create = async (name: string, { react = false }) => {
   const shell = createShell();
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
-
   /**
    * Always copy default template.
    */
   await copyTemplate("default", name);
-
   /**
    * Copy other template files as needed.
    */
@@ -28,7 +27,12 @@ export const create = async (name: string, { react = false }) => {
     await copyTemplate("react", name);
   }
 
-  await rewritePkgJson(name);
+  await rewritePackageJson(
+    resolve(process.cwd(), name),
+    {
+      "name": name,
+    }
+  );
 
   spinner.succeed("Project created.");
 
@@ -54,8 +58,6 @@ export const create = async (name: string, { react = false }) => {
   }
 
   spinner.succeed("Dependencies installed.");
-
   await shell.run("git init");
-
   spinner.succeed("Set up as Git repository.");
 };
