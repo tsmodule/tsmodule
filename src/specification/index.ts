@@ -8,19 +8,19 @@ const defaultSettings: TsModuleProjectConfig = {
     /**
      * TS modules are ESM packages.
      */
-    type: "module",
+    "type": "module",
     /**
      * By default, they target Node.
      */
-    platform: "node",
+    "platform": "node",
     /**
      * They emit types at the runtime index.
      */
-    types: "dist/index.d.ts",
+    "types": "dist/index.d.ts",
     /**
      * They package all files in dist/.
      */
-    files: ["dist"],
+    "files": ["dist"],
     /**
      * And they emulate CJS-like submodule resolution.
      *
@@ -31,7 +31,7 @@ const defaultSettings: TsModuleProjectConfig = {
      * // source code at src/a/b/c/index.ts
      * ```
      */
-    exports: {
+    "exports": {
       "./package.json": "./package.json",
       ".": "./dist/index.js",
       "./*": "./dist/*/index.js"
@@ -39,7 +39,7 @@ const defaultSettings: TsModuleProjectConfig = {
     /**
      * Apply build, dev, lint, test, and publish scripts.
      */
-    scripts: {
+    "scripts": {
       "dev": "tsmodule dev",
       "build": "tsmodule build",
       "test": "ava",
@@ -50,7 +50,7 @@ const defaultSettings: TsModuleProjectConfig = {
     /**
      * Set Ava config for testing.
      */
-    ava: {
+    "ava": {
       "timeout": 240000,
       "files": [
         "test/**/*.test.ts"
@@ -67,18 +67,18 @@ const defaultSettings: TsModuleProjectConfig = {
   /**
    * Standardize TSConfig and ESLint.
    */
-  files: [
+  "files": [
     "tsconfig.json",
     ".eslintrc",
   ],
   /**
    * A Node program will not need any runtime deps by default.
    */
-  dependencies: [],
+  "dependencies": [],
   /**
    * It will need types, plus build/lint/test deps.
    */
-  devDependencies: [
+  "devDependencies": [
     "@types/node",
     "@tsmodule/tsmodule",
     "@typescript-eslint/eslint-plugin",
@@ -102,7 +102,17 @@ export const specification: TsmoduleSpecification = {
      * Next-specific package.json settings.
      */
     packageJson: {
-      scripts: {
+      /**
+       * Export styles and components.
+       */
+      "exports": {
+        "./package.json": "./package.json",
+        ".": "./dist/index.js",
+        "./styles": "./dist/bundle.css",
+        "./styles/*": "./dist/components/*/index.css",
+        "./*": "./dist/components/*/index.js",
+      },
+      "scripts": {
         "export": "tsmodule build",
         "dev": "next dev",
         "build": "next build",
@@ -116,15 +126,15 @@ export const specification: TsmoduleSpecification = {
     /**
      * Ensure Next, PostCSS, and Tailwind configs are available.
      */
-    files: [
+    "files": [
       ".eslintrc",
       "next-env.d.ts",
       "next.config.js",
       "postcss.config.js",
       "tailwind.config.js",
     ],
-    dependencies: ["react@^17.0.2", "react-dom@^17.0.2"],
-    devDependencies: [
+    "dependencies": ["react@^17.0.2", "react-dom@^17.0.2"],
+    "devDependencies": [
       /**
        * React TS typings.
        */
