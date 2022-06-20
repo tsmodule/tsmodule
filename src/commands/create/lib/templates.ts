@@ -32,16 +32,16 @@ export const copyTemplate = async (
 };
 
 /**
- * Copy the specified files from the given `template` into `targetDir`.
+ * Apply the file spec for the given `template` to `targetDir`.
  *
  * @param template The template to copy files from.
  * @param targetDir The directory to copy files into.
  */
-export const copyTemplateFiles = async (
+export const applyTemplateFileSpec = async (
   template: TsmoduleProjectType,
   targetDir: string
 ) => {
-  const DEBUG = createDebugLogger(copyTemplateFiles);
+  const DEBUG = createDebugLogger(applyTemplateFileSpec);
   DEBUG.log("Copying template files", { template, targetDir });
 
   const templatePath = getTemplateDir(template);
@@ -72,7 +72,7 @@ export const copyTemplateFiles = async (
 };
 
 /**
- * Set fields for the package.json in `targetDir`.
+ * Apply the package.json spec to the package.json in `targetDir`.
  *
  * @param template The project type to load the package.json spec for.
  * @param targetDir The target directory containing the package.json to rewrite.
