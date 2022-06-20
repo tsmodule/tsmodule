@@ -11,14 +11,14 @@ modules** that target any platform.
 <!-- toc -->
 
 - [Installation](#installation)
-    + [Requirements](#requirements)
-    + [Existing projects](#existing-projects)
-    + [New projects](#new-projects)
+  * [Requirements (global)](#requirements-global)
+  * [Existing projects](#existing-projects)
+  * [New projects](#new-projects)
 - [Purpose](#purpose)
   * [Create ESM packages using TypeScript](#create-esm-packages-using-typescript)
   * [Develop projects in real-time](#develop-projects-in-real-time)
   * [Build to optimized ES modules](#build-to-optimized-es-modules)
-    + [Optimizing NPM dependencies with `-b, --bundle`](#optimizing-npm-dependencies-with--b---bundle)
+  * [Optimize NPM dependencies with `-b, --bundle`](#optimize-npm-dependencies-with--b---bundle)
   * [Run TypeScript directly](#run-typescript-directly)
 - [Use Cases](#use-cases)
   * [Generic TypeScript library](#generic-typescript-library)
