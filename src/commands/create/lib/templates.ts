@@ -13,13 +13,24 @@ const getTemplateDir = (template: string) => {
   return resolve(PACKAGE_ROOT, `./templates/${template}`);
 };
 
+export interface ApplyTemplateParams {
+  /**
+   * The template to copy from.
+   */
+  template: TsmoduleProjectType;
+  /**
+   * The root directory of the target project. Defaults to `.`.
+   */
+  targetDir?: string;
+}
+
 /**
  * Copy all of the files for a given `template` into `targetDir`.
  */
-export const copyTemplate = async (
-  template: TsmoduleProjectType,
-  targetDir: string
-) => {
+export const copyTemplate = async ({
+  template,
+  targetDir = process.cwd()
+}: ApplyTemplateParams) => {
   const shell = createShell();
   const templatePath = getTemplateDir(template);
   const targetPath = resolve(targetDir);
@@ -37,10 +48,10 @@ export const copyTemplate = async (
  * @param template The template to copy files from.
  * @param targetDir The directory to copy files into.
  */
-export const applyTemplateFileSpec = async (
-  template: TsmoduleProjectType,
-  targetDir: string
-) => {
+export const applyTemplateFileSpec = async ({
+  template,
+  targetDir = process.cwd()
+}: ApplyTemplateParams) => {
   const DEBUG = createDebugLogger(applyTemplateFileSpec);
   DEBUG.log("Copying template files", { template, targetDir });
 
@@ -78,14 +89,41 @@ export const applyTemplateFileSpec = async (
  * @param targetDir The target directory containing the package.json to rewrite.
  * @returns The updated package.json.
  */
-export const applyPackageJsonSpec = async (
-  template: TsmoduleProjectType,
-  targetDir: string
-) => {
+export const applyPackageJsonSpec = async ({
+  template,
+  targetDir = process.cwd()
+}: ApplyTemplateParams) => {
   const targetPath = resolve(targetDir);
   const packageJsonSpec = specification[template].packageJson;
 
   return await setPackageJsonFields(targetPath, packageJsonSpec);
+};
+
+export const applyDependenciesSpec = async ({
+  template,
+  targetDir = process.cwd()
+}: ApplyTemplateParams) => {
+  const shell = createShell({
+    cwd: targetDir
+  });
+
+  const depsToInstall = [...specification.default.dependencies];
+  const devDepsToInstall = [...specification.default.devDependencies];
+
+  switch (template) {
+    case "react":
+      depsToInstall.push(...specification.react.dependencies);
+      devDepsToInstall.push(...specification.react.devDependencies);
+      break;
+  }
+
+  if (depsToInstall.length) {
+    await shell.run(`yarn add ${depsToInstall.join(" ")}`);
+  }
+
+  if (devDepsToInstall.length) {
+    await shell.run(`yarn add -D ${devDepsToInstall.join(" ")}`);
+  }
 };
 
 // await copyTemplateFiles("default", "../new-project");

@@ -4,7 +4,7 @@ import { createShell } from "await-shell";
 import ora from "ora";
 import { resolve } from "path";
 
-import { applyPackageJsonSpec, copyTemplate } from "./lib/templates";
+import { applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
 import { setPackageJsonFields } from "../../utils/packageJson";
 import { specification } from "../../specification";
 
@@ -19,14 +19,22 @@ export const create = async (name: string, { react = false }) => {
   /**
    * Always copy default template.
    */
-  await copyTemplate("default", name);
-  await applyPackageJsonSpec("default", name);
+  const defaultSettings: ApplyTemplateParams = {
+    template: "default",
+    targetDir: name
+  };
+  await copyTemplate(defaultSettings);
+  await applyPackageJsonSpec(defaultSettings);
   /**
    * Copy other template files as needed.
    */
   if (react) {
-    await copyTemplate("react", name);
-    await applyPackageJsonSpec("react", name);
+    const reactSettings: ApplyTemplateParams = {
+      template: "react",
+      targetDir: name
+    };
+    await copyTemplate(reactSettings);
+    await applyPackageJsonSpec(reactSettings);
   }
 
   await setPackageJsonFields(
