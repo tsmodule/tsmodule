@@ -25,6 +25,7 @@ modules** that target any platform.
   * [React component library (using Next.js)](#react-component-library-using-nextjs)
 - [Footnotes](#footnotes)
   * [Module configuration](#module-configuration)
+    + [Index exports](#index-exports)
     + [Package.json export](#packagejson-export)
 - [License](#license)
 
@@ -200,23 +201,32 @@ type-check and declaration emit:
 }
 ```
 
-And conditional exports in package.json will be configured like so, such that
-"index modules" at e.g. `src/test/index.ts` will be available at
-`my-package/test`:
+#### Index exports
 
-```json
-{
-  "files": ["dist/"],
-  "exports": {
-    "./package.json": "./package.json",
-    "./": "./dist/index.js",
-    "./*": "./dist/*/index.js"
-  },
-}
+Conditional exports in package.json are configured such that "index
+exports" are available at a subpath. For example:
+
+```
+src/a/b/c/index.ts
 ```
 
-This has no restriction on internal imports between files, only the default
-configuration for how downstream consumers can import from module subpaths.
+Will be available downstream via:
+
+```ts
+import { c } from "your-package/a/b/c"
+```
+
+**Notes:**
+
+- Index exports are the only entry points available for import, are ones located
+at `src/**/index.ts(x?)`.<sup>1</sup>
+
+- The default package entry point for `your-package` is `src/index.ts`.
+
+<sub><sup>1</sup> This has no restriction on internal imports between files,
+which can import from each other freely, including at runtime.
+However, consumers of your package will only be able to import from index
+exports as shown.<sub>
 
 #### Package.json export
 
