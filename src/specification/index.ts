@@ -51,7 +51,7 @@ const defaultSettings: TsModuleProjectConfig = {
      * Set Ava config for testing.
      */
     "ava": {
-      "timeout": 240000,
+      "timeout": "10m",
       "files": [
         "test/**/*.test.ts"
       ],

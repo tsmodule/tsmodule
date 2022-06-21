@@ -75,7 +75,7 @@
     }
   },
   "ava": {
-    "timeout": "10 minutes",
+    "timeout": "10m",
     "files": [
       "test/**/*.test.ts"
     ],
