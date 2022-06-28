@@ -26,7 +26,7 @@
   "scripts": {
     "prebootload": "node bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "yarn bootload && yarn link -f",
+    "prebuild": "yarn bootload && yarn link",
     "build": "node dist/index.js build -b",
     "dev": "node dist/index.js dev",
     "test-bundle": "yarn build && ava --no-worker-threads",
@@ -40,29 +40,29 @@
     "release": "release-it"
   },
   "dependencies": {
-    "esbuild": "^0.14.38",
-    "typescript": "^4.6.3"
+    "esbuild": "^0.14.47",
+    "typescript": "^4.7.4"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
-    "@types/node": "^17.0.29",
-    "@typescript-eslint/eslint-plugin": "^5.21.0",
-    "@typescript-eslint/parser": "^5.21.0",
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
     "assert": "^2.0.0",
     "ava": "^4.3.0",
     "await-shell": "^34.1.1",
     "chalk": "^5.0.1",
-    "commander": "^9.2.0",
+    "commander": "^9.3.0",
     "create-debug-logger": "^3.0.0",
     "es-module-lexer": "^0.10.5",
-    "eslint": "^8.14.0",
-    "eslint-config-next": "^12.1.5",
+    "eslint": "^8.18.0",
+    "eslint-config-next": "^12.2.0",
     "fast-glob": "^3.2.11",
-    "glob": "^8.0.1",
+    "glob": "^8.0.3",
     "node-watch": "^0.7.3",
-    "ora": "^6.1.0",
+    "ora": "^6.1.2",
     "path": "^0.12.7",
-    "release-it": "^14.14.2"
+    "release-it": "^15.1.1"
   },
   "release-it": {
     "git": {
