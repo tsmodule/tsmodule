@@ -5,13 +5,14 @@ import chalk from "chalk";
 
 import { Command } from "commander";
 import { build } from "./commands/build";
+import { convert } from "./commands/convert";
 import { create } from "./commands/create";
 import { dev } from "./commands/dev";
 import { execute } from "./commands/execute";
-import { convert } from "./commands/convert";
 
 import { localPackageJson } from "./constants";
 import { normalizeImportSpecifiers } from "./commands/normalize";
+import { programCatch } from "./utils/programCatch";
 
 const { version } = await localPackageJson();
 const program = new Command();
@@ -29,7 +30,7 @@ program
 program
   .command("dev")
   .description("Build and watch for changes.")
-  .action(dev);
+  .action(programCatch(dev));
 
 program
   .command("build")
@@ -44,20 +45,24 @@ program
   .option("--stdin [source]", "Read from a string or stdin.")
   .option("--stdin-file [file]", "File path to mock for stdin.")
   .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.")
-  .action(async (options) => {
-    await build(options);
-  });
+  .action(
+    programCatch(
+      async (options) => {
+        await build(options);
+      }
+    )
+  );
 
 program
   .command("create <name>")
   .option("--react", "Create React component library with Next.js")
   .description("Create a new project.")
-  .action(create);
+  .action(programCatch(create));
 
 program
   .command("convert")
   .description("Convert an existing project to a TS module.")
-  .action(convert);
+  .action(programCatch(convert));
 
 program
   .command("normalize [files]")
@@ -65,19 +70,25 @@ program
     "Rewrites import specifiers in files to ESM-compliant paths.\n" +
     "(default: dist/**/*.js)"
   )
-  .action(async ({ files }) => {
-    await normalizeImportSpecifiers(files);
-  });
+  .action(
+    programCatch(
+      async ({ files }) => {
+        await normalizeImportSpecifiers(files);
+      }
+    )
+  );
 
 program
-  .command("run", { isDefault: true })
-  .argument("<file>", "The file to run.")
+  .command("execute", { isDefault: true })
+  .argument("<file>", "The file to execute.")
   .option("--d, --dev", "Enable development mode")
   .description("Run the given TS program, analogous to `node <file>`.")
-  .action(execute);
+  .action(programCatch(execute));
 
 program.parse(process.argv);
 
 export * from "./commands";
 export * from "./specification";
 export * from "./types";
+
+// const a: string = 42;

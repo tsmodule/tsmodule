@@ -22,6 +22,7 @@ import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { getPackageJsonFile } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
+import { showProgress } from "../../utils/showProgress";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 
@@ -29,6 +30,15 @@ export const bannerLog = (msg: string) => {
   const logMsg = `  ${msg}  `;
   log(
     chalk.bgBlue(
+      chalk.bold(chalk.white(logMsg)),
+    )
+  );
+};
+
+export const bannerError = (msg: string) => {
+  const logMsg = `  ${msg}  `;
+  log(
+    chalk.bgRed(
       chalk.bold(chalk.white(logMsg)),
     )
   );
@@ -224,14 +234,19 @@ export const build = async ({
       return build.code;
     } else {
       const stdinBuildConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
-      await esbuild({
-        ...buildOptions,
-        ...stdinBuildConfig,
-      });
+      await showProgress(
+        async () => await esbuild({
+          ...buildOptions,
+          ...stdinBuildConfig,
+        }),
+        {
+          start: "Building stdin to dist/.",
+          success: "Built stdin to dist/.",
+          error: "Error building stdin to dist/.",
+        }
+      );
 
-      log(chalk.green("Successfully built stdin file to dist/."));
       log(chalk.grey("Use --no-write to print to stdout instead."));
-
       return;
     }
   }
@@ -279,26 +294,30 @@ export const build = async ({
   DEBUG.log("Compiling TSX files:", { tsxJsxInput });
   const compilableTsxFiles = tsxJsxInput.filter((file) => !file.endsWith(".d.ts"));
 
-  await Promise.all(
-    compilableTsxFiles.map(
-      async (tsxFile) => {
-        /**
-        * Prepend the necessary createElement import to the TSX source.
-        */
-        const tsxFileContents = await readFile(tsxFile, "utf-8");
-        const runtimeCode = REACT_IMPORTS + tsxFileContents;
+  await showProgress(
+    async () => await Promise.all(
+      compilableTsxFiles.map(
+        async (tsxFile) => {
+          /**
+          * Prepend the necessary createElement import to the TSX source.
+          */
+          const tsxFileContents = await readFile(tsxFile, "utf-8");
+          const runtimeCode = REACT_IMPORTS + tsxFileContents;
 
-        const tsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
-        await esbuild({
-          ...buildOptions,
-          ...tsxConfig,
-        });
-      }
-    )
+          const tsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
+          await esbuild({
+            ...buildOptions,
+            ...tsxConfig,
+          });
+        }
+      )
+    ),
+    {
+      start: "Compiling TSX files.",
+      success: "Compiled TSX files.",
+      error: "Failed to compile TSX files.",
+    }
   );
-
-  ora("Built TSX files.").succeed();
-
 
   /**
    * Compile TS files.
@@ -309,26 +328,39 @@ export const build = async ({
       .filter((file) => !isTsxOrJsx.test(file));
 
   DEBUG.log("Compiling TS files:", { tsJsInput });
-  await esbuild({
-    ...buildOptions,
-    entryPoints: tsJsInput.filter((file) => !file.endsWith(".d.ts")),
-  });
-
-  ora("Built TS files.").succeed();
+  await showProgress(
+    async () => await esbuild({
+      ...buildOptions,
+      entryPoints: tsJsInput.filter((file) => !file.endsWith(".d.ts")),
+    }),
+    {
+      start: "Compiling TS/JS files.",
+      success: "Compiled TS/JS files.",
+      error: "Failed to compile TS/JS files.",
+    },
+  );
 
   /**
    * Non JS/TS files.
    */
   const nonTsJsInput = allFiles.filter((file) => !isJsOrTs.test(file));
 
-  DEBUG.log("Copying non-JS/TS files.", { allFiles, nonTsJsInput });
-  for (const file of nonTsJsInput) {
-    const emittedFile = getEmittedFile(file);
-    DEBUG.log("Copying non-source file:", { file, emittedFile });
+  await showProgress(
+    async () => {
+      for (const file of nonTsJsInput) {
+        const emittedFile = getEmittedFile(file);
+        DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-    await mkdir(dirname(emittedFile), { recursive: true });
-    await copyFile(file, emittedFile, constants.COPYFILE_FICLONE);
-  }
+        await mkdir(dirname(emittedFile), { recursive: true });
+        await copyFile(file, emittedFile, constants.COPYFILE_FICLONE);
+      }
+    },
+    {
+      start: "Copying non-source files to dist/.",
+      success: "Copied non-source files to dist/.",
+      error: "Failed to copy non-source files to dist/.",
+    },
+  );
 
   /**
    * Rewrite import specifiers in emitted output.
@@ -343,11 +375,20 @@ export const build = async ({
 
     DEBUG.log("Normalizing import specifiers in emitted JS.", { emittedJs });
 
+    await showProgress(
+      async () => await normalizeImportSpecifiers(
+        emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
+      ),
+      {
+        start: "Normalizing import specifiers.",
+        success: "Normalized import specifiers.",
+        error: "Failed to normalize import specifiers.",
+      }
+    );
+
     await normalizeImportSpecifiers(
       emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
     );
-
-    ora("Normalized import specifiers.").succeed();
   }
 
   /**
@@ -377,11 +418,18 @@ export const build = async ({
        * Build style bundle.
        */
       DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev });
-      await buildCssEntryPoint(
-        styles,
-        bundleOutput,
-        dev,
-      // noStandardStyles
+      await showProgress(
+        async () => await buildCssEntryPoint(
+          styles,
+          bundleOutput,
+          dev,
+        // noStandardStyles
+        ),
+        {
+          start: "Bundling styles with Tailwind.",
+          success: "Bundled styles with Tailwind.",
+          error: "Failed to bundle styles.",
+        },
       );
 
       /**
@@ -391,18 +439,23 @@ export const build = async ({
         DEBUG.log("Bundling all styles.");
         const cssFiles = glob.sync("dist/**/*.css");
 
-        const message = ora("Bundling emitted styles.").start();
-        await Promise.all(
-          cssFiles.map(
-            async (file) => await buildCssEntryPoint(
-              file,
-              file,
-              dev,
-            // noStandardStyles,
+        await showProgress(
+          async () =>  await Promise.all(
+            cssFiles.map(
+              async (file) => await buildCssEntryPoint(
+                file,
+                file,
+                dev,
+              // noStandardStyles,
+              )
             )
-          )
+          ),
+          {
+            start: "Bundling emitted styles",
+            success: `Bundled all styles to ${chalk.bold(bundleOutput)}.`,
+            error: "Failed to bundle styles.",
+          },
         );
-        message.succeed(`Bundled all styles to ${chalk.bold(bundleOutput)}.`);
       }
     } else {
       log(chalk.grey("Bundle styles not found for this project.\n\rChecked: " + chalk.bold(styles)));
@@ -411,9 +464,14 @@ export const build = async ({
 
   bannerLog("Running post-build setup.");
 
-  const declarationsProgress = ora("Generating type declarations.").start();
-  await emitTsDeclarations();
-  declarationsProgress.succeed(`Generated delcarations for ${allFiles.length} files.`);
+  await showProgress(
+    async () => await emitTsDeclarations(),
+    {
+      start: "Generating type declarations.",
+      success: `Generated declarations for ${allFiles.length} files.`,
+      error: "Failed to generate type declarations.",
+    },
+  );
 
   log(chalk.green("Build complete."));
 };
