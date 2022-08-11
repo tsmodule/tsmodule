@@ -87,7 +87,10 @@ export const resolve: ModuleResolveHook = async (
           resolvedTsSourceFile
         });
 
-        return { url: resolvedTsSourceFile };
+        return {
+          url: resolvedTsSourceFile,
+          shortCircuit: true,
+        };
       }
     }
     /**
@@ -95,7 +98,10 @@ export const resolve: ModuleResolveHook = async (
      */
     if (fileExists(unresolvedSpecifier)) {
       DEBUG.log("Found file at unresolved specifier:", { unresolvedSpecifier });
-      return { url: unresolvedSpecifier };
+      return {
+        url: unresolvedSpecifier,
+        shortCircuit: true,
+      };
     }
     /**
      * Otherwise, we have an absolute file that does not exist, and should defer
@@ -112,7 +118,10 @@ export const resolve: ModuleResolveHook = async (
   const resolvedFile = checkExtensions(importedFileURL);
   if (resolvedFile) {
     DEBUG.log("Resolved import URL to file:", { resolvedFile });
-    return { url: resolvedFile };
+    return {
+      url: resolvedFile,
+      shortCircuit: true,
+    };
   }
   /**
    * If none found, try to resolve an index file.
@@ -122,7 +131,10 @@ export const resolve: ModuleResolveHook = async (
 
   if (resolvedIndexFile) {
     DEBUG.log("Resolved import URL to index file:", { resolvedIndexFile });
-    return { url: resolvedIndexFile };
+    return {
+      url: resolvedIndexFile,
+      shortCircuit: true,
+    };
   }
 
   return defaultResolve(specifier, context, defaultResolve);
@@ -155,7 +167,11 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
     }
   );
 
-  return { format: "module", source: result.code };
+  return {
+    format: "module",
+    source: result.code,
+    shortCircuit: true,
+  };
 };
 
 /**
