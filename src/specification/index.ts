@@ -60,7 +60,7 @@ const defaultSettings: TsModuleProjectConfig = {
       },
       "nodeArguments": [
         "--no-warnings",
-        "--loader=@tsmodule/tsmodule"
+        "--loader=@tsmodule/tsmodule/loader"
       ]
     },
   },

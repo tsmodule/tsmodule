@@ -2,9 +2,9 @@ import { createDebugLogger } from "debug-logging";
 import { createShell } from "await-shell";
 
 export const D_TS_CONFIG = {
-  moduleResolution: "node",
-  module: "esnext",
-  target: "esnext",
+  moduleResolution: "Node",
+  module: "ESNext",
+  target: "ESNext",
   esModuleInterop: true,
   incremental: false,
   rootDir: "src",
@@ -26,8 +26,7 @@ export const emitTsDeclarations = async () => {
       .map(([key, value]) => `--${key} ${value}`)
       .join(" ");
 
-  const cmd = `tsc -p tsconfig.json ${argString}`;
+  const cmd = `npx tsc -p tsconfig.json ${argString}`;
   DEBUG.log(`Calling: ${cmd}`);
-
-  await shell.run(`tsc -p tsconfig.json ${argString}`);
+  await shell.run(cmd);
 };
