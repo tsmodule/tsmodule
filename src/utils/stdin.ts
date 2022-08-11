@@ -1,7 +1,7 @@
 import type { Stream } from "stream";
 import { readFileSync } from "fs";
 
-import { createDebugLogger, log } from "create-debug-logger";
+import { createDebugLogger, log } from "debug-logging";
 import chalk from "chalk";
 
 function streamToPromise(stream: Stream) {

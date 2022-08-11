@@ -11,7 +11,7 @@ import { writeFile } from "fs/promises";
 import { isAbsolute, resolve as resolvePath } from "path";
 import glob from "fast-glob";
 
-import { createDebugLogger } from "create-debug-logger";
+import { createDebugLogger } from "debug-logging";
 import { rewriteStatements } from "./lib/typescriptApi.js";
 
 /**
