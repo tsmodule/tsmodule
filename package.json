@@ -35,8 +35,7 @@
     "retest-bundle": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "lint": "eslint --fix src",
     "prepare": "yarn build",
-    "prepublishOnly": "node scripts/prepublish.js",
-    "release": "release-it"
+    "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
     "esbuild": "0.14.50",
