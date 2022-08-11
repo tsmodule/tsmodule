@@ -8,10 +8,10 @@
   "license": "MIT",
   "types": "dist/types/index.d.ts",
   "bin": {
-    "tsmodule": "dist/index.js"
+    "tsmodule": "dist/bin/index.js"
   },
   "exports": {
-    ".": "./dist/loader/index.js",
+    ".": "./dist/index.js",
     "./*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
@@ -84,7 +84,7 @@
     },
     "nodeArguments": [
       "--no-warnings",
-      "--loader=@tsmodule/tsmodule"
+      "--loader=@tsmodule/tsmodule/loader"
     ]
   },
   "keywords": [
