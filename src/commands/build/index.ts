@@ -164,6 +164,11 @@ export const build = async ({
     treeShaking: bundle,
     target,
     minify: !dev,
+    /**
+     * ESBuild upgrade blocked in order to preserve this override.
+     *
+     * @see https://github.com/evanw/esbuild/issues/2460
+     */
     jsx: "transform",
     jsxFactory: "React.createElement",
     format: "esm",
