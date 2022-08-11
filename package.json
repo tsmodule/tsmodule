@@ -8,7 +8,7 @@
   "license": "MIT",
   "types": "dist/types/index.d.ts",
   "bin": {
-    "tsmodule": "dist/bin/index.js"
+    "tsmodule": "dist/bin.js"
   },
   "exports": {
     ".": "./dist/index.js",
@@ -17,26 +17,25 @@
   },
   "files": [
     "dist/",
-    "templates/",
-    "templates/**/.gitignore"
+    "dist/templates/",
+    "dist/templates/**/.gitignore"
   ],
   "engines": {
     "node": ">=14"
   },
   "scripts": {
-    "prebootload": "node bootstrap.js",
+    "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
     "prebuild": "yarn bootload && yarn link",
-    "build": "node dist/bin/index.js build",
-    "dev": "node dist/bin/index.js dev",
-    "test-bundle": "yarn build && ava --no-worker-threads",
-    "test-production-bundle": "node runBundleTests.js",
+    "build": "node dist/bin.js build",
+    "dev": "node dist/bin.js dev",
+    "test-bundle": "yarn build -b && ava --no-worker-threads",
     "test": "yarn test-bundle",
     "retest": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "retest-bundle": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "lint": "eslint --fix src",
     "prepare": "yarn build",
-    "prepublishOnly": "yarn test-production-bundle",
+    "prepublishOnly": "node scripts/prepublish.js",
     "release": "release-it"
   },
   "dependencies": {
@@ -84,7 +83,7 @@
     },
     "nodeArguments": [
       "--no-warnings",
-      "--loader=@tsmodule/tsmodule/loader"
+      "--loader=./dist/loader/index.js"
     ]
   },
   "keywords": [

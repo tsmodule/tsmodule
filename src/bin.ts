@@ -4,15 +4,15 @@
 import chalk from "chalk";
 
 import { Command } from "commander";
-import { build } from "../commands/build";
-import { convert } from "../commands/convert";
-import { create } from "../commands/create";
-import { dev } from "../commands/dev";
-import { execute } from "../commands/execute";
+import { build } from "./commands/build";
+import { convert } from "./commands/convert";
+import { create } from "./commands/create";
+import { dev } from "./commands/dev";
+import { execute } from "./commands/execute";
 
-import { localPackageJson } from "../constants";
-import { normalizeImportSpecifiers } from "../commands/normalize";
-import { programCatch } from "../utils/programCatch";
+import { localPackageJson } from "./constants";
+import { normalizeImportSpecifiers } from "./commands/normalize";
+import { programCatch } from "./utils/programCatch";
 
 const { version } = await localPackageJson();
 const program = new Command();

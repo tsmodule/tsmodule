@@ -8,9 +8,14 @@ import { rm } from "fs/promises";
 // process.env.NODE_ENV = "production";
 
 /**
+ * Ensure process.cwd() resolves to project root (..).
+ */
+// process.chdir("..");
+
+/**
  * Clean dist.
  */
-await rm(resolve(process.cwd(), "dist"), { recursive: true, force: true });
+await rm(resolve("dist"), { recursive: true, force: true });
 
 const BOOTSTRAP_FILES = glob.sync("src/**/*.ts");
 console.log("BOOTSTRAP: Building with esbuild...");
@@ -24,7 +29,7 @@ await esbuild({
 
 console.log("BOOTSTRAP: Normalizing import specifiers...");
 
-const { normalizeImportSpecifiers } = await import("./dist/commands/normalize/index.js");
+const { normalizeImportSpecifiers } = await import("../dist/commands/normalize/index.js");
 await normalizeImportSpecifiers();
 
 console.log("BOOTSTRAP: Done.");
