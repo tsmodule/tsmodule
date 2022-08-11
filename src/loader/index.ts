@@ -87,7 +87,10 @@ export const resolve: ModuleResolveHook = async (
           resolvedTsSourceFile
         });
 
-        return { url: resolvedTsSourceFile };
+        return {
+          url: resolvedTsSourceFile,
+          shortCircuit: true,
+        };
       }
     }
     /**
