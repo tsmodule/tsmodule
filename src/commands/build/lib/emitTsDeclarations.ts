@@ -1,4 +1,4 @@
-import { createDebugLogger } from "create-debug-logger";
+import { createDebugLogger } from "debug-logging";
 import { createShell } from "await-shell";
 
 export const D_TS_CONFIG = {

@@ -13,7 +13,7 @@ import ora from "ora";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { createDebugLogger, log } from "create-debug-logger";
+import { createDebugLogger, log } from "debug-logging";
 import { createShell } from "await-shell";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
@@ -164,6 +164,11 @@ export const build = async ({
     treeShaking: bundle,
     target,
     minify: !dev,
+    /**
+     * ESBuild upgrade blocked in order to preserve this override.
+     *
+     * @see https://github.com/evanw/esbuild/issues/2460
+     */
     jsx: "transform",
     jsxFactory: "React.createElement",
     format: "esm",

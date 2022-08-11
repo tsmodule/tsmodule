@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 
 import { init, parse } from "es-module-lexer";
-import { createDebugLogger } from "create-debug-logger";
+import { createDebugLogger } from "debug-logging";
 
 /**
  * Await es-module-lexer's WASM initialization.

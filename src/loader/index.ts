@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL, URL } from "url";
 import { readFile } from "fs/promises";
 import { transform } from "esbuild";
 
-import { createDebugLogger } from "create-debug-logger";
+import { createDebugLogger } from "debug-logging";
 
 /**
  * TODO: Version the loader independently so it can be used for bootstrapping.

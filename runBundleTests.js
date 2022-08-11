@@ -6,7 +6,7 @@ const testPackages = [
   "assert",
   "ava",
   "await-shell",
-  "create-debug-logger",
+  "debug-logging",
   "fast-glob",
 ];
 
