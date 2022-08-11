@@ -155,7 +155,11 @@ export const load: ModuleLoadHook = async (url, context, defaultLoad) => {
     }
   );
 
-  return { format: "module", source: result.code };
+  return {
+    format: "module",
+    source: result.code,
+    shortCircuit: true,
+  };
 };
 
 /**
