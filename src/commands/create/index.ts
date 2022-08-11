@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 import chalk from "chalk";
-import { createShell } from "await-shell";
 import ora from "ora";
+
+import { createShell } from "await-shell";
 import { resolve } from "path";
 
 import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
 import { setPackageJsonFields } from "../../utils/packageJson";
-import { specification } from "../../specification";
 
 // @ts-ignore - Need to add initializeShell() to await-shell.
 globalThis.SHELL_OPTIONS = {
@@ -14,7 +14,6 @@ globalThis.SHELL_OPTIONS = {
 };
 
 export const create = async (name: string, { react = false }) => {
-  const shell = createShell();
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
   /**
    * Always copy default template.
@@ -62,6 +61,9 @@ export const create = async (name: string, { react = false }) => {
   }
 
   spinner.succeed("Dependencies installed.");
+
+  const shell = createShell({ cwd: resolve(name) });
   await shell.run("git init");
+
   spinner.succeed("Set up as Git repository.");
 };
