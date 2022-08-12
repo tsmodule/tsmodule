@@ -1,6 +1,28 @@
 import { TsModuleProjectConfig, TsmoduleSpecification } from "./types";
 
 /**
+ * Default conditional exports for a TS Module.
+ */
+const defaultExportSettings = {
+  /**
+   * The `package.json` export is specified for compatibility with Metro and
+   * React Native bundlers which will fail to resolve the module if it is
+   * not exported when the `exports` field is defined.
+   *
+   * @see https://github.com/tsmodule/tsmodule/issues/1
+   */
+  "./package.json": "./package.json",
+  /**
+   * The module index at `my-package`.
+   */
+  ".": "./dist/index.js",
+  /**
+   * All other index exports at `my-package/a/b/c`.
+   */
+  "./*": "./dist/*/index.js"
+};
+
+/**
  * Default configuration is always applied to a project first.
  */
 const defaultSettings: TsModuleProjectConfig = {
@@ -31,11 +53,7 @@ const defaultSettings: TsModuleProjectConfig = {
      * // source code at src/a/b/c/index.ts
      * ```
      */
-    "exports": {
-      "./package.json": "./package.json",
-      ".": "./dist/index.js",
-      "./*": "./dist/*/index.js"
-    },
+    "exports": defaultExportSettings,
     /**
      * Apply build, dev, lint, test, and publish scripts.
      */
@@ -43,8 +61,8 @@ const defaultSettings: TsModuleProjectConfig = {
       "dev": "tsmodule dev",
       "build": "tsmodule build",
       "test": "ava",
-      "pretest": "tsmodule build --runtime-only",
-      "prepublishOnly": "yarn build && yarn test",
+      "pretest": "tsmodule build",
+      "prepublishOnly": "yarn test",
       "lint": "eslint src --fix",
     },
     /**
@@ -115,11 +133,10 @@ export const specification: TsmoduleSpecification = {
        * Export styles and components.
        */
       "exports": {
-        "./package.json": "./package.json",
-        ".": "./dist/index.js",
+        ...defaultExportSettings,
+        "./*": "./dist/components/*/index.js",
         "./styles": "./dist/bundle.css",
         "./styles/*": "./dist/components/*/index.css",
-        "./*": "./dist/components/*/index.js",
       },
       /**
        * React-specific build scripts.

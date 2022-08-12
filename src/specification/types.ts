@@ -1,6 +1,5 @@
 import { PackageJsonSettings } from "../utils/packageJson";
 
-
 export type TsmoduleProjectType = "default" | "react";
 
 export interface TsModuleProjectConfig {
