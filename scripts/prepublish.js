@@ -4,13 +4,16 @@ import { testProductionBundle } from "./testProductionBundle.js";
 const shell = createShell();
 
 /**
- * Build the runtime bundle.
+ * Build the productions bundle.
  */
-await shell.run("yarn build -rb");
+await shell.run("yarn build -b");
 
 /**
- * Copy template files.
+ * Ship template files in dist/.
  */
 await shell.run("cp -rf templates/ dist/templates/");
 
+/**
+ * Run production bundle tests.
+ */
 await testProductionBundle();
