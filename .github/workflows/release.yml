@@ -39,6 +39,6 @@ jobs:
       run: yarn test
 
     - name: Release
-      run: npx release-it minor --ci
+      run: npx release-it minor --ci -VV
       env:
         GITHUB_TOKEN: ${{ secrets.OVERRIDE_GITHUB_TOKEN }}
