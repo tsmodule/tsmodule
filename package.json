@@ -29,7 +29,7 @@
     "prebuild": "yarn bootload && npm link -f --scripts-prepend-node-path",
     "build": "node dist/bin.js build -b",
     "dev": "node dist/bin.js dev",
-    "test-bundle": "yarn build -b && ava --no-worker-threads",
+    "test-bundle": "yarn build -b && ava",
     "test": "yarn test-bundle",
     "retest": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "retest-bundle": "SKIP_TEST_SETUP=1 yarn test-bundle",
@@ -69,19 +69,6 @@
       "release": true,
       "releaseName": "v${version}"
     }
-  },
-  "ava": {
-    "timeout": "10m",
-    "files": [
-      "test/**/*.test.ts"
-    ],
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--no-warnings",
-      "--loader=./dist/loader/index.js"
-    ]
   },
   "keywords": [
     "esm",
