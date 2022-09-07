@@ -7,6 +7,9 @@ export default {
     "ts": "module"
   },
   workerThreads: false,
+  environmentVariables: {
+    "NODE_ENV": "development"
+  },
   nodeArguments: [
     "--no-warnings",
     "--loader=./dist/loader/index.js"
