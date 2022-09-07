@@ -35,10 +35,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.OVERRIDE_GITHUB_TOKEN }}
 
-    - name: Test
-      run: yarn test
-
-    - name: Release
+    - name: Test Production Bundle & Release
       run: npx release-it minor --ci -VV
       env:
         GITHUB_TOKEN: ${{ secrets.OVERRIDE_GITHUB_TOKEN }}
