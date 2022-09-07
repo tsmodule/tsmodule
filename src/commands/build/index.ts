@@ -46,6 +46,11 @@ export const bannerError = (msg: string) => {
 
 const forceTypeModuleInDist = async () => {
   let distPkgJson;
+
+  if (!existsSync("dist")) {
+    await mkdir("dist");
+  }
+
   if (existsSync("dist/package.json")) {
     distPkgJson = JSON.parse(await readFile("dist/package.json", "utf-8"));
   } else {
@@ -57,7 +62,10 @@ const forceTypeModuleInDist = async () => {
   }
 
   distPkgJson.type = "module";
-  await writeFile("dist/package.json", JSON.stringify(distPkgJson, null, 2));
+  await writeFile(
+    "dist/package.json",
+    JSON.stringify(distPkgJson, null, 2)
+  );
 };
 
 const singleEntryPointConfig = (
@@ -423,7 +431,7 @@ export const build = async ({
           styles,
           bundleOutput,
           dev,
-        // noStandardStyles
+          // noStandardStyles
         ),
         {
           start: "Bundling styles with Tailwind.",
@@ -440,13 +448,13 @@ export const build = async ({
         const cssFiles = glob.sync("dist/**/*.css");
 
         await showProgress(
-          async () =>  await Promise.all(
+          async () => await Promise.all(
             cssFiles.map(
               async (file) => await buildCssEntryPoint(
                 file,
                 file,
                 dev,
-              // noStandardStyles,
+                // noStandardStyles,
               )
             )
           ),
