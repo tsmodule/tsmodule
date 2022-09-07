@@ -9,11 +9,6 @@ const shell = createShell();
 await shell.run("yarn build -b");
 
 /**
- * Ship template files in dist/.
- */
-await shell.run("cp -rf templates/ dist/templates/");
-
-/**
  * Run production bundle tests.
  */
 await testProductionBundle();

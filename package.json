@@ -17,8 +17,8 @@
   },
   "files": [
     "dist/",
-    "dist/templates/",
-    "dist/templates/**/.gitignore"
+    "templates/",
+    "templates/**/.gitignore"
   ],
   "engines": {
     "node": ">=14"
@@ -26,15 +26,14 @@
   "scripts": {
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "yarn bootload && yarn link",
+    "prebuild": "yarn bootload && npm link -f --scripts-prepend-node-path",
     "build": "node dist/bin.js build -b",
     "dev": "node dist/bin.js dev",
-    "test-bundle": "yarn build -b && ava --no-worker-threads",
+    "test-bundle": "yarn build -b && ava",
     "test": "yarn test-bundle",
     "retest": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "retest-bundle": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "lint": "eslint --fix src",
-    "prepare": "yarn build",
     "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
@@ -42,7 +41,6 @@
     "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@types/glob": "^7.2.0",
     "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
@@ -71,19 +69,6 @@
       "release": true,
       "releaseName": "v${version}"
     }
-  },
-  "ava": {
-    "timeout": "10m",
-    "files": [
-      "test/**/*.test.ts"
-    ],
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--no-warnings",
-      "--loader=./dist/loader/index.js"
-    ]
   },
   "keywords": [
     "esm",

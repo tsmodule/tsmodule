@@ -1,9 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - 'master'
   pull_request:
     branches:
       - '**'
@@ -15,7 +12,11 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        nodejs: [14, 16, 18]
+        nodejs: [
+          # 14, 
+          16, 
+          18
+        ]
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
@@ -23,8 +24,8 @@ jobs:
       with:
         node-version: ${{ matrix.nodejs }}
 
-    - name: Install and link
-      run: yarn install --frozen-lockfile && yarn link
+    - name: Install
+      run: yarn install --frozen-lockfile
 
     - name: Test
       run: yarn test

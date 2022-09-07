@@ -42,7 +42,7 @@ test.before("[create] should create all template types", async () => {
     ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
-    await shell.run("yarn link @tsmodule/tsmodule");
+    await shell.run("npm link -f --scripts-prepend-node-path @tsmodule/tsmodule");
   }
 });
 
