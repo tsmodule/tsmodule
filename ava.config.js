@@ -8,10 +8,10 @@ export default {
   },
   workerThreads: false,
   environmentVariables: {
-    "NODE_ENV": "development"
+    // "NODE_ENV": "development"
   },
   nodeArguments: [
     "--no-warnings",
-    "--loader=./dist/loader/index.js"
+    "--loader=@tsmodule/tsmodule/loader"
   ]
 };
