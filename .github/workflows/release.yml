@@ -35,13 +35,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.OVERRIDE_GITHUB_TOKEN }}
 
-    - name: Increment version
-      run: npx release-it minor --no-github --ci
-
     - name: Test
       run: yarn test
 
     - name: Release
-      run: npx release-it --ci --no-increment
+      run: npx release-it minor --ci
       env:
         GITHUB_TOKEN: ${{ secrets.OVERRIDE_GITHUB_TOKEN }}
