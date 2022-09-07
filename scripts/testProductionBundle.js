@@ -1,4 +1,5 @@
 import { createShell } from "await-shell";
+import { readFile } from "fs/promises";
 
 const shell = createShell();
 
@@ -10,30 +11,33 @@ const testPackages = [
   "fast-glob",
 ];
 
+const PACKAGE_JSON = JSON.parse(await readFile("package.json", "utf8"));
+const productionDeps = [];
+
+for (
+  const [dependency, version] of Object.entries(PACKAGE_JSON?.dependencies)
+) {
+  productionDeps.push(`${dependency}@${version}`);
+}
+
 export const testProductionBundle = async () => {
+  const testDeps = [
+    ...testPackages,
+    ...productionDeps,
+  ];
+
   /**
- * Delete node_modules, remove the test packages, and re-add them as regular
- * dependencies.
- */
-  await shell.run("rm -rf node_modules");
+   * Delete all node_modules.
+   */
+  await shell.run("rm -rf node_modules/");
 
-  let error;
+  /**
+   * Use NPM to install packages needed for testing without touching anything.
+   */
+  await shell.run(`npm install --no-save ${testDeps.join(" ")}`);
 
-  try {
-    await shell.run(`yarn remove ${testPackages.join(" ")}`);
-    await shell.run(`yarn add --production ${testPackages.join(" ")}`);
-    // await shell.run("yarn --production");
-    await shell.run("yarn ava --no-worker-threads");
-  } catch (e) {
-    error = e;
-  }
-
-  if (!process.env.CI) {
-    await shell.run(`yarn remove -f ${testPackages.join(" ")}`);
-    await shell.run(`yarn add -D ${testPackages.join(" ")}`);
-  }
-
-  if (error) {
-    throw error;
-  }
+  /**
+   * Run test.
+   */
+  await shell.run("yarn test");
 };

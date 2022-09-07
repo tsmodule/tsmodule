@@ -54,7 +54,6 @@
     "eslint": "^8.18.0",
     "eslint-config-next": "^12.2.0",
     "fast-glob": "^3.2.11",
-    "glob": "^8.0.3",
     "node-watch": "^0.7.3",
     "ora": "^6.1.2",
     "path": "^0.12.7",
