@@ -12,6 +12,7 @@
     "strictBindCallApply": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "strictFunctionTypes": true,
     "resolveJsonModule": true,
     "strictNullChecks": true,
