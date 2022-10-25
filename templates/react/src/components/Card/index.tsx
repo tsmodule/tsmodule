@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-interface CardProps {
+interface CardProps extends PropsWithChildren {
   href: string;
 }
 
