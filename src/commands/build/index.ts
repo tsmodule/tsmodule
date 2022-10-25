@@ -199,8 +199,12 @@ export const build = async ({
 
   const defaultExterns = ["esbuild", "*.png"];
 
+  const exportConfig = resolvePath(cwd, "tsconfig.export.json");
+  const exportConfigExists = existsSync(exportConfig);
+
   const buildOptions: BuildOptions = {
     ...commonOptions,
+    tsconfig: exportConfigExists ? exportConfig : undefined,
     bundle,
     absWorkingDir: cwd,
     outbase: "src",

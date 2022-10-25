@@ -2,7 +2,7 @@ import { createShell } from "await-shell";
 import { pathToFileURL } from "url";
 import { resolve } from "path";
 
-import { PACKAGE_ROOT } from "../../constants";
+import { INSTALL_ROOT } from "../../constants";
 
 export const execute = async () => {
   /**
@@ -10,7 +10,7 @@ export const execute = async () => {
    * from inside `dist/` or `src/`.
    */
   const loaderPath = resolve(
-    PACKAGE_ROOT,
+    INSTALL_ROOT,
     "dist/loader/index.js"
   );
 

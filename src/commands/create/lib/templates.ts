@@ -6,11 +6,11 @@ import { createDebugLogger } from "debug-logging";
 import { createShell } from "await-shell";
 
 import { specification, TsmoduleProjectType } from "../../../specification";
-import { PACKAGE_ROOT } from "../../../constants";
+import { INSTALL_ROOT } from "../../../constants";
 import { setPackageJsonFields } from "../../../utils/packageJson";
 
 const getTemplateDir = (template: string) => {
-  return resolve(PACKAGE_ROOT, `./templates/${template}`);
+  return resolve(INSTALL_ROOT, `./templates/${template}`);
 };
 
 export interface ApplyTemplateParams {
