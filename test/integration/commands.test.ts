@@ -71,6 +71,12 @@ test.serial("[create --react] should create Next.js component library", async (t
   t.assert(existsSync(resolve(reactTestDir, ".eslintrc")), "should create eslintrc");
 });
 
+test.serial("[create --react] should create expected files", async (t) => {
+  process.chdir(reactTestDir);
+
+  t.assert(existsSync("ava.config.mjs"), "should create ava.config.mjs");
+});
+
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();

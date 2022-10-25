@@ -65,22 +65,6 @@ const defaultSettings: TsModuleProjectConfig = {
       "prepublishOnly": "yarn test",
       "lint": "eslint src --fix",
     },
-    /**
-     * Set Ava config for testing.
-     */
-    "ava": {
-      "timeout": "10m",
-      "files": [
-        "test/**/*.test.ts"
-      ],
-      "extensions": {
-        "ts": "module"
-      },
-      "nodeArguments": [
-        "--no-warnings",
-        "--loader=@tsmodule/tsmodule/loader"
-      ]
-    },
   },
   /**
    * Standardize TSConfig and ESLint.
