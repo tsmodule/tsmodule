@@ -138,10 +138,10 @@ export const specification: TsmoduleSpecification = {
       /**
        * Lock React types to v17.
        */
-      "resolutions": {
-        "@types/react": "^17.0.38",
-        "@types/react-dom": "^17.0.11"
-      },
+      // "resolutions": {
+      //   "@types/react": "^17.0.38",
+      //   "@types/react-dom": "^17.0.11"
+      // },
     },
     /**
      * Ensure Next, PostCSS, and Tailwind configs are available.
@@ -153,14 +153,17 @@ export const specification: TsmoduleSpecification = {
       "postcss.config.js",
       "tailwind.config.js",
     ],
-    "dependencies": ["react@^17.0.2", "react-dom@^17.0.2"],
+    "dependencies": [
+      "react@^18.2.0",
+      "react-dom@^18.2.0"
+    ],
     "devDependencies": [
       ...defaultSettings.devDependencies,
       /**
        * React TS typings.
        */
-      "@types/react@^17.0.39",
-      "@types/react-dom@^17.0.11",
+      "@types/react@^18.0.23",
+      "@types/react-dom@^18.0.7",
       /**
        * ESLint for Next.
        */

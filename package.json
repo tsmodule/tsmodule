@@ -37,27 +37,27 @@
     "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
-    "esbuild": "0.15.8",
-    "typescript": "^4.8.3"
+    "esbuild": "0.15.12",
+    "typescript": "^4.8.4"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.38.0",
-    "@typescript-eslint/parser": "^5.38.0",
+    "@types/node": "^18.11.5",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
     "assert": "^2.0.0",
-    "ava": "^4.3.1",
+    "ava": "^5.0.1",
     "await-shell": "^34.1.1",
-    "chalk": "^5.0.1",
-    "commander": "^9.3.0",
+    "chalk": "^5.1.2",
+    "commander": "^9.4.1",
     "debug-logging": "^4.0.4",
-    "es-module-lexer": "^1.0.3",
-    "eslint": "^8.23.1",
-    "eslint-config-next": "^12.3.1",
+    "es-module-lexer": "^1.1.0",
+    "eslint": "^8.26.0",
+    "eslint-config-next": "^13.0.0",
     "fast-glob": "^3.2.12",
     "node-watch": "^0.7.3",
     "ora": "^6.1.2",
     "path": "^0.12.7",
-    "release-it": "^15.1.1"
+    "release-it": "^15.5.0"
   },
   "release-it": {
     "git": {

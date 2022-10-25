@@ -10,11 +10,11 @@ import { create } from "./commands/create";
 import { dev } from "./commands/dev";
 import { execute } from "./commands/execute";
 
-import { localPackageJson } from "./constants";
+import { tsmodulePackageJson } from "./constants";
 import { normalizeImportSpecifiers } from "./commands/normalize";
 import { programCatch } from "./utils/programCatch";
 
-const { version } = await localPackageJson();
+const { version } = await tsmodulePackageJson();
 const program = new Command();
 
 program

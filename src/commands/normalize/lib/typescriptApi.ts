@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 
 import { init, parse } from "es-module-lexer";
 import { createDebugLogger } from "debug-logging";
+import { cwd } from "process";
 
 /**
  * Await es-module-lexer's WASM initialization.
@@ -13,20 +14,72 @@ await init;
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
 
 const typescriptResolve = async (specifier: string, entryPoint: string) => {
+  const DEBUG = createDebugLogger(typescriptResolve);
   const resolvedDirectory = dirname(normalize(entryPoint));
-  const resolvedPath = forcePosixPath(resolve(resolvedDirectory, specifier));
+  const resolvedPath = forcePosixPath(resolvedDirectory);
   const reducedPath = resolvedPath.replace(pathPosix.extname(resolvedPath), "");
 
-  for (const fileExtension of fileExtensions) {
-    const dotTsFile = `${reducedPath}${fileExtension}`;
-    const indexDotTsFile = `${reducedPath}/index${fileExtension}`;
+  const nodeModulesPath = forcePosixPath(resolve(cwd(), "node_modules"));
+  const nodeModulesPathExists = existsSync(nodeModulesPath);
 
-    if (existsSync(dotTsFile)) {
-      return dotTsFile;
+  DEBUG.log({ specifier, entryPoint, nodeModulesPath });
+
+  for (const fileExtension of fileExtensions) {
+    /**
+     * .../{name}.{ts,js,...}
+     */
+    const dotTsFile = `${specifier}${fileExtension}`;
+    /**
+      * .../{name}index.{ts,js,...}
+      */
+    const indexDotTsFile = `${specifier}/index${fileExtension}`;
+
+    DEBUG.log("Looking for", { dotTsFile, indexDotTsFile });
+
+    if (!isNamedSpecifier(specifier)) {
+      if (existsSync(resolve(reducedPath, dotTsFile))) {
+        return dotTsFile;
+      }
+
+      if (existsSync(resolve(reducedPath, indexDotTsFile))) {
+        return indexDotTsFile;
+      }
     }
 
-    if (existsSync(indexDotTsFile)) {
-      return indexDotTsFile;
+    if (nodeModulesPathExists) {
+      /**
+       * If this named specifier in Node modules has conditional exports set in
+       * its package.json, do not touch it.
+       */
+      const packageName = specifier.split("/")[0];
+      const packageJsonPath = resolve(nodeModulesPath, packageName, "package.json");
+      const packageJsonExists = existsSync(packageJsonPath);
+      if (packageJsonExists) {
+        const packageJson = await readFile(packageJsonPath, "utf-8");
+        const packageJsonParsed = JSON.parse(packageJson);
+        if (packageJsonParsed.exports) {
+          DEBUG.log("Skipping named specifier with conditional exports", { specifier });
+          return specifier;
+        }
+      }
+
+      /**
+       * This is a named specifier with a / in it, e.g. "next/head".
+       */
+      DEBUG.log("In", { nodeModulesPath  });
+
+      const nodeModulesFile = resolve(nodeModulesPath, dotTsFile);
+      const nodeModulesIndexFile = resolve(nodeModulesPath, indexDotTsFile);
+
+      if (existsSync(nodeModulesFile)) {
+        DEBUG.log("Found", { nodeModulesFile });
+        return dotTsFile;
+      }
+
+      if (existsSync(nodeModulesIndexFile)) {
+        DEBUG.log("Found", { nodeModulesIndexFile });
+        return indexDotTsFile;
+      }
     }
   }
 };
@@ -34,12 +87,30 @@ const typescriptResolve = async (specifier: string, entryPoint: string) => {
 const forcePosixPath = (path: string) => path.replace(/\\/g, "/");
 
 /**
+ * Returns whether or not the given specifier is named, i.e. `next/head` or
+ * `react`, as opposed to `./{name}`, `../{name}`, or `/{name}`.
+ */
+const isNamedSpecifier = (specifier: string) => {
+  return !(
+    specifier.startsWith("./") ||
+    specifier.startsWith("..") ||
+    specifier.startsWith("/")
+  );
+};
+
+/**
  * Get a POSIX-like ESM relative path from one file to another.
  */
 const getEsmRelativeSpecifier = (from: string, to: string) => {
-
   from = forcePosixPath(from);
   to = forcePosixPath(to);
+
+  /**
+   * If not absolute POSIX path, do not resolve.
+   */
+  if (!to.startsWith("/")) {
+    return to;
+  }
 
   const relativePath = pathPosix.relative(pathPosix.dirname(from), to);
   const specifier = !relativePath.startsWith(".") ? `./${relativePath}` : relativePath;
