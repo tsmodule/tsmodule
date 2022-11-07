@@ -13,7 +13,10 @@ await init;
 
 const fileExtensions = [".js", ".mjs", ".jsx", ".json", ".ts", ".mts", ".tsx"];
 
-const typescriptResolve = async (specifier: string, entryPoint: string) => {
+const typescriptResolve = async (
+  specifier: string,
+  entryPoint: string
+): Promise<string | null> => {
   const DEBUG = createDebugLogger(typescriptResolve);
   const resolvedDirectory = dirname(normalize(entryPoint));
   const resolvedPath = forcePosixPath(resolvedDirectory);
@@ -23,6 +26,22 @@ const typescriptResolve = async (specifier: string, entryPoint: string) => {
   const nodeModulesPathExists = existsSync(nodeModulesPath);
 
   DEBUG.log({ specifier, entryPoint, nodeModulesPath });
+
+  /**
+   * If the specifier is not named and ends in a file extension, do not resolve
+   * it.
+   */
+  if (!isNamedSpecifier(specifier) && pathPosix.extname(specifier)) {
+    DEBUG.log("Skipping non-named specifier with file extension", { specifier });
+    return null;
+  }
+
+  /**
+   * "." is an alias for "./index".
+   */
+  if (specifier === ".") {
+    specifier = "./index";
+  }
 
   for (const fileExtension of fileExtensions) {
     /**
@@ -82,6 +101,8 @@ const typescriptResolve = async (specifier: string, entryPoint: string) => {
       }
     }
   }
+
+  return null;
 };
 
 const forcePosixPath = (path: string) => path.replace(/\\/g, "/");
@@ -92,8 +113,7 @@ const forcePosixPath = (path: string) => path.replace(/\\/g, "/");
  */
 const isNamedSpecifier = (specifier: string) => {
   return !(
-    specifier.startsWith("./") ||
-    specifier.startsWith("..") ||
+    specifier.startsWith(".") ||
     specifier.startsWith("/")
   );
 };

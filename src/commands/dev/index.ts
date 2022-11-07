@@ -60,11 +60,15 @@ export const dev = async () => {
       clear();
 
       const preTime = Date.now();
-      await build({
-        dev: true,
-        runtimeOnly: true,
-        input: filePath
-      });
+      try {
+        await build({
+          dev: true,
+          runtimeOnly: true,
+          input: filePath
+        });
+      } catch (e) {
+        log("ERROR:", e);
+      }
       const time = Date.now() - preTime;
 
       ora(
