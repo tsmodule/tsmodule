@@ -104,7 +104,7 @@ const buildCssEntryPoint = async (
   inputStyles = resolvePath(inputStyles);
   outputStyles = resolvePath(outputStyles);
 
-  const twCmd = "npx tailwindcss";
+  const twCmd = "yarn tailwindcss";
   const minify = dev ? "" : "--minify";
   const postcss = "--postcss postcss.config.js";
 

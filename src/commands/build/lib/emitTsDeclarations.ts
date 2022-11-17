@@ -26,7 +26,7 @@ export const emitTsDeclarations = async () => {
       .map(([key, value]) => `--${key} ${value}`)
       .join(" ");
 
-  const cmd = `npx tsc -p tsconfig.json ${argString}`;
+  const cmd = `yarn tsc -p tsconfig.json ${argString}`;
   DEBUG.log(`Calling: ${cmd}`);
   await shell.run(cmd);
 };
