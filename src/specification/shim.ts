@@ -27,10 +27,6 @@
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
-
- *  THE FOLLOWING EXCEPTIONS APPLY:
- *    - As to the owner of the GitHub account https://github.com/revmischa,
- *      whose license to use and deal in this software is revoked eff. 11/19/22.
  */
 
 if (typeof document === "undefined") {
