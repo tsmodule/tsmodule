@@ -50,7 +50,7 @@ test.before("[create] should create all template types", async () => {
 
 const dev = async (shell: Shell) => {
   try {
-    await shell.run(`tsmodule dev ${defaultTest}`);
+    await shell.run(`yarn tsmodule dev ${defaultTest}`);
   } catch (e) {
     console.log({ e });
   }
@@ -204,7 +204,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   if (process.platform !== "win32") {
     await t.notThrowsAsync(
       async () => {
-        await shell.run("echo \"console.log(42)\" | tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
+        await shell.run("echo \"console.log(42)\" | yarn tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
       }
     );
 
@@ -220,7 +220,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   const shell = createShell();
 
   await createTestAssets(defaultTest);
-  await shell.run("tsmodule build -r");
+  await shell.run("yarn tsmodule build -r");
 
   t.assert(existsSync(resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png")));
   t.snapshot(await readTextFile(resolve(defaultTestDir, "dist/index.css")));
@@ -244,7 +244,7 @@ test.serial("[build -b] should bundle output", async (t) => {
   await sleep();
 
   await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build -b"),
+    async () => await shell.run("yarn tsmodule build -b"),
     "should bundle non-React projects"
   );
 
@@ -256,7 +256,7 @@ test.serial("[build -b] should bundle output", async (t) => {
 
   process.chdir(reactTestDir);
   await t.notThrowsAsync(
-    async () => await shell.run("tsmodule build -b"),
+    async () => await shell.run("yarn tsmodule build -b"),
     "should bundle React projects"
   );
 
@@ -317,7 +317,7 @@ test.serial("[build -b] should bundle output", async (t) => {
 //   }
 
 //   await t.notThrowsAsync(
-//     async () => await shell.run("tsmodule build && node dist/index.js"),
+//     async () => await shell.run("yarn tsmodule build && node dist/index.js"),
 //     "should build and execute"
 //   );
 
@@ -332,7 +332,7 @@ test.serial("[build -b] should bundle output", async (t) => {
 //   const shell = createShell();
 
 //   await t.notThrowsAsync(
-//     async () => await shell.run("tsmodule build && node dist/index.js"),
+//     async () => await shell.run("yarn tsmodule build && node dist/index.js"),
 //     "should build and execute"
 //   );
 
