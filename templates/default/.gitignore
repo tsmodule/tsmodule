@@ -8,3 +8,8 @@ dist/
 
 # Incremental TS build info.
 *.tsbuildinfo
+
+.env
+.env.*
+
+yarn-error.log

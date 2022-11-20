@@ -72,6 +72,9 @@ const defaultSettings: TsModuleProjectConfig = {
   "files": [
     "tsconfig.json",
     ".eslintrc",
+    ".gitignore",
+    "tsconfig.export.json",
+    "LICENSE",
     "ava.config.mjs",
   ],
   /**

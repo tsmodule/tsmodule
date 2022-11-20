@@ -7,6 +7,7 @@ import { rm, writeFile } from "fs/promises";
 
 import { createTestAssets, cleanTestDir, writeTestFile, readTextFile, sleep } from "./utils";
 import { build } from "../../dist/commands/build/index.js";
+import { specification } from "../../dist/specification/index.js";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
@@ -68,15 +69,18 @@ test.serial("[create --react] should create Next.js component library", async (t
 
   t.assert("react" in dependencies, "should add react dependency");
   t.assert("react-dom" in dependencies, "should add react-dom dependency");
-
-  t.assert(existsSync(resolve(reactTestDir, ".gitignore")), "should create gitignore");
-  t.assert(existsSync(resolve(reactTestDir, ".eslintrc")), "should create eslintrc");
 });
 
 test.serial("[create --react] should create expected files", async (t) => {
   process.chdir(reactTestDir);
 
-  t.assert(existsSync("ava.config.mjs"), "should create ava.config.mjs");
+  for (const file of specification.default.files) {
+    t.assert(existsSync(file), `should create default file ${file}`);
+  }
+
+  for (const file of specification.react.files) {
+    t.assert(existsSync(file), `should create React-specific file ${file}`);
+  }
 });
 
 test.serial("[dev] should watch for file changes", async (t) => {
