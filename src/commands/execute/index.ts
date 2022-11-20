@@ -1,4 +1,4 @@
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 import { pathToFileURL } from "url";
 import { resolve } from "path";
 
@@ -21,6 +21,9 @@ export const execute = async () => {
     ...process.argv.slice(2)
   ];
 
-  const shell = createShell();
+  const shell = createShell({
+    stdio: "inherit"
+  });
+
   await shell.run(`node ${nodeArgs.join(" ")}`);
 };

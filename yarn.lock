@@ -665,7 +665,7 @@ available-typed-arrays@^1.0.5:
 
 await-shell@^34.1.1:
   version "34.1.1"
-  resolved "https://registry.npmjs.org/await-shell/-/await-shell-34.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/await-shell/-/await-shell-34.1.1.tgz#af68292891ffb72d62c4d9fea6e544d75cd46ca7"
   integrity sha512-xyZ4BeHCwkxGV2VnmDrqluc0QvH0pbo0zoKkhhOugptf9JOZRHFb+ag7FYegJW8gVJTy/wVAOMnfUIkWd8YhzA==
 
 axe-core@^4.4.3:
@@ -4135,6 +4135,11 @@ unique-string@^3.0.0:
   integrity sha512-VGXBUVwxKMBUznyffQweQABPRRW1vHZAbadFZud4pLFAqRGvv/96vafgjWFqzourzr8YonlQiPgH0YCJfawoGQ==
   dependencies:
     crypto-random-string "^4.0.0"
+
+universal-shell@^35.0.0:
+  version "35.0.0"
+  resolved "https://registry.yarnpkg.com/universal-shell/-/universal-shell-35.0.0.tgz#21da1549c708703e0653f9d5433a7f7082b4b4ec"
+  integrity sha512-qs777a3LwqnLncWpgglUQYl4ylpfltf+o4Bq8XaCDIaddhKZkpKz6b7znIIReZSFSpZqu0V1+VVJ0RbWNHZDLg==
 
 universal-user-agent@^6.0.0:
   version "6.0.0"

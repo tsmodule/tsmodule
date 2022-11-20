@@ -1,5 +1,5 @@
 import { build } from "../../dist/commands/build/index.js";
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 import test from "ava";
 
 process.chdir("test/integration/resolve");

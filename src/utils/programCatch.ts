@@ -2,7 +2,7 @@
 
 import { bannerError } from "../commands";
 import chalk from "chalk";
-import { SpawnResult } from "await-shell";
+import { SpawnResult } from "universal-shell";
 
 const isShellExit = (error: unknown): error is SpawnResult => {
   const anyError = error as any;

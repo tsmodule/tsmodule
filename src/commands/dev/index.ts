@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import { lstat } from "fs/promises";
 
 import chalk from "chalk";
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 import { log } from "debug-logging";
 import ora from "ora";
 import watch from "node-watch";

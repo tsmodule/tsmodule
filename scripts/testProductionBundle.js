@@ -1,4 +1,4 @@
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 import { readFile } from "fs/promises";
 
 const shell = createShell();
@@ -6,7 +6,7 @@ const shell = createShell();
 const testPackages = [
   "assert",
   "ava",
-  "await-shell",
+  "universal-shell",
   "debug-logging",
   "fast-glob",
 ];

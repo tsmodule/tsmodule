@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import test from "ava";
 
-import { createShell, Shell } from "await-shell";
+import { createShell, Shell } from "universal-shell";
 import { existsSync } from "fs";
 import { rm, writeFile } from "fs/promises";
 

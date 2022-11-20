@@ -2,7 +2,7 @@
 import chalk from "chalk";
 import ora from "ora";
 
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 import { resolve } from "path";
 
 import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";

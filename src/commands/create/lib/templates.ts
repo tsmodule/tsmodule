@@ -3,7 +3,7 @@ import glob from "fast-glob";
 import { copyFile, mkdir } from "fs/promises";
 import { dirname, resolve } from "path";
 import { createDebugLogger } from "debug-logging";
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 
 import { specification, TsmoduleProjectType } from "../../../specification";
 import { INSTALL_ROOT } from "../../../constants";

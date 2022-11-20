@@ -1,4 +1,4 @@
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 
 const shell = createShell();
 const version = process.argv[2] ?? "patch";

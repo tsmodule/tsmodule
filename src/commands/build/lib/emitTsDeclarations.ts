@@ -1,5 +1,5 @@
 import { createDebugLogger } from "debug-logging";
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 
 export const D_TS_CONFIG = {
   moduleResolution: "Node",

@@ -14,7 +14,7 @@ import ora from "ora";
  * internal source (for bootstrap code path).
  */
 import { createDebugLogger, log } from "debug-logging";
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";

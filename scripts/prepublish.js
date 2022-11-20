@@ -1,4 +1,4 @@
-import { createShell } from "await-shell";
+import { createShell } from "universal-shell";
 import { testProductionBundle } from "./testProductionBundle.js";
 
 const shell = createShell();
