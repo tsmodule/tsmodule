@@ -25,5 +25,6 @@ export const execute = async () => {
     stdio: "inherit"
   });
 
-  await shell.run(`node ${nodeArgs.join(" ")}`);
+  const { code } = await shell.run(`node ${nodeArgs.join(" ")}`);
+  process.exit(code ?? 0);
 };
