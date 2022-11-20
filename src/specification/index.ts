@@ -72,6 +72,7 @@ const defaultSettings: TsModuleProjectConfig = {
   "files": [
     "tsconfig.json",
     ".eslintrc",
+    "ava.config.mjs",
   ],
   /**
    * A Node program will not need any runtime deps by default.
@@ -147,7 +148,6 @@ export const specification: TsmoduleSpecification = {
      * Ensure Next, PostCSS, and Tailwind configs are available.
      */
     "files": [
-      ".eslintrc",
       "next-env.d.ts",
       "next.config.js",
       "postcss.config.js",

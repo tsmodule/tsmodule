@@ -36,17 +36,6 @@
     "@typescript-eslint/quotes": ["error", "double"],
 
     "object-curly-spacing": "off",
-    "@typescript-eslint/object-curly-spacing": ["error", "always"],
-
-    "sort-imports": [
-      "warn",
-      {
-        "ignoreCase": false,
-        "ignoreDeclarationSort": false,
-        "ignoreMemberSort": true,
-        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
-        "allowSeparatedGroups": true
-      }
-    ]
+    "@typescript-eslint/object-curly-spacing": ["error", "always"]
   }
 }
