@@ -8,25 +8,25 @@
  */
 
 if (typeof process !== "undefined") {
+  /**
+   * Overwrite all identifiers even if they exist already, otherwise they will
+   * be inherited from parent contexts and will not point to the correct
+   * location.
+   */
   const { dirname } = await import("path");
   const { fileURLToPath } = await import("url");
 
   /**
    * Shim entry-point related paths.
    */
-  if (typeof globalThis.__filename === "undefined") {
-    globalThis.__filename = fileURLToPath(import.meta.url);
-  }
-  if (typeof globalThis.__dirname === "undefined") {
-    globalThis.__dirname = dirname(globalThis.__filename);
-  }
+  globalThis.__filename = fileURLToPath(import.meta.url);
+  globalThis.__dirname = dirname(globalThis.__filename);
+
   /**
-   * Shim require if needed.
+   * Shim require().
    */
-  if (typeof globalThis.require === "undefined") {
-    const { default: module } = await import("module");
-    globalThis.require = module.createRequire(import.meta.url);
-  }
+  const { default: module } = await import("module");
+  globalThis.require = module.createRequire(import.meta.url);
 }
 
 export {};
