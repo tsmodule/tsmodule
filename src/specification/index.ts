@@ -76,9 +76,10 @@ const defaultSettings: TsModuleProjectConfig = {
    * Standardize TSConfig and ESLint.
    */
   "files": [
-    "tsconfig.json",
+    ".github/**",
     ".eslintrc",
     ".gitignore",
+    "tsconfig.json",
     "tsconfig.export.json",
     "LICENSE",
     "ava.config.mjs",
@@ -157,6 +158,8 @@ export const specification: TsmoduleSpecification = {
      * Ensure Next, PostCSS, and Tailwind configs are available.
      */
     "files": [
+      ".github/**",
+      ".gitignore",
       "next-env.d.ts",
       "next.config.js",
       "postcss.config.js",

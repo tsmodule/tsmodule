@@ -1,15 +1,16 @@
 /* eslint-disable no-console */
 import test from "ava";
+import glob from "fast-glob";
 
 import { createShell, Shell } from "universal-shell";
 import { existsSync } from "fs";
-import { rm, writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
+import { resolve } from "path";
+import { tmpdir } from "os";
 
 import { createTestAssets, cleanTestDir, writeTestFile, readTextFile, sleep } from "./utils";
 import { build } from "../../dist/commands/build/index.js";
 import { specification } from "../../dist/specification/index.js";
-import { resolve } from "path";
-import { tmpdir } from "os";
 
 const { testName: defaultTest, testDir: defaultTestDir } = await cleanTestDir("test-default");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
@@ -74,12 +75,12 @@ test.serial("[create --react] should create Next.js component library", async (t
 test.serial("[create --react] should create expected files", async (t) => {
   process.chdir(reactTestDir);
 
-  for (const file of specification.default.files) {
-    t.assert(existsSync(file), `should create default file ${file}`);
+  for (const filePattern of specification.default.files) {
+    t.assert(glob.sync(filePattern).length, `should create default file ${filePattern}`);
   }
 
-  for (const file of specification.react.files) {
-    t.assert(existsSync(file), `should create React-specific file ${file}`);
+  for (const filePattern of specification.react.files) {
+    t.assert(glob.sync(filePattern).length, `should create React-specific file ${filePattern}`);
   }
 });
 
