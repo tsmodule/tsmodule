@@ -257,8 +257,8 @@ test.serial("[build -b] should bundle output", async (t) => {
 
   const bundle = await readTextFile(resolve(defaultTestDir, "dist/bundle-a.js"));
   t.assert(
-    bundle.includes("console.log(42)"),
-    "should inline dependencies in emitted bundles"
+    !bundle.includes("console.log(42)"),
+    "should not inline relative imports in emitted bundles"
   );
 
   process.chdir(reactTestDir);

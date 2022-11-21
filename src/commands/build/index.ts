@@ -23,6 +23,7 @@ import { getPackageJsonFile } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
+import { relativeExternsPlugin } from "../../specification/externs";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 
@@ -216,6 +217,7 @@ export const build = async ({
     write: !noWrite,
     external: bundle ? defaultExterns : undefined,
     banner: bundle ? { "js": ESM_REQUIRE_SHIM } : undefined,
+    plugins: [relativeExternsPlugin],
   };
 
   let stdinSource = "";
