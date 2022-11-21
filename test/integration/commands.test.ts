@@ -45,7 +45,7 @@ test.before("[create] should create all template types", async () => {
     ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
-    await shell.run("npm link -f --scripts-prepend-node-path @tsmodule/tsmodule");
+    await shell.run("npm link -f @tsmodule/tsmodule --no-save --scripts-prepend-node-path");
   }
 });
 
@@ -95,6 +95,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "src/update.ts",
         "export const hello = 'world';"
       );
+      await sleep();
       shell.kill();
     })(),
   ]);
@@ -225,6 +226,8 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
 
   await createTestAssets(defaultTest);
   await shell.run("yarn tsmodule build -r");
+
+  await sleep();
 
   t.assert(existsSync(resolve(defaultTestDir, "dist/path/to/assets/tsmodule.png")));
   t.snapshot(await readTextFile(resolve(defaultTestDir, "dist/index.css")));

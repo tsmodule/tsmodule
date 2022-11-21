@@ -36,6 +36,12 @@ const defaultSettings: TsModuleProjectConfig = {
      */
     "platform": "node",
     /**
+     * Only support Node 14+.
+     */
+    "engines": {
+      "node": ">=14"
+    },
+    /**
      * They emit types at the runtime index.
      */
     "types": "dist/index.d.ts",
