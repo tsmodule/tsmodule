@@ -132,7 +132,7 @@ Below are some example use cases of TS modules in practice.
 
 The most common type of library will be a TS module with generic TypeScript
 exports in `src/**/index.ts`, e.g.
-[`await-shell`](https://github.com/ctjlewis/await-shell), a Promise wrapper
+[`universal-shell`](https://github.com/ctjlewis/universal-shell), a Promise wrapper
 around `child_process.spawn` that's used in tsmodule itself.
 
 This library contains only one export, at `src/index.ts` (a function called

@@ -46,7 +46,6 @@
     "@typescript-eslint/parser": "^5.41.0",
     "assert": "^2.0.0",
     "ava": "^5.0.1",
-    "await-shell": "^34.1.1",
     "chalk": "^5.1.2",
     "commander": "^9.4.1",
     "debug-logging": "^4.0.4",

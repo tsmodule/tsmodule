@@ -8,11 +8,6 @@ import { resolve } from "path";
 import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
 import { setPackageJsonFields } from "../../utils/packageJson";
 
-// @ts-ignore - Need to add initializeShell() to await-shell.
-globalThis.SHELL_OPTIONS = {
-  stdio: ["ignore", "ignore", "inherit"],
-};
-
 export const create = async (name: string, { react = false }) => {
   const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
   /**
@@ -62,7 +57,11 @@ export const create = async (name: string, { react = false }) => {
 
   spinner.succeed("Dependencies installed.");
 
-  const shell = createShell({ cwd: resolve(name) });
+  const shell = createShell({
+    cwd: resolve(name),
+    stdio: ["ignore", "ignore", "inherit"],
+  });
+
   await shell.run("git init");
 
   spinner.succeed("Set up as Git repository.");
