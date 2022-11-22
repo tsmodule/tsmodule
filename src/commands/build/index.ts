@@ -231,6 +231,8 @@ export const build = async ({
     plugins,
   };
 
+  DEBUG.log("Build options", buildOptions);
+
   let stdinSource = "";
   if (stdin) {
     DEBUG.log("Building file from stdin", { stdin, stdinFile, noWrite });
