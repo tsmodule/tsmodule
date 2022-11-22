@@ -7,11 +7,13 @@
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
   "types": "dist/types/index.d.ts",
+  "module": "dist/bin.js",
   "bin": {
     "tsmodule": "dist/bin.js"
   },
   "exports": {
     ".": "./dist/bin.js",
+    "./*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
   "files": [
