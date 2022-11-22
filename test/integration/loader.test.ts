@@ -1,4 +1,4 @@
-import { build } from "../../dist/commands/build/index.js";
+import { build } from "../../dist/index.js";
 import { createShell } from "universal-shell";
 import test from "ava";
 

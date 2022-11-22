@@ -218,6 +218,7 @@ export const build = async ({
     ...commonOptions,
     tsconfig: exportConfigExists ? exportConfig : undefined,
     bundle,
+    splitting: standalone,
     absWorkingDir: cwd,
     outbase: "src",
     outdir: "dist",

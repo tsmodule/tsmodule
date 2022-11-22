@@ -9,8 +9,7 @@ import { resolve } from "path";
 import { tmpdir } from "os";
 
 import { createTestAssets, cleanTestDir, writeTestFile, readTextFile, sleep } from "./utils";
-import { build } from "../../dist/commands/build/index.js";
-import { specification } from "../../dist/specification/index.js";
+import { build, specification } from "../../dist/index.js";
 
 const { testName: defaultTest, testDir: defaultTestDir } = await cleanTestDir("test-default");
 const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir("test-react");
