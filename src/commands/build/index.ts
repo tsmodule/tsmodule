@@ -2,7 +2,7 @@ import { constants, existsSync } from "fs";
 import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
 
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
-import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions } from "esbuild";
+import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions, Plugin } from "esbuild";
 import chalk from "chalk";
 import { env } from "process";
 import glob from "fast-glob";
@@ -137,6 +137,7 @@ interface BuildArgs {
   input?: string;
   styles?: string;
   bundle?: boolean;
+  standalone?: boolean;
   dev?: boolean;
   target?: string | string[];
   runtimeOnly?: boolean;
@@ -158,17 +159,22 @@ export const build = async ({
   target = "esnext",
   dev = false,
   bundle = false,
+  standalone = false,
   runtimeOnly = false,
   jsOnly = false,
   noWrite = false,
   stdin = undefined,
   stdinFile = undefined,
-}: BuildArgs) => {
+}: BuildArgs = {}) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
 
   if (dev) {
     runtimeOnly = true;
+  }
+
+  if (standalone) {
+    bundle = true;
   }
 
   const { cwd, srcDir, outDir } = getWorkingDirs();
@@ -203,6 +209,11 @@ export const build = async ({
   const exportConfig = resolvePath(cwd, "tsconfig.export.json");
   const exportConfigExists = existsSync(exportConfig);
 
+  const plugins: Plugin[] = [];
+  if (!standalone) {
+    plugins.push(relativeExternsPlugin);
+  }
+
   const buildOptions: BuildOptions = {
     ...commonOptions,
     tsconfig: exportConfigExists ? exportConfig : undefined,
@@ -217,7 +228,7 @@ export const build = async ({
     write: !noWrite,
     external: bundle ? defaultExterns : undefined,
     banner: bundle ? { "js": ESM_REQUIRE_SHIM } : undefined,
-    plugins: [relativeExternsPlugin],
+    plugins,
   };
 
   let stdinSource = "";
@@ -488,4 +499,11 @@ export const build = async ({
   );
 
   log(chalk.green("Build complete."));
+};
+
+export const buildCommand = async (input?: string, options?: BuildArgs) => {
+  return await build({
+    input,
+    ...options,
+  });
 };
