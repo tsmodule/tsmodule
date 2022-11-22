@@ -4,7 +4,7 @@
 import chalk from "chalk";
 
 import { Command } from "commander";
-import { build } from "./commands/build";
+import { build, buildCommand } from "./commands/build";
 import { convert } from "./commands/convert";
 import { create } from "./commands/create";
 import { dev } from "./commands/dev";
@@ -35,22 +35,19 @@ program
 program
   .command("build")
   .description("Builds TS files to output in dist/.")
-  .option("-i, --input <files>", "Entrypoints to compile.")
+  .argument("[files]", "Glob of entrypoints to compile.")
   .option("-j, --js-only", "Do not build styles")
   .option("-s, --styles <styles>", "Specify stylesheet entrypoint.")
   .option("-t, --target <target>", "ECMAScript featureset to target.")
-  .option("-b, --bundle", "Bundle dependencies into entrypoints.")
+  .option("-b, --bundle", "Bundle external dependencies into entrypoints.")
+  .option("--standalone", "Bundle a single entry-point.")
   .option("-d, --dev", "Build development runtime.")
   .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime.")
   .option("--stdin [source]", "Read from a string or stdin.")
   .option("--stdin-file [file]", "File path to mock for stdin.")
   .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.")
   .action(
-    programCatch(
-      async (options) => {
-        await build(options);
-      }
-    )
+    programCatch(buildCommand)
   );
 
 program

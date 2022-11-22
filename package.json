@@ -16,7 +16,9 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/",
+    "dist/types/index.d.ts",
+    "dist/bin.js",
+    "dist/loader/index.js",
     "templates/",
     "templates/**/.gitignore"
   ],
@@ -27,7 +29,7 @@
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
     "prebuild": "yarn bootload && npm link -f --no-save --scripts-prepend-node-path",
-    "build": "node dist/bin.js build -b",
+    "build": "node dist/bin.js build --standalone",
     "dev": "node dist/bin.js dev",
     "test-bundle": "yarn build -b && ava",
     "test": "yarn test-bundle",
