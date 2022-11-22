@@ -11,12 +11,10 @@
     "tsmodule": "dist/bin.js"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*/index.js",
+    ".": "./dist/bin.js",
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/types/index.d.ts",
     "dist/bin.js",
     "dist/loader/index.js",
     "templates/",
