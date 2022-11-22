@@ -2,7 +2,7 @@
   "name": "@tsmodule/tsmodule",
   "platform": "node",
   "type": "module",
-  "version": "41.9.0",
+  "version": "41.10.0",
   "repository": "tsmodule/tsmodule",
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
