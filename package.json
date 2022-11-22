@@ -7,16 +7,16 @@
   "description": "TypeScript Module loader and compiler",
   "license": "MIT",
   "types": "dist/types/index.d.ts",
+  "module": "dist/bin.js",
   "bin": {
     "tsmodule": "dist/bin.js"
   },
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./dist/bin.js",
     "./*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/types/index.d.ts",
     "dist/bin.js",
     "dist/loader/index.js",
     "templates/",
@@ -29,9 +29,9 @@
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
     "prebuild": "yarn bootload && npm link -f --no-save --scripts-prepend-node-path",
-    "build": "node dist/bin.js build --standalone",
+    "build": "node dist/bin.js build --standalone \"src/{index.ts,bin.ts,loader/index.ts}\"",
     "dev": "node dist/bin.js dev",
-    "test-bundle": "yarn build -b && ava",
+    "test-bundle": "yarn build && ava",
     "test": "yarn test-bundle",
     "retest": "SKIP_TEST_SETUP=1 yarn test-bundle",
     "retest-bundle": "SKIP_TEST_SETUP=1 yarn test-bundle",
