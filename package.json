@@ -29,7 +29,7 @@
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
     "prebuild": "yarn bootload && npm link -f --no-save --scripts-prepend-node-path",
-    "build": "node dist/bin.js build --standalone 'src/{index.ts,bin.ts,loader/index.ts}'",
+    "build": "node dist/bin.js build --standalone \"src/{index.ts,bin.ts,loader/index.ts}\"",
     "dev": "node dist/bin.js dev",
     "test-bundle": "yarn build && ava",
     "test": "yarn test-bundle",
