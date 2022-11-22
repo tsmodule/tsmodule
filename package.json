@@ -17,8 +17,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/bin.js",
-    "dist/loader/index.js",
+    "dist/types/index.d.ts",
+    "dist/**/*.js",
     "templates/",
     "templates/**/.gitignore"
   ],
