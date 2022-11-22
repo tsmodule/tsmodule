@@ -67,7 +67,7 @@ const defaultSettings: TsModuleProjectConfig = {
       "dev": "tsmodule dev",
       "build": "tsmodule build",
       "test": "ava",
-      "pretest": "tsmodule build",
+      "pretest": "yarn build",
       "prepublishOnly": "yarn test",
       "lint": "eslint src --fix",
     },
