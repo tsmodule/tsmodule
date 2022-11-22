@@ -69,7 +69,7 @@ const forceTypeModuleInDist = async () => {
   );
 };
 
-const singleEntryPointConfig = (
+const overwriteEntryPoint = (
   source: string,
   file: string,
   loader?: Loader
@@ -84,8 +84,10 @@ const singleEntryPointConfig = (
       resolveDir: dirname(file),
       loader,
     },
+
     outdir: undefined,
-    outfile: emittedFile
+    outfile: emittedFile,
+    splitting: false,
   };
 
   return config;
@@ -218,7 +220,7 @@ export const build = async ({
     ...commonOptions,
     tsconfig: exportConfigExists ? exportConfig : undefined,
     bundle,
-    splitting: standalone,
+    splitting: bundle && !stdin,
     absWorkingDir: cwd,
     outbase: "src",
     outdir: "dist",
@@ -261,7 +263,7 @@ export const build = async ({
       const build = await transform(stdinSource, transformOptions);
       return build.code;
     } else {
-      const stdinBuildConfig = singleEntryPointConfig(stdinSource, stdinFile, "tsx");
+      const stdinBuildConfig = overwriteEntryPoint(stdinSource, stdinFile, "tsx");
       await showProgress(
         async () => await esbuild({
           ...buildOptions,
@@ -332,7 +334,7 @@ export const build = async ({
           const tsxFileContents = await readFile(tsxFile, "utf-8");
           const runtimeCode = REACT_IMPORTS + tsxFileContents;
 
-          const tsxConfig = singleEntryPointConfig(runtimeCode, tsxFile, "tsx");
+          const tsxConfig = overwriteEntryPoint(runtimeCode, tsxFile, "tsx");
           await esbuild({
             ...buildOptions,
             ...tsxConfig,
