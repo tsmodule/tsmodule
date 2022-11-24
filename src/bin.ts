@@ -30,6 +30,7 @@ program
 program
   .command("dev")
   .description("Build and watch for changes.")
+  .option("-f, --format <format>", "Output format (default: ESM).")
   .action(programCatch(dev));
 
 program

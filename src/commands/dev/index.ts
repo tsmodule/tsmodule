@@ -9,6 +9,7 @@ import ora from "ora";
 import watch from "node-watch";
 
 import { build } from "../build";
+import { Format } from "esbuild";
 
 const clear = () => {
   if (process.env.NODE_ENV !== "test") {
@@ -26,7 +27,13 @@ const timestamp = (files: string) => {
   );
 };
 
-export const dev = async () => {
+export type DevArgs = {
+  format?: Format;
+};
+
+export const dev = async ({
+  format = "esm",
+}: DevArgs) => {
   const cwd = process.cwd();
   const shell = createShell();
 
@@ -36,7 +43,10 @@ export const dev = async () => {
 
   clear();
 
-  await build({ dev: true });
+  await build({
+    format,
+    dev: true
+  });
   timestamp("src/**/*");
 
   watch(
