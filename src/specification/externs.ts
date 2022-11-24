@@ -1,5 +1,8 @@
 import { Plugin } from "esbuild";
 
+/**
+ * Marks imports like ./a, ./b, ../c, etc. as external.
+ */
 export const relativeExternsPlugin: Plugin = {
   name: "relative-externs",
   setup(build) {

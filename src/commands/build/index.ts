@@ -24,6 +24,7 @@ import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
 import { relativeExternsPlugin } from "../../specification/externs";
+import { removeEsmShim } from "../../specification/removeEsmShim";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 
@@ -220,6 +221,19 @@ export const build = async ({
     plugins.push(relativeExternsPlugin);
   }
 
+  if (format === "cjs") {
+    plugins.push(removeEsmShim);
+  }
+
+  let banner: BuildOptions["banner"] | undefined;
+  if (bundle) {
+    switch (format) {
+      case "esm":
+        banner = { "js": `/** __ESM_SHIM_START */${ESM_REQUIRE_SHIM}/** __ESM_SHIM_END */` };
+        break;
+    }
+  }
+
   const buildOptions: BuildOptions = {
     ...commonOptions,
     tsconfig: exportConfigExists ? exportConfig : undefined,
@@ -234,7 +248,7 @@ export const build = async ({
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
     external: !bundle ? undefined : [...defaultExterns, ...external],
-    banner: bundle && format == "esm" ? { "js": ESM_REQUIRE_SHIM } : undefined,
+    banner,
     plugins,
   };
 
