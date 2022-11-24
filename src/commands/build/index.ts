@@ -222,7 +222,7 @@ export const build = async ({
     ...commonOptions,
     tsconfig: exportConfigExists ? exportConfig : undefined,
     bundle,
-    splitting: bundle && !stdin,
+    splitting: format === "esm" && bundle && !stdin,
     absWorkingDir: cwd,
     outbase: "src",
     outdir: "dist",
