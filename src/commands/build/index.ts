@@ -2,7 +2,7 @@ import { constants, existsSync } from "fs";
 import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
 
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
-import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions, Plugin } from "esbuild";
+import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions, Plugin, Format } from "esbuild";
 import chalk from "chalk";
 import { env } from "process";
 import glob from "fast-glob";
@@ -135,12 +135,13 @@ if(typeof process<"u"){let{dirname:e}=await import("path"),{fileURLToPath:i}=awa
 `;
 
 
-interface BuildArgs {
+export interface BuildArgs {
   input?: string;
   styles?: string;
   bundle?: boolean;
   standalone?: boolean;
   dev?: boolean;
+  format?: Format;
   target?: string | string[];
   runtimeOnly?: boolean;
   jsOnly?: boolean;
@@ -159,6 +160,7 @@ export const build = async ({
   input = "src/**/*",
   styles = "src/components/index.css",
   target = "esnext",
+  format = "esm",
   dev = false,
   bundle = false,
   standalone = false,
@@ -198,7 +200,7 @@ export const build = async ({
      */
     jsx: "transform",
     jsxFactory: "React.createElement",
-    format: "esm",
+    format,
     charset: "utf8",
     logLevel: dev ? "warning" : "error",
     define: {
@@ -225,7 +227,7 @@ export const build = async ({
     outbase: "src",
     outdir: "dist",
     assetNames: "[name].js",
-    format: "esm",
+    format,
     target: "esnext",
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
