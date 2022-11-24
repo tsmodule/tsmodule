@@ -45,7 +45,7 @@ export const bannerError = (msg: string) => {
   );
 };
 
-const forceTypeModuleInDist = async () => {
+const forceModuleTypeInDist = async (mode: Format = "esm") => {
   let distPkgJson;
 
   if (!existsSync("dist")) {
@@ -58,8 +58,17 @@ const forceTypeModuleInDist = async () => {
     distPkgJson = {};
   }
 
-  if (distPkgJson?.module === "module") {
-    return true;
+  switch (mode) {
+    case "esm":
+      distPkgJson.type = "module";
+      break;
+
+    case "cjs":
+      distPkgJson.type = "commonjs";
+      break;
+
+    default:
+      return false;
   }
 
   distPkgJson.type = "module";
@@ -67,6 +76,8 @@ const forceTypeModuleInDist = async () => {
     "dist/package.json",
     JSON.stringify(distPkgJson, null, 2)
   );
+
+  return true;
 };
 
 const overwriteEntryPoint = (
@@ -431,11 +442,9 @@ export const build = async ({
    * @see https://github.com/vercel/next.js/pull/33637
    * @see https://github.com/timneutkens/next.js/blob/99dceb60faae6b00faed75db795ef24107934227/packages/next/build/index.ts#L537-L540
    */
-  if (format === "esm") {
-    const rewrotePkgJson = await forceTypeModuleInDist();
-    if (rewrotePkgJson) {
-      ora("Forced \"type\": \"module\" in output.").succeed();
-    }
+  const rewrotePkgJson = await forceModuleTypeInDist(format);
+  if (rewrotePkgJson) {
+    ora("Forced \"type\": \"module\" in output.").succeed();
   }
 
   if (runtimeOnly) {
