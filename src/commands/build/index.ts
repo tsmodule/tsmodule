@@ -429,9 +429,11 @@ export const build = async ({
    * @see https://github.com/vercel/next.js/pull/33637
    * @see https://github.com/timneutkens/next.js/blob/99dceb60faae6b00faed75db795ef24107934227/packages/next/build/index.ts#L537-L540
    */
-  const rewrotePkgJson = await forceTypeModuleInDist();
-  if (rewrotePkgJson) {
-    ora("Forced \"type\": \"module\" in output.").succeed();
+  if (format === "esm") {
+    const rewrotePkgJson = await forceTypeModuleInDist();
+    if (rewrotePkgJson) {
+      ora("Forced \"type\": \"module\" in output.").succeed();
+    }
   }
 
   if (runtimeOnly) {
