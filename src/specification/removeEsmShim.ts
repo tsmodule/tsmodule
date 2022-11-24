@@ -12,12 +12,10 @@ export const removeEsmShim: Plugin = {
      */
     build.onLoad({ filter: /\.js$/ }, async ({ path }) => {
       const contents = await readFile(path, "utf8");
-      if (contents.startsWith("/** __ESM_SHIM_START */")) {
+      if (contents.startsWith("\n/** __ESM_SHIM_START */")) {
         const lines = contents.split("\n");
         const end = lines.indexOf("/** __ESM_SHIM_END */");
         lines.splice(0, end + 1);
-
-        console.log({ path, lines });
 
         return {
           contents: lines.join("\n"),
