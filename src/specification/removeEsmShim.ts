@@ -1,6 +1,12 @@
 import { Plugin } from "esbuild";
 import { readFile } from "fs/promises";
 
+export const ESM_REQUIRE_SHIM = `
+/** __ESM_SHIM_START */
+if(typeof process<"u"){let{dirname:e}=await import("path"),{fileURLToPath:i}=await import("url");globalThis.__filename=i(import.meta.url),globalThis.__dirname=e(globalThis.__filename);let{default:a}=await import("module");globalThis.require=a.createRequire(import.meta.url)}
+/** __ESM_SHIM_END */
+`;
+
 export const removeEsmShim: Plugin = {
   name: "removeEsmShim",
   setup(build) {
@@ -12,25 +18,12 @@ export const removeEsmShim: Plugin = {
      */
     build.onLoad({ filter: /\.js$/ }, async ({ path }) => {
       const contents = await readFile(path, "utf8");
-      if (contents.startsWith("\n/** __ESM_SHIM_START */")) {
-        const lines = contents.split("\n");
-        const end = lines.indexOf("/** __ESM_SHIM_END */");
-        lines.splice(0, end + 1);
-
+      if (contents.startsWith(ESM_REQUIRE_SHIM)) {
         return {
-          contents: lines.join("\n"),
+          contents: contents.slice(ESM_REQUIRE_SHIM.length),
           loader: "js",
         };
       }
     });
-
-    // Load ".txt" files and return an array of words
-    // build.onLoad({ filter: /\.txt$/ }, async (args) => {
-    //   const text = await readFile(args.path, "utf8");
-    //   return {
-    //     contents: JSON.stringify(text.split(/\s+/)),
-    //     loader: "js",
-    //   };
-    // });
   },
 };

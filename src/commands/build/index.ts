@@ -24,7 +24,7 @@ import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
 import { relativeExternsPlugin } from "../../specification/externs";
-import { removeEsmShim } from "../../specification/removeEsmShim";
+import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmShim";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 
@@ -139,13 +139,6 @@ const buildCssEntryPoint = async (
     throw new Error(`Building CSS bundle exited with code ${code} for ${inputStyles}.\n\rTried running: ${cmdString}.\n\rError: ${stdout + stderr}`);
   }
 };
-
-
-const ESM_REQUIRE_SHIM = `
-if(typeof process<"u"){let{dirname:e}=await import("path"),{fileURLToPath:i}=await import("url");globalThis.__filename=i(import.meta.url),globalThis.__dirname=e(globalThis.__filename);let{default:a}=await import("module");globalThis.require=a.createRequire(import.meta.url)}
-`;
-
-
 export interface BuildArgs {
   input?: string;
   styles?: string;
@@ -239,7 +232,7 @@ export const build = async ({
   if (bundle) {
     switch (format) {
       case "esm":
-        banner = { "js": `/** __ESM_SHIM_START */${ESM_REQUIRE_SHIM}/** __ESM_SHIM_END */` };
+        banner = { "js": ESM_REQUIRE_SHIM };
         break;
     }
   }
