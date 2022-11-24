@@ -234,7 +234,7 @@ export const build = async ({
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
     external: !bundle ? undefined : [...defaultExterns, ...external],
-    banner: bundle ? { "js": ESM_REQUIRE_SHIM } : undefined,
+    banner: bundle && format == "esm" ? { "js": ESM_REQUIRE_SHIM } : undefined,
     plugins,
   };
 
