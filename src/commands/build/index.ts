@@ -71,7 +71,6 @@ const forceModuleTypeInDist = async (mode: Format = "esm") => {
       return false;
   }
 
-  distPkgJson.type = "module";
   await writeFile(
     "dist/package.json",
     JSON.stringify(distPkgJson, null, 2)
