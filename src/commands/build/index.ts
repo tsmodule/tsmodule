@@ -149,6 +149,7 @@ export interface BuildArgs {
   // noStandardStyles?: boolean;
   stdin?: string;
   stdinFile?: string;
+  external?: string[];
 }
 
 /**
@@ -169,6 +170,7 @@ export const build = async ({
   noWrite = false,
   stdin = undefined,
   stdinFile = undefined,
+  external = [],
 }: BuildArgs = {}) => {
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
@@ -231,7 +233,7 @@ export const build = async ({
     target: "esnext",
     platform: pkgJson?.platform ?? "node",
     write: !noWrite,
-    external: bundle ? defaultExterns : undefined,
+    external: !bundle ? undefined : [...defaultExterns, ...external],
     banner: bundle ? { "js": ESM_REQUIRE_SHIM } : undefined,
     plugins,
   };
