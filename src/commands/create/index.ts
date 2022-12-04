@@ -9,7 +9,10 @@ import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyT
 import { setPackageJsonFields } from "../../utils/packageJson";
 
 export const create = async (name: string, { react = false }) => {
-  const spinner = ora(`Creating new module ${chalk.blueBright(name)}.`).start();
+  const spinner = ora({
+    text: `Creating new module ${chalk.blueBright(name)}.`,
+    indent: 2,
+  }).start();
   /**
    * Always copy default template.
    */
