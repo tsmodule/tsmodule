@@ -13,7 +13,7 @@ import ora from "ora";
  * Until then, there's no way around manually specifying full specifiers in
  * internal source (for bootstrap code path).
  */
-import { createDebugLogger, log } from "debug-logging";
+import { createDebugLogger } from "debug-logging";
 import { createShell } from "universal-shell";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
@@ -25,6 +25,8 @@ import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
 import { relativeExternsPlugin } from "../../specification/externs";
 import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmShim";
+
+import { log } from "@tsmodule/log";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 
@@ -509,7 +511,8 @@ export const build = async ({
         );
       }
     } else {
-      log(chalk.grey("Bundle styles not found for this project.\n\rChecked: " + chalk.bold(styles)));
+      log(chalk.grey("Bundle styles not found for this project."));
+      log("Checked: " + chalk.bold(styles));
     }
   }
 
