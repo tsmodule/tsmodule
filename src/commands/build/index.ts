@@ -35,7 +35,12 @@ export const bannerLog = (msg: string) => {
   log(
     chalk.bgBlue(
       chalk.bold(chalk.white(logMsg)),
-    )
+    ),
+    [],
+    {
+      preLines: 1,
+      postLines: 1,
+    }
   );
 };
 
@@ -452,7 +457,10 @@ export const build = async ({
    */
   const rewrotePkgJson = await forceModuleTypeInDist(format);
   if (rewrotePkgJson) {
-    ora("Forced \"type\": \"module\" in output.").succeed();
+    ora({
+      text: "Forced \"type\" package.json field in dist.",
+      indent: 2,
+    }).succeed();
   }
 
   if (runtimeOnly) {
@@ -511,8 +519,10 @@ export const build = async ({
         );
       }
     } else {
+      log();
       log(chalk.grey("Bundle styles not found for this project."));
       log("Checked: " + chalk.bold(styles));
+      log();
     }
   }
 
@@ -527,7 +537,8 @@ export const build = async ({
     },
   );
 
-  log(chalk.green("Build complete."));
+  log();
+  log("Build complete.", ["green"]);
 };
 
 export const buildCommand = async (input?: string, options?: BuildArgs) => {

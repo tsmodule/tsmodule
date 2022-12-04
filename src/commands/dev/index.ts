@@ -5,13 +5,14 @@ import { lstat } from "fs/promises";
 import chalk from "chalk";
 import { createShell } from "universal-shell";
 import { log } from "debug-logging";
+import { clear } from "@tsmodule/log";
 import ora from "ora";
 import watch from "node-watch";
 
 import { build } from "../build";
 import { Format } from "esbuild";
 
-const clear = () => {
+const clearTerminal = () => {
   if (process.env.NODE_ENV !== "test") {
     // eslint-disable-next-line no-console
     console.clear();
@@ -41,7 +42,7 @@ export const dev = async ({
     await shell.run("clear");
   }
 
-  clear();
+  clearTerminal();
 
   await build({
     format,
@@ -67,7 +68,7 @@ export const dev = async ({
       const isDir = stat.isDirectory();
       if (isDir) return;
 
-      clear();
+      clearTerminal();
 
       const preTime = Date.now();
       try {
@@ -82,9 +83,12 @@ export const dev = async ({
       const time = Date.now() - preTime;
 
       ora(
-        chalk.blueBright(
-          `Dev refresh finished in ${chalk.bold(`${time}ms`)}.`
-        )
+        {
+          text: chalk.blueBright(
+            `Dev refresh finished in ${chalk.bold(`${time}ms`)}.`
+          ),
+          indent: 2,
+        }
       ).succeed();
 
       timestamp(relative(cwd, filePath));

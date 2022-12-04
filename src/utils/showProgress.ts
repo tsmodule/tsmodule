@@ -14,7 +14,10 @@ export const showProgress = async (
   fn: () => unknown | Promise<unknown>,
   messages: ProgressMessages,
 ) => {
-  const progress = ora(messages.start);
+  const progress = ora({
+    text: messages.start,
+    indent: 2,
+  });
 
   try {
     await fn();
