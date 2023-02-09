@@ -144,7 +144,7 @@ export const specification: TsmoduleSpecification = {
         "lint": "next lint --fix",
         "pretest": "tsmodule build --runtime-only",
         "test": "ava",
-        "prepublishOnly": "yarn export && yarn test"
+        "prepublishOnly": "yarn test && yarn export"
       },
       /**
        * Lock React types to v17.
