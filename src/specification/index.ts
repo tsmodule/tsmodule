@@ -115,6 +115,7 @@ export const specification: TsmoduleSpecification = {
      * Next-specific package.json settings.
      */
     packageJson: {
+      ...defaultSettings.packageJson,
       /**
        * Target browser.
        */
