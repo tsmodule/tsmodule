@@ -1,7 +1,7 @@
-import { FC, PropsWithChildren } from "react";
+import { type FC, type PropsWithChildren } from 'react'
 
 interface CardProps extends PropsWithChildren {
-  href: string;
+  href: string
 }
 
 export const Card: FC<CardProps> = ({ href, children }) => {
@@ -9,5 +9,5 @@ export const Card: FC<CardProps> = ({ href, children }) => {
     <a href={href} className="card">
       {children}
     </a>
-  );
-};
+  )
+}

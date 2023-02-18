@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from 'next/image'
 
 export const Footer = () => {
   return (
@@ -9,11 +9,11 @@ export const Footer = () => {
         target="_blank"
         rel="noopener noreferrer"
       >
-          Powered by{" "}
+          Powered by{' '}
         <span className="h-4 ml-2 flex-center">
           <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
         </span>
       </a>
     </footer>
-  );
-};
+  )
+}

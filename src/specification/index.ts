@@ -77,7 +77,7 @@ const defaultSettings: TsModuleProjectConfig = {
    */
   "files": [
     ".github/**",
-    ".eslintrc",
+    ".eslintrc.yml",
     ".gitignore",
     "tsconfig.json",
     "LICENSE",
@@ -93,14 +93,20 @@ const defaultSettings: TsModuleProjectConfig = {
   "devDependencies": [
     "@types/node",
     "@tsmodule/tsmodule",
-    "@typescript-eslint/eslint-plugin",
-    "@typescript-eslint/parser",
     "ava",
-    "eslint",
     /**
      * Ensure TSC is available for .d.ts generation.
      */
     "typescript",
+    /**
+     * ESLint deps.
+     */
+    "eslint@^8.0.1",
+    "eslint-config-standard-with-typescript@latest",
+    "@typescript-eslint/eslint-plugin@^5.0.0",
+    "eslint-plugin-import@^2.25.2",
+    "eslint-plugin-n@^15.0.0",
+    "eslint-plugin-promise@^6.0.0",
   ],
 };
 
@@ -177,8 +183,9 @@ export const specification: TsmoduleSpecification = {
       "@types/react@^18.0.23",
       "@types/react-dom@^18.0.7",
       /**
-       * ESLint for Next.
+       * Next-specific ESLint config.
        */
+      "eslint-plugin-react@latest",
       "eslint-config-next",
       /**
        * Build-time dependencies.

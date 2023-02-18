@@ -1,14 +1,14 @@
-import "../index.css";
+import '../index.css'
 
-import type { AppProps } from "next/app";
-import { StrictMode } from "react";
+import type { AppProps } from 'next/app'
+import { StrictMode } from 'react'
 
-function App({ Component, pageProps }: AppProps) {
+function App ({ Component, pageProps }: AppProps) {
   return (
     <StrictMode>
       <Component {...pageProps} />
     </StrictMode>
-  );
+  )
 }
 
-export default App;
+export default App
