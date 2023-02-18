@@ -95,7 +95,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "src/update.ts",
         "export const hello = 'world';"
       );
-      await sleep();
+      await sleep(3000);
       shell.kill();
     })(),
   ]);

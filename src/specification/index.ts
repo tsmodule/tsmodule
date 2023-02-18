@@ -163,8 +163,8 @@ export const specification: TsmoduleSpecification = {
       ".gitignore",
       "next-env.d.ts",
       "next.config.js",
-      "postcss.config.js",
-      "tailwind.config.js",
+      "postcss.config.cjs",
+      "tailwind.config.cjs",
     ],
     "dependencies": [
       "react@^18.2.0",

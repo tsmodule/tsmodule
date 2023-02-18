@@ -127,12 +127,12 @@ const buildCssEntryPoint = async (
 
   const twCmd = "yarn tailwindcss";
   const minify = dev ? "" : "--minify";
-  const postcss = "--postcss postcss.config.js";
+  const postcss = "--postcss postcss.config.cjs";
 
   const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, `-o ${outputStyles}`];
 
-  if (existsSync(resolvePath(process.cwd(), "tailwind.config.js"))) {
-    cmd.push("--config tailwind.config.js");
+  if (existsSync(resolvePath(process.cwd(), "tailwind.config.cjs"))) {
+    cmd.push("--config tailwind.config.cjs");
   }
 
   const shell = createShell({
