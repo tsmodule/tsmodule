@@ -45,6 +45,8 @@ export const createTestAssets = async (testName: string) => {
   const testDir = getTestDir(testName);
   const subdir = resolve(testDir, "src/path/to/assets");
 
+  await sleep();
+
   if (!existsSync(subdir)) {
     console.log("Creating subdir", { subdir });
     await mkdir(subdir, { recursive: true });

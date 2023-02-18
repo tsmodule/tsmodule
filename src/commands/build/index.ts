@@ -17,7 +17,7 @@ import { createDebugLogger } from "debug-logging";
 import { createShell } from "universal-shell";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
-import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
+import { DEVELOPMENT_MODE, isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { getPackageJsonFile } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
@@ -136,7 +136,7 @@ const buildCssEntryPoint = async (
   }
 
   const shell = createShell({
-    log: false,
+    log: DEVELOPMENT_MODE,
     stdio: "ignore",
   });
 

@@ -8,9 +8,7 @@
   "license": "MIT",
   "types": "dist/types/index.d.ts",
   "module": "dist/bin.js",
-  "bin": {
-    "tsmodule": "dist/bin.js"
-  },
+  "bin": "dist/bin.js",
   "exports": {
     ".": "./dist/bin.js",
     "./*": "./dist/*/index.js",
@@ -28,7 +26,7 @@
   "scripts": {
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "yarn bootload && npm link -f --no-save --scripts-prepend-node-path",
+    "prebuild": "yarn bootload && npm link -f --no-save",
     "build": "node dist/bin.js build --standalone \"src/{index.ts,bin.ts,loader/index.ts}\"",
     "dev": "node dist/bin.js dev",
     "test-bundle": "yarn build && ava",
@@ -48,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "assert": "^2.0.0",
-    "ava": "^5.1.0",
+    "ava": "^5.2.0",
     "chalk": "^5.1.2",
     "commander": "^9.4.1",
     "debug-logging": "^4.1.2",
@@ -89,5 +87,6 @@
       "email": "ctj.lewis@icloud.com",
       "url": "https://ctjlewis.com"
     }
-  ]
+  ],
+  "packageManager": "yarn@3.4.1"
 }
