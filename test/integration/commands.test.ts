@@ -4,7 +4,7 @@ import glob from "fast-glob";
 
 import { createShell, Shell } from "universal-shell";
 import { existsSync } from "fs";
-import { writeFile } from "fs/promises";
+import { unlink, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
@@ -106,6 +106,31 @@ test.serial("[dev] should watch for file changes", async (t) => {
   t.snapshot(emittedDevModule);
 });
 
+test("[dev] dist/ clearing", async (t) => {
+  process.chdir(defaultTestDir);
+  const shell = createShell();
+
+  t.assert(
+    existsSync(resolve(defaultTestDir, "dist/update.js")),
+    "should begin this test with dist/ files"
+  );
+
+  await unlink(resolve(defaultTestDir, "src/update.ts"));
+
+  await Promise.allSettled([
+    dev(shell),
+    (async () => {
+      await sleep();
+      shell.kill();
+    })(),
+  ]);
+
+  t.assert(
+    !existsSync(resolve(defaultTestDir, "dist/update.js")),
+    "should clear dist/ files on dev start"
+  );
+});
+
 test("[dev] should notice new file", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
@@ -187,6 +212,11 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
     "[non-bundle] should build source provided programmatically via { stdin } arg"
   );
 
+  t.snapshot(
+    await readTextFile(resolve(defaultTestDir, "dist/stdin-nobundle.js")),
+    "[non-bundle] emitted stdin output should match snapshot"
+  );
+
   await t.notThrowsAsync(
     async () => await build({
       stdin: stdinImportStatement,
@@ -196,9 +226,9 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
     "[bundle] should build source provided programmatically via { stdin } arg"
   );
 
-  t.snapshot(
-    await readTextFile(resolve(defaultTestDir, "dist/stdin-nobundle.js")),
-    "[non-bundle] emitted stdin output should match snapshot"
+  t.assert(
+    !existsSync("dist/stdin-nobundle.js"),
+    "[build] should clear dist/ before building"
   );
 
   t.snapshot(
