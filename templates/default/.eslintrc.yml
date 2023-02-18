@@ -6,9 +6,11 @@ extends: standard-with-typescript
 overrides: []
 
 parserOptions:
-  project: tsconfig.json
   ecmaVersion: latest
   sourceType: module
+  project:
+    - tsconfig.json
+    - tsconfig.tests.json
 
 rules: {
   "@typescript-eslint/explicit-function-return-type": off

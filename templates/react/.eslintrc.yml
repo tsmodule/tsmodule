@@ -10,9 +10,11 @@ extends:
 
 overrides: []
 parserOptions:
-  project: tsconfig.json
   ecmaVersion: latest
   sourceType: module
+  project:
+    - tsconfig.json
+    - tsconfig.tests.json
 
 plugins:
   - react

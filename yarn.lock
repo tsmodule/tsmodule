@@ -4173,10 +4173,10 @@ unique-string@^3.0.0:
   dependencies:
     crypto-random-string "^4.0.0"
 
-universal-shell@^35.0.7:
-  version "35.0.7"
-  resolved "https://registry.yarnpkg.com/universal-shell/-/universal-shell-35.0.7.tgz#a1838afc0fbafb5e0e90dae73a04022bfaf5e7ef"
-  integrity sha512-GiXv1NKBHCh/Vfclt9ZgdVFmagTcHkzI0N0tMFkEY3Onl+NHvpoWq/pn3a1jI6+3YB47VCcTZEP5V661sVOTqA==
+universal-shell@^35.0.10:
+  version "35.0.10"
+  resolved "https://registry.yarnpkg.com/universal-shell/-/universal-shell-35.0.10.tgz#93c5383191b854f1f65d81b66ffc49b4c7c68272"
+  integrity sha512-SiPmSvS+2StUYB1HVTWatha8CAIBVL4VJL1ZfUCeXT6NXkDOxoY9Rqz1L/PVIImM20zCrB+lPSFSKqJx5thqeQ==
 
 universal-user-agent@^6.0.0:
   version "6.0.0"
