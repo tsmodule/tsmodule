@@ -34,7 +34,7 @@ export const testProductionBundle = async () => {
   /**
    * Use NPM to install packages needed for testing without touching anything.
    */
-  await shell.run(`npm install --no-save ${testDeps.join(" ")}`);
+  await shell.run(`npm install --no-save ${testDeps.join(" ")} --scripts-prepend-node-path`);
 
   /**
    * Run test.

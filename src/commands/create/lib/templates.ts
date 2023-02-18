@@ -31,7 +31,7 @@ export const copyTemplate = async ({
   template,
   targetDir = process.cwd()
 }: ApplyTemplateParams) => {
-  const shell = createShell();
+  const shell = createShell({ log: false });
   const templatePath = getTemplateDir(template);
   const targetPath = resolve(targetDir);
 

@@ -95,7 +95,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "src/update.ts",
         "export const hello = 'world';"
       );
-      await sleep();
+      await sleep(5000);
       shell.kill();
     })(),
   ]);
@@ -248,7 +248,7 @@ test.serial("[build -b] should bundle output", async (t) => {
     "export const b = 42;"
   );
 
-  await sleep();
+  await sleep(5000);
 
   await t.notThrowsAsync(
     async () => await shell.run("yarn tsmodule build -b"),

@@ -1,4 +1,4 @@
-import { Card } from "../Card";
+import { Card } from '../Card'
 
 export const CardGrid = () => {
   return (
@@ -25,5 +25,5 @@ export const CardGrid = () => {
         </p>
       </Card>
     </div>
-  );
-};
+  )
+}

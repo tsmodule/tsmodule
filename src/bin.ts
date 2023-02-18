@@ -4,7 +4,7 @@
 import chalk from "chalk";
 
 import { Command } from "commander";
-import { build, buildCommand } from "./commands/build";
+import { buildCommand } from "./commands/build";
 import { convert } from "./commands/convert";
 import { create } from "./commands/create";
 import { dev } from "./commands/dev";
@@ -41,6 +41,7 @@ program
   .option("-t, --target <target>", "ECMAScript featureset to target (default: ESNext).")
   .option("-f, --format <format>", "Output format (default: ESM).")
   .option("-b, --bundle", "Bundle external dependencies into entrypoints.")
+  .option("-t, --tsconfig", "Specify a custom tsconfig.json file.", "tsconfig.json")
   .option("-e, --external <external...>", "External dependencies to exclude from bundling.")
   .option("--standalone", "Bundle a standalone entry-points without any import statements.")
   .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime.")

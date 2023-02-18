@@ -8,9 +8,7 @@
   "license": "MIT",
   "types": "dist/types/index.d.ts",
   "module": "dist/bin.js",
-  "bin": {
-    "tsmodule": "dist/bin.js"
-  },
+  "bin": "dist/bin.js",
   "exports": {
     ".": "./dist/bin.js",
     "./*": "./dist/*/index.js",
@@ -28,7 +26,7 @@
   "scripts": {
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "yarn bootload && npm link -f --no-save --scripts-prepend-node-path",
+    "prebuild": "yarn bootload && npm link -f --no-save",
     "build": "node dist/bin.js build --standalone \"src/{index.ts,bin.ts,loader/index.ts}\"",
     "dev": "node dist/bin.js dev",
     "test-bundle": "yarn build && ava",
@@ -39,7 +37,7 @@
     "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
-    "esbuild": "^0.15.16",
+    "esbuild": "^0.17.8",
     "typescript": "^4.9.3"
   },
   "devDependencies": {
@@ -48,9 +46,9 @@
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "assert": "^2.0.0",
-    "ava": "^5.1.0",
+    "ava": "^5.2.0",
     "chalk": "^5.1.2",
-    "commander": "^9.4.1",
+    "commander": "^10.0.0",
     "debug-logging": "^4.1.2",
     "es-module-lexer": "^1.1.0",
     "eslint": "^8.28.0",
@@ -89,5 +87,6 @@
       "email": "ctj.lewis@icloud.com",
       "url": "https://ctjlewis.com"
     }
-  ]
+  ],
+  "packageManager": "yarn@3.4.1"
 }

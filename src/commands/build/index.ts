@@ -17,7 +17,7 @@ import { createDebugLogger } from "debug-logging";
 import { createShell } from "universal-shell";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
-import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
+import { DEVELOPMENT_MODE, isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { getPackageJsonFile } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
@@ -127,16 +127,16 @@ const buildCssEntryPoint = async (
 
   const twCmd = "yarn tailwindcss";
   const minify = dev ? "" : "--minify";
-  const postcss = "--postcss postcss.config.js";
+  const postcss = "--postcss postcss.config.cjs";
 
   const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, `-o ${outputStyles}`];
 
-  if (existsSync(resolvePath(process.cwd(), "tailwind.config.js"))) {
-    cmd.push("--config tailwind.config.js");
+  if (existsSync(resolvePath(process.cwd(), "tailwind.config.cjs"))) {
+    cmd.push("--config tailwind.config.cjs");
   }
 
   const shell = createShell({
-    log: false,
+    log: DEVELOPMENT_MODE,
     stdio: "ignore",
   });
 
@@ -157,6 +157,7 @@ export interface BuildArgs {
   runtimeOnly?: boolean;
   jsOnly?: boolean;
   noWrite?: boolean;
+  tsconfig?: string;
   // noStandardStyles?: boolean;
   stdin?: string;
   stdinFile?: string;
@@ -173,6 +174,7 @@ export const build = async ({
   styles = "src/components/index.css",
   target = "esnext",
   format = "esm",
+  tsconfig = "tsconfig.json",
   dev = false,
   bundle = false,
   standalone = false,
@@ -223,9 +225,6 @@ export const build = async ({
 
   const defaultExterns = ["esbuild", "*.png"];
 
-  const exportConfig = resolvePath(cwd, "tsconfig.export.json");
-  const exportConfigExists = existsSync(exportConfig);
-
   const plugins: Plugin[] = [];
   if (!standalone) {
     plugins.push(relativeExternsPlugin);
@@ -246,7 +245,7 @@ export const build = async ({
 
   const buildOptions: BuildOptions = {
     ...commonOptions,
-    tsconfig: exportConfigExists ? exportConfig : undefined,
+    tsconfig,
     bundle,
     splitting: format === "esm" && bundle && !stdin,
     absWorkingDir: cwd,
