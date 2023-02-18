@@ -18,6 +18,7 @@ export const emitTsDeclarations = async () => {
   const DEBUG = createDebugLogger(emitTsDeclarations);
   const shell = createShell({
     log: false,
+    silent: true,
   });
 
   const argString =
