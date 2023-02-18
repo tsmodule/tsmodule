@@ -45,7 +45,7 @@ test.before("[create] should create all template types", async () => {
     ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
-    await shell.run("npm link -f @tsmodule/tsmodule --no-save");
+    await shell.run("npm link -f @tsmodule/tsmodule --no-save --scripts-prepend-node-path");
   }
 });
 
