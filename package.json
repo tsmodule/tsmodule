@@ -2,7 +2,7 @@
   "name": "@tsmodule/tsmodule",
   "platform": "node",
   "type": "module",
-  "version": "41.34.0",
+  "version": "41.35.0",
   "repository": "tsmodule/tsmodule",
   "description": "Create standardized TypeScript ESM packages for Node or browser.",
   "license": "MIT",
