@@ -66,8 +66,8 @@ const defaultSettings: TsModuleProjectConfig = {
     "scripts": {
       "dev": "tsmodule dev",
       "build": "tsmodule build",
-      "test": "ava",
       "pretest": "yarn build",
+      "test": "ava",
       "prepublishOnly": "yarn test",
       "lint": "eslint src --fix",
     },
@@ -143,7 +143,7 @@ export const specification: TsmoduleSpecification = {
         "build": "next build",
         "start": "next start",
         "lint": "next lint --fix",
-        "pretest": "tsmodule build --runtime-only",
+        "pretest": "yarn build",
         "test": "ava",
         "prepublishOnly": "yarn test && yarn export"
       },
