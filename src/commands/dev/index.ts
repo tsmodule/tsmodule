@@ -5,7 +5,6 @@ import { lstat } from "fs/promises";
 import chalk from "chalk";
 import { createShell } from "universal-shell";
 import { log } from "debug-logging";
-import { clear } from "@tsmodule/log";
 import ora from "ora";
 import watch from "node-watch";
 
@@ -19,7 +18,7 @@ const clearTerminal = () => {
   }
 };
 
-const timestamp = (files: string) => {
+const showTimestamp = (files: string) => {
   log(
     "\n",
     chalk.gray(`Built ${chalk.bold(files)}.`),
@@ -48,7 +47,8 @@ export const dev = async ({
     format,
     dev: true
   });
-  timestamp("src/**/*");
+
+  showTimestamp("src/**/*");
 
   watch(
     resolve(cwd, "src"),
@@ -75,7 +75,8 @@ export const dev = async ({
         await build({
           dev: true,
           runtimeOnly: true,
-          input: filePath
+          input: filePath,
+          clear: false,
         });
       } catch (e) {
         log("ERROR:", e);
@@ -91,7 +92,7 @@ export const dev = async ({
         }
       ).succeed();
 
-      timestamp(relative(cwd, filePath));
+      showTimestamp(relative(cwd, filePath));
     }
   );
 };

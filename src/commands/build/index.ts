@@ -1,5 +1,5 @@
 import { constants, existsSync } from "fs";
-import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
+import { copyFile, mkdir, readFile, rm, unlink, writeFile } from "fs/promises";
 
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions, Plugin, Format } from "esbuild";
@@ -146,21 +146,32 @@ const buildCssEntryPoint = async (
     throw new Error(`Building CSS bundle exited with code ${code} for ${inputStyles}.\n\rTried running: ${cmdString}.\n\rError: ${stdout + stderr}`);
   }
 };
-export interface BuildArgs {
+export interface BuildArgs extends CommonOptions {
+  /** Input file pattern. */
   input?: string;
+  /** Input styles pattern. */
   styles?: string;
+  /** Whether to compile bundles for input files. */
   bundle?: boolean;
+  /** Whether to compile standalone bundles (no chunks, no imports). */
   standalone?: boolean;
+  /** Whether to compile in development mode. */
   dev?: boolean;
-  format?: Format;
-  target?: string | string[];
+  /** Whether to clear the output directory before building. */
+  clear?: boolean;
+  /** Whether to skip building typedefs or not. */
   runtimeOnly?: boolean;
+  /** Whether to only build Javascript (`true` skips CSS etc.). */
   jsOnly?: boolean;
+  /** Whether to skip writing files to disk. */
   noWrite?: boolean;
+  /** tsconfig to use. */
   tsconfig?: string;
-  // noStandardStyles?: boolean;
+  /** Completed stdin stream to build from instead of a file. */
   stdin?: string;
+  /** File name to emulate while reading from stdin. */
   stdinFile?: string;
+  /** Packages to mark as external (refuse to inline with `--bundle`). */
   external?: string[];
 }
 
@@ -178,6 +189,7 @@ export const build = async ({
   dev = false,
   bundle = false,
   standalone = false,
+  clear = true,
   runtimeOnly = false,
   jsOnly = false,
   noWrite = false,
@@ -196,10 +208,18 @@ export const build = async ({
     bundle = true;
   }
 
+  /**
+   * If `clear` is set, remove the output directory.
+   */
+  if (clear) {
+    const outputFiles = await glob("./dist/*");
+    await Promise.all(outputFiles.map((file) => unlink(file)));
+  }
+
   const { cwd, srcDir, outDir } = getWorkingDirs();
 
   /**
-   * Initialize build options, and inject PACKAGE_JSON for library builds.
+   * Initialize build options, and inject process.env for library builds.
    */
   const pkgJsonFile = await getPackageJsonFile();
   const pkgJson = JSON.parse(pkgJsonFile);
@@ -208,11 +228,6 @@ export const build = async ({
     treeShaking: bundle,
     target,
     minify: !dev,
-    /**
-     * ESBuild upgrade blocked in order to preserve this override.
-     *
-     * @see https://github.com/evanw/esbuild/issues/2460
-     */
     jsx: "transform",
     jsxFactory: "React.createElement",
     format,

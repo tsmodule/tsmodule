@@ -5,14 +5,14 @@ import chalk from "chalk";
 
 const renameExtension = (path: string, ext: string) => {
   const currentExt = extname(path);
-  
+
   if (currentExt === ext) {
     return path;
   }
 
   const substr = path.substring(0, -currentExt.length || path.length);
   return substr;
-}
+};
 
 export const getWorkingDirs = () => {
   const cwd = process.cwd();

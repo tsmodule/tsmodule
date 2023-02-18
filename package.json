@@ -2,9 +2,9 @@
   "name": "@tsmodule/tsmodule",
   "platform": "node",
   "type": "module",
-  "version": "41.30.0",
+  "version": "41.35.0",
   "repository": "tsmodule/tsmodule",
-  "description": "TypeScript Module loader and compiler",
+  "description": "Create standardized TypeScript ESM packages for Node or browser.",
   "license": "MIT",
   "types": "dist/types/index.d.ts",
   "module": "dist/bin.js",
@@ -74,11 +74,8 @@
     "esm",
     "es module",
     "ts module",
-    "bundle",
-    "loader",
+    "tsmodule",
     "typescript",
-    "loader hook",
-    "require hook",
     "experimental-loader"
   ],
   "contributors": [
@@ -87,6 +84,5 @@
       "email": "ctj.lewis@icloud.com",
       "url": "https://ctjlewis.com"
     }
-  ],
-  "packageManager": "yarn@3.4.1"
+  ]
 }
