@@ -157,6 +157,7 @@ export interface BuildArgs {
   runtimeOnly?: boolean;
   jsOnly?: boolean;
   noWrite?: boolean;
+  tsconfig?: string;
   // noStandardStyles?: boolean;
   stdin?: string;
   stdinFile?: string;
@@ -173,6 +174,7 @@ export const build = async ({
   styles = "src/components/index.css",
   target = "esnext",
   format = "esm",
+  tsconfig = "tsconfig.json",
   dev = false,
   bundle = false,
   standalone = false,
@@ -223,9 +225,6 @@ export const build = async ({
 
   const defaultExterns = ["esbuild", "*.png"];
 
-  const exportConfig = resolvePath(cwd, "tsconfig.export.json");
-  const exportConfigExists = existsSync(exportConfig);
-
   const plugins: Plugin[] = [];
   if (!standalone) {
     plugins.push(relativeExternsPlugin);
@@ -246,7 +245,7 @@ export const build = async ({
 
   const buildOptions: BuildOptions = {
     ...commonOptions,
-    tsconfig: exportConfigExists ? exportConfig : undefined,
+    tsconfig,
     bundle,
     splitting: format === "esm" && bundle && !stdin,
     absWorkingDir: cwd,

@@ -80,7 +80,6 @@ const defaultSettings: TsModuleProjectConfig = {
     ".eslintrc",
     ".gitignore",
     "tsconfig.json",
-    "tsconfig.export.json",
     "LICENSE",
     "ava.config.mjs",
   ],
