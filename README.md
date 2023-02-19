@@ -107,11 +107,11 @@ With `-b, --bundle` mode, all entry points are compiled "in-place" and runtime N
 
 TSModule itself builds with `-b, --bundle` flag, and requires only three runtime NPM dependencies:
 
-1. `esbuild`, which does the heavy lifting for the build process, does not allow itself to be bundled
+1. `esbuild`, which does the heavy lifting for the build process, does not allow itself to be bundled;
 2. `typescript`, so TSModule can use the built `tsc` binary to generate `.d.ts`
-   type declarations during builds
-3. `pkg`, for building binaries with `build --binary` (which implies `--bundle`
-   and `--standalone src/bin.ts`).
+   type declarations during builds; and
+3. `pkg`, for building binaries with `build --binary` (a specific standalone
+   bundle mode).
 
 <sub>Note: Bundling every entry point in place may not be what you want, i.e. if you
 only have a single entrypoint. In these cases, `tsmodule build -b src/index.ts`
