@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { bannerError } from "../commands";
 import chalk from "chalk";
 import { SpawnResult } from "universal-shell";
+import { bannerError } from "./logs";
 
 const isShellExit = (error: unknown): error is SpawnResult => {
   const anyError = error as any;
