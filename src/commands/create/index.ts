@@ -5,10 +5,11 @@ import ora from "ora";
 import { createShell } from "universal-shell";
 import { resolve } from "path";
 
-import { applyDependenciesSpec, applyPackageJsonSpec, ApplyTemplateParams, copyTemplate } from "./lib/templates";
+import { applyDependenciesSpec, applyPackageJsonSpec, applySpecification, ApplyTemplateParams, copyTemplate } from "./lib/templates";
 import { setPackageJsonFields } from "../../utils/packageJson";
 
 export const create = async (name: string, { react = false }) => {
+  const template = react ? "react" : "default";
   const spinner = ora({
     text: `Creating new module ${chalk.blueBright(name)}.`,
     indent: 2,
@@ -16,48 +17,23 @@ export const create = async (name: string, { react = false }) => {
   /**
    * Always copy default template.
    */
-  const defaultSettings: ApplyTemplateParams = {
-    template: "default",
-    targetDir: name
-  };
-  await copyTemplate(defaultSettings);
-  await applyPackageJsonSpec(defaultSettings);
-  /**
-   * Copy other template files as needed.
-   */
-  if (react) {
-    const reactSettings: ApplyTemplateParams = {
-      template: "react",
-      targetDir: name
-    };
-    await copyTemplate(reactSettings);
-    await applyPackageJsonSpec(reactSettings);
-  }
-
+  await copyTemplate({ template: "default", targetDir: name });
   await setPackageJsonFields(
     resolve(process.cwd(), name),
     {
       "name": name,
     }
   );
+  /**
+   * For non-default template, copy template files on top.
+   */
+  if (template !== "default") {
+    await copyTemplate({ template, targetDir: name, });
+  }
 
   spinner.succeed("Project created.");
 
-  /**
-   * Install dependencies in the created directory.
-   */
-  await applyDependenciesSpec({
-    template: "default",
-    targetDir: name,
-  });
-
-  if (react) {
-    await applyDependenciesSpec({
-      template: "react",
-      targetDir: name,
-    });
-  }
-
+  await applySpecification({ template, targetDir: name });
   spinner.succeed("Dependencies installed.");
 
   const shell = createShell({
@@ -66,6 +42,5 @@ export const create = async (name: string, { react = false }) => {
   });
 
   await shell.run("git init");
-
   spinner.succeed("Set up as Git repository.");
 };

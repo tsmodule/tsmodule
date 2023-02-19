@@ -107,15 +107,8 @@ export const applyDependenciesSpec = async ({
     cwd: targetDir
   });
 
-  const depsToInstall = [...specification.default.dependencies];
-  const devDepsToInstall = [...specification.default.devDependencies];
-
-  switch (template) {
-    case "react":
-      depsToInstall.push(...specification.react.dependencies);
-      devDepsToInstall.push(...specification.react.devDependencies);
-      break;
-  }
+  const depsToInstall = specification[template].dependencies;
+  const devDepsToInstall = specification[template].devDependencies;
 
   if (depsToInstall.length) {
     await shell.run(`yarn add ${depsToInstall.join(" ")}`);
@@ -135,9 +128,16 @@ export const applySpecification = async ({
     targetDir,
   };
 
+  /**
+   * Apply default spec first.
+   */
   await applyTemplateFileSpec(defaultSettings);
   await applyPackageJsonSpec(defaultSettings);
+  await applyDependenciesSpec(defaultSettings);
 
+  /**
+   * Apply template spec second, if applicable.
+   */
   if (template !== "default") {
     const templateSettings: ApplyTemplateParams = {
       template,
@@ -146,15 +146,6 @@ export const applySpecification = async ({
 
     await applyTemplateFileSpec(templateSettings);
     await applyPackageJsonSpec(templateSettings);
+    await applyDependenciesSpec(templateSettings);
   }
-
-  /**
-   * Dependencies will install default and template dependencies.
-   */
-  await applyDependenciesSpec({
-    template,
-    targetDir,
-  });
 };
-
-// await copyTemplateFiles("default", "../new-project");

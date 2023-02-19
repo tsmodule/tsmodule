@@ -166,6 +166,7 @@ export const specification: TsmoduleSpecification = {
     "files": [
       ".github/**",
       ".gitignore",
+      ".eslintrc.yml",
       "next-env.d.ts",
       "next.config.js",
       "postcss.config.cjs",
@@ -176,7 +177,6 @@ export const specification: TsmoduleSpecification = {
       "react-dom@^18.2.0"
     ],
     "devDependencies": [
-      ...defaultSettings.devDependencies,
       /**
        * React TS typings.
        */
