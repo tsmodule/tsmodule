@@ -1,23 +1,16 @@
+import { createDebugLogger } from "debug-logging";
+import { log } from "@tsmodule/log";
 import { constants, existsSync } from "fs";
-import { copyFile, mkdir, readFile, rm, unlink, writeFile } from "fs/promises";
-
+import { copyFile, mkdir, readFile, rm, unlink } from "fs/promises";
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
-import { build as esbuild, transform, BuildOptions, Loader, TransformOptions, CommonOptions, Plugin, Format } from "esbuild";
-import chalk from "chalk";
+import { build as esbuild, transform, BuildOptions, TransformOptions, CommonOptions, Plugin } from "esbuild";
 import { env } from "process";
+import chalk from "chalk";
 import glob from "fast-glob";
 import ora from "ora";
 
-/**
- * TODO: Version the loader independently so it can be used for bootstrapping.
- * Until then, there's no way around manually specifying full specifiers in
- * internal source (for bootstrap code path).
- */
-import { createDebugLogger } from "debug-logging";
-import { createShell } from "universal-shell";
-
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
-import { DEVELOPMENT_MODE, isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
+import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
 import { getPackageJsonFile } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
@@ -25,127 +18,10 @@ import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
 import { relativeExternsPlugin } from "../../specification/externs";
 import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmShim";
-
-import { log } from "@tsmodule/log";
+import { buildCssEntryPoint, forceModuleTypeInDist, overwriteEntryPoint } from "./lib/buildUtils";
+import { bannerLog } from "../../utils/logs";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
-
-export const bannerLog = (msg: string) => {
-  const logMsg = `  ${msg}  `;
-  log(
-    chalk.bgBlue(
-      chalk.bold(chalk.white(logMsg)),
-    ),
-    [],
-    {
-      preLines: 1,
-      postLines: 1,
-    }
-  );
-};
-
-export const bannerError = (msg: string) => {
-  const logMsg = `  ${msg}  `;
-  log(
-    chalk.bgRed(
-      chalk.bold(chalk.white(logMsg)),
-    )
-  );
-};
-
-const forceModuleTypeInDist = async (mode: Format = "esm") => {
-  let distPkgJson;
-
-  if (!existsSync("dist")) {
-    await mkdir("dist");
-  }
-
-  if (existsSync("dist/package.json")) {
-    distPkgJson = JSON.parse(await readFile("dist/package.json", "utf-8"));
-  } else {
-    distPkgJson = {};
-  }
-
-  switch (mode) {
-    case "esm":
-      distPkgJson.type = "module";
-      break;
-
-    case "cjs":
-      distPkgJson.type = "commonjs";
-      break;
-
-    default:
-      return false;
-  }
-
-  await writeFile(
-    "dist/package.json",
-    JSON.stringify(distPkgJson, null, 2)
-  );
-
-  return true;
-};
-
-const overwriteEntryPoint = (
-  source: string,
-  file: string,
-  loader?: Loader
-) => {
-  file = resolvePath(file);
-  const emittedFile = getEmittedFile(file);
-
-  const config: BuildOptions = {
-    stdin: {
-      contents: source,
-      sourcefile: file,
-      resolveDir: dirname(file),
-      loader,
-    },
-
-    outdir: undefined,
-    outfile: emittedFile,
-    splitting: false,
-  };
-
-  return config;
-};
-
-/**
- * Generate a Tailwind command that will build the given input stylesheet.
- * Add an import for standard styles.
- */
-const buildCssEntryPoint = async (
-  inputStyles: string,
-  outputStyles: string,
-  dev: boolean,
-  // noStandardStyles: boolean,
-) => {
-
-  inputStyles = resolvePath(inputStyles);
-  outputStyles = resolvePath(outputStyles);
-
-  const twCmd = "yarn tailwindcss";
-  const minify = dev ? "" : "--minify";
-  const postcss = "--postcss postcss.config.cjs";
-
-  const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, `-o ${outputStyles}`];
-
-  if (existsSync(resolvePath(process.cwd(), "tailwind.config.cjs"))) {
-    cmd.push("--config tailwind.config.cjs");
-  }
-
-  const shell = createShell({
-    log: DEVELOPMENT_MODE,
-    stdio: "ignore",
-  });
-
-  const cmdString = cmd.join(" ");
-  const { code, stdout, stderr } = await shell.run(cmdString);
-  if (code !== 0) {
-    throw new Error(`Building CSS bundle exited with code ${code} for ${inputStyles}.\n\rTried running: ${cmdString}.\n\rError: ${stdout + stderr}`);
-  }
-};
 export interface BuildArgs extends CommonOptions {
   /** Input file pattern. */
   input?: string;
