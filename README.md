@@ -3,8 +3,9 @@
   <h1>TypeScript Module Toolkit</h1>
 </div>
 
-tsmodule is a toolkit for developing **standardized, pure ESM TypeScript
-modules** that target any platform. 
+Create standardized TypeScript ESM packages for Node or browser. Includes
+`--bundle` and `--binary` build options, powered by
+[**esbuild**](https://github.com/evanw/esbuild).
 
 **Table of contents**
 
