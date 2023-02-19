@@ -20,6 +20,7 @@ import { relativeExternsPlugin } from "../../specification/externs";
 import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmShim";
 import { buildCssEntryPoint, forceModuleTypeInDist, overwriteEntryPoint } from "./lib/buildUtils";
 import { bannerLog } from "../../utils/logs";
+import { buildBinaries } from "./lib/buildBinaries";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 export interface BuildArgs extends CommonOptions {
@@ -27,6 +28,8 @@ export interface BuildArgs extends CommonOptions {
   input?: string;
   /** Input styles pattern. */
   styles?: string;
+  /** Whether to build an executable binary with Vercel's pkg library. */
+  binary?: boolean;
   /** Whether to compile bundles for input files. */
   bundle?: boolean;
   /** Whether to compile standalone bundles (no chunks, no imports). */
@@ -64,6 +67,7 @@ export const build = async ({
   tsconfig = "tsconfig.json",
   dev = false,
   bundle = false,
+  binary = false,
   standalone = false,
   clear = true,
   runtimeOnly = false,
@@ -412,7 +416,18 @@ export const build = async ({
       log();
       log(chalk.grey("Bundle styles not found for this project."));
       log("Checked: " + chalk.bold(styles));
-      log();
+    }
+
+    /**
+     * If `--binary` is passed, build binaries.
+     */
+    if (binary) {
+      bannerLog("Building binary executables.");
+      log("IMPORTANT: Top-level await is not supported yet.", ["bold", "yellow"]);
+      log("Your program cannot be built to a binary if it contains TLA. Wrap with an async iife for now.");
+      log("See: https://github.com/vercel/pkg/issues/1291");
+
+      await buildBinaries();
     }
   }
 

@@ -83,6 +83,17 @@ test.serial("[create --react] should create expected files", async (t) => {
   }
 });
 
+test.serial("[build --binary] should create binaries", async (t) => {
+  process.chdir(defaultTestDir);
+
+  await build({
+    binary: true,
+  });
+
+  const binaries = glob.sync("./bin-*");
+  t.snapshot(binaries);
+});
+
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();

@@ -43,6 +43,7 @@ program
   .option("-b, --bundle", "Bundle external dependencies into entrypoints.")
   .option("-t, --tsconfig", "Specify a custom tsconfig.json file.", "tsconfig.json")
   .option("-e, --external <external...>", "External dependencies to exclude from bundling.")
+  .option("--binary", "Build binary executables from src/bin.ts.")
   .option("--standalone", "Bundle a standalone entry-points without any import statements.")
   .option("-r, --runtime-only", "Do not emit type declarations, only build JS runtime.")
   .option("-j, --js-only", "Do not build styles")

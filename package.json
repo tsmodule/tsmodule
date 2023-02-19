@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "esbuild": "^0.17.8",
+    "pkg": "^5.8.0",
     "typescript": "^4.9.3"
   },
   "devDependencies": {
@@ -58,7 +59,7 @@
     "ora": "^6.1.2",
     "path": "^0.12.7",
     "release-it": "^15.5.0",
-    "universal-shell": "^35.0.10"
+    "universal-shell": "^35.0.11"
   },
   "release-it": {
     "git": {
