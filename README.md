@@ -101,19 +101,31 @@ tsmodule build [--bundle]
   - Bundle CSS by default
   - Use Tailwind by default
 
-### Optimize NPM dependencies with `-b, --bundle`
+### Optimize NPM dependencies with `build --bundle`
 
 With `-b, --bundle` mode, all entry points are compiled "in-place" and runtime NPM dependencies will generally not be needed as they will be inlined. If you build in bundle mode, you can move your dependencies to devDependencies, as the only thing that will be needed to run any/all compiled-in-place entry point(s) in your module are the bundles themselves.
 
-TSModule itself builds with `-b, --bundle` flag, and requires only two runtime NPM dependencies:
+TSModule itself builds with `-b, --bundle` flag, and requires only three runtime NPM dependencies:
 
 1. `esbuild`, which does the heavy lifting for the build process, does not allow itself to be bundled
 2. `typescript`, so TSModule can use the built `tsc` binary to generate `.d.ts`
    type declarations during builds
+3. `pkg`, for building binaries with `build --binary` (which implies `--bundle`
+   and `--standalone src/bin.ts`).
 
 <sub>Note: Bundling every entry point in place may not be what you want, i.e. if you
 only have a single entrypoint. In these cases, `tsmodule build -b src/index.ts`
 is more appropriate.</sub>
+
+### Build executable binaries with `build --binary`
+
+Uses Vercel's [`pkg`](https://github.com/vercel/pkg) to build binaries from
+`src/bin.ts`.
+
+<sub>**IMPORTANT:** This requires coercing to CJS, which is not possible if your
+program uses top-level await. For now, replace with async closures and monitor
+[this issue](https://github.com/vercel/pkg/issues/1291) for updates on full ESM
+support.</sub>
 
 ### Run TypeScript directly
 
