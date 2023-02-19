@@ -19,6 +19,12 @@ parserOptions:
 plugins:
   - react
 
-rules: {
-  "@typescript-eslint/explicit-function-return-type": off
-}
+rules:
+  "@typescript-eslint/explicit-function-return-type":
+    - off
+  "@typescript-eslint/quotes":
+    - error
+    - double
+  "@typescript-eslint/semi":
+    - error
+    - always

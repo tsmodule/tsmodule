@@ -12,6 +12,12 @@ parserOptions:
     - tsconfig.json
     - tsconfig.tests.json
 
-rules: {
-  "@typescript-eslint/explicit-function-return-type": off
-}
+rules:
+  "@typescript-eslint/explicit-function-return-type":
+    - off
+  "@typescript-eslint/quotes":
+    - error
+    - double
+  "@typescript-eslint/semi":
+    - error
+    - always

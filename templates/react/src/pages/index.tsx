@@ -1,9 +1,9 @@
-import Head from 'next/head'
+import Head from "next/head";
 
-import { CardGrid } from '../components/CardGrid'
-import { Footer } from '../components/Footer'
-import { GetStarted } from '../components/GetStarted'
-import { Welcome } from '../components/Welcome'
+import { CardGrid } from "../components/CardGrid";
+import { Footer } from "../components/Footer";
+import { GetStarted } from "../components/GetStarted";
+import { Welcome } from "../components/Welcome";
 
 export default function Home () {
   return (
@@ -22,5 +22,5 @@ export default function Home () {
 
       <Footer />
     </>
-  )
+  );
 }
