@@ -337,10 +337,6 @@ export const build = async ({
         error: "Failed to normalize import specifiers.",
       }
     );
-
-    await normalizeImportSpecifiers(
-      emittedJs.endsWith(".js") ? emittedJs : `${emittedJs}.js`
-    );
   }
 
   /**
