@@ -24,6 +24,8 @@ export const showProgress = async (
     progress.succeed(messages.success);
   } catch (e) {
     progress.fail(messages.error);
+    // eslint-disable-next-line no-console
+    console.trace(e);
     throw e;
   }
 };
