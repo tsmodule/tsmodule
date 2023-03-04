@@ -1,13 +1,14 @@
 import { createDebugLogger } from "debug-logging";
 import { log } from "@tsmodule/log";
 import { constants, existsSync } from "fs";
-import { copyFile, mkdir, readFile, rm, unlink } from "fs/promises";
+import { copyFile, mkdir, readFile, rm, unlink, writeFile } from "fs/promises";
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, TransformOptions, CommonOptions, Plugin } from "esbuild";
 import { env } from "process";
 import chalk from "chalk";
 import glob from "fast-glob";
 import ora from "ora";
+import { getTsconfig } from "get-tsconfig";
 
 import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
@@ -21,6 +22,7 @@ import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmSh
 import { buildCssEntryPoint, forceModuleTypeInDist, overwriteEntryPoint } from "./lib/buildUtils";
 import { bannerLog } from "../../utils/logs";
 import { buildBinaries } from "./lib/buildBinaries";
+import { tmpdir } from "os";
 
 const REACT_IMPORTS = "import React from \"react\";\nimport ReactDOM from \"react-dom\";\n";
 export interface BuildArgs extends CommonOptions {
@@ -138,9 +140,28 @@ export const build = async ({
     }
   }
 
+  /**
+   * Copy the target tsconfig to temp, then override `jsx` and `jsxFactory`.
+   */
+  DEBUG.log("Copying tsconfig to tmpdir() in order to override JSX settings.");
+  const { config } = getTsconfig(tsconfig) ?? {};
+  const { compilerOptions } = config ?? {};
+  const tsconfigWithOverrides = {
+    ...config,
+    compilerOptions: {
+      ...compilerOptions,
+      jsx: "react",
+      jsxFactory: "React.createElement"
+    }
+  };
+
+  const tempCopy = resolve(tmpdir(), `tsconfig.${Date.now()}.json`);
+  await writeFile(tempCopy, JSON.stringify(tsconfigWithOverrides, null, 2));
+  DEBUG.log("tsconfig copied.");
+
   const buildOptions: BuildOptions = {
     ...commonOptions,
-    tsconfig,
+    tsconfig: tempCopy,
     bundle,
     splitting: !standalone && !stdin && format === "esm" && bundle,
     absWorkingDir: cwd,
@@ -291,6 +312,12 @@ export const build = async ({
       error: "Failed to compile TS/JS files.",
     },
   );
+
+  /**
+   * Delete temp tsconfig.
+   */
+  await rm(tempCopy);
+  DEBUG.log("Deleted tsconfig copy in tmpdir().");
 
   /**
    * Non JS/TS files.
