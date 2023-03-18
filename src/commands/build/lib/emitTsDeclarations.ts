@@ -1,17 +1,12 @@
 import { createDebugLogger } from "debug-logging";
 import { createShell } from "universal-shell";
 
-export const D_TS_CONFIG = {
+export const EMIT_DTS_OVERRIDES = {
   moduleResolution: "Node",
-  module: "ESNext",
-  target: "ESNext",
-  esModuleInterop: true,
   incremental: false,
-  rootDir: "src",
-  outDir: "dist",
   declaration: true,
-  noEmit: false,
   emitDeclarationOnly: true,
+  noEmit: false,
 };
 
 export const emitTsDeclarations = async () => {
@@ -23,7 +18,7 @@ export const emitTsDeclarations = async () => {
 
   const argString =
     Object
-      .entries(D_TS_CONFIG)
+      .entries(EMIT_DTS_OVERRIDES)
       .map(([key, value]) => `--${key} ${value}`)
       .join(" ");
 
