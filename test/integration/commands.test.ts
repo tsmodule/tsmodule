@@ -21,8 +21,10 @@ test.before("[create] should create all template types", async () => {
     return;
   }
 
-  const shell = createShell();
   process.chdir(tmpdir());
+  const shell = createShell({
+    cwd: tmpdir(),
+  });
 
   /**
    * Install dependencies for tests serially to prevent yarn cache errors.
@@ -45,7 +47,11 @@ test.before("[create] should create all template types", async () => {
     // ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
-    await shell.run("yarn link @tsmodule/tsmodule");
+    const subShell = createShell({
+      cwd: dirToLink,
+    });
+
+    await subShell.run("yarn link @tsmodule/tsmodule");
   }
 });
 
@@ -89,7 +95,9 @@ test.serial("[create --react] should create expected files", async (t) => {
 
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   await Promise.allSettled([
     dev(shell),
@@ -116,7 +124,9 @@ test.serial("[dev] should watch for file changes", async (t) => {
 
 test.serial("[dev] dist/ clearing", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   t.assert(
     existsSync(resolve(defaultTestDir, "dist/update.js")),
@@ -141,7 +151,9 @@ test.serial("[dev] dist/ clearing", async (t) => {
 
 test.serial("[dev] should notice new file", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   await Promise.allSettled([
     dev(shell),
@@ -171,7 +183,9 @@ test.serial("[dev] should notice new file", async (t) => {
 
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   await Promise.all([
     (async () => {
@@ -206,7 +220,9 @@ test.serial("[create --react] library should build with Next", async (t) => {
   }
 
   process.chdir(reactTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: reactTestDir,
+  });
 
   await shell.run("yarn build");
   t.pass();
@@ -214,7 +230,9 @@ test.serial("[create --react] library should build with Next", async (t) => {
 
 test.serial("[build --stdin] should build source provided via stdin", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   writeStdinImportFile();
 
@@ -266,7 +284,9 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
 
 test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   createTestAssets(defaultTest);
   await shell.run("yarn tsmodule build -r");
@@ -286,7 +306,9 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
 
 test.serial("[build -b] should bundle output", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   writeFileSync(
     resolve(defaultTestDir, "src/bundle-a.ts"),
@@ -385,7 +407,9 @@ test.serial("[build --no-write] should return transformed code", async (t) => {
 
 test.serial("[create --react] library should build and execute", async (t) => {
   process.chdir(reactTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: reactTestDir,
+  });
 
   if (process.platform === "win32") {
     t.pass();
@@ -405,7 +429,9 @@ test.serial("[create --react] library should build and execute", async (t) => {
 
 test.serial("[build] command", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell();
+  const shell = createShell({
+    cwd: defaultTestDir,
+  });
 
   await t.notThrowsAsync(
     async () => await shell.run("yarn tsmodule build && node dist/index.js"),
