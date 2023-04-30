@@ -30,22 +30,22 @@ test.before("[create] should create all template types", async () => {
   await shell.run(`tsmodule create --react ${reactTest}`);
   await shell.run(`tsmodule create ${defaultTest}`);
 
-  const dirsToCopyDevInto: string[] = [];
+  // const dirsToCopyDevInto: string[] = [];
 
-  await Promise.all(
-    dirsToCopyDevInto.map(async (dirToCopyInto) => {
-      const shell = createShell();
-      await shell.run(`cp -rf ${defaultTestDir} ${dirToCopyInto}`);
-    })
-  );
+  // await Promise.all(
+  //   dirsToCopyDevInto.map(async (dirToCopyInto) => {
+  //     const shell = createShell();
+  //     await shell.run(`cp -rf ${defaultTestDir} ${dirToCopyInto}`);
+  //   })
+  // );
 
   for (const dirToLink of [
     defaultTestDir,
     reactTestDir,
-    ...dirsToCopyDevInto,
+    // ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
-    await shell.run("npm link -f @tsmodule/tsmodule --no-save --scripts-prepend-node-path");
+    await shell.run("yarn link -f @tsmodule/tsmodule");
   }
 });
 
