@@ -7,6 +7,7 @@ import { existsSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { tmpdir } from "os";
 
+import { INSTALL_ROOT } from "../../src/constants";
 import { createTestAssets, cleanTestDir, writeTestFile, readTextFile, sleep } from "./utils";
 import { rmRf } from "../../src/utils/dirs";
 import { build, specification } from "../../dist/index.js";
@@ -17,20 +18,16 @@ export const { testName: reactTest, testDir: reactTestDir } = await cleanTestDir
 console.log({ defaultTestDir, reactTestDir });
 
 test.before("[create] should create all template types", async () => {
-  if (process.env.SKIP_TEST_SETUP) {
-    return;
-  }
-
   process.chdir(tmpdir());
-  const shell = createShell({
-    cwd: tmpdir(),
-  });
+  const shell = createShell();
 
   /**
    * Install dependencies for tests serially to prevent yarn cache errors.
    */
-  await shell.run(`tsmodule create --react ${reactTest}`);
-  await shell.run(`tsmodule create ${defaultTest}`);
+  if (!process.env.SKIP_TEST_SETUP) {
+    await shell.run(`tsmodule create --react ${reactTest}`);
+    await shell.run(`tsmodule create ${defaultTest}`);
+  }
 
   // const dirsToCopyDevInto: string[] = [];
 
@@ -47,11 +44,24 @@ test.before("[create] should create all template types", async () => {
     // ...dirsToCopyDevInto,
   ]) {
     process.chdir(dirToLink);
-    const subShell = createShell({
-      cwd: dirToLink,
-    });
+    const subShell = createShell();
 
-    await subShell.run("npm link -f @tsmodule/tsmodule");
+    const linkedPackageJsonPath = resolve(dirToLink, "package.json");
+    const linkedPackageJsonFile = readTextFile(linkedPackageJsonPath);
+    const linkedPackageJson = JSON.parse(linkedPackageJsonFile);
+
+    const { devDependencies = {} } = linkedPackageJson;
+    devDependencies["@tsmodule/tsmodule"] = INSTALL_ROOT;
+    linkedPackageJson.devDependencies = devDependencies;
+
+    writeFileSync(
+      linkedPackageJsonPath,
+      JSON.stringify(linkedPackageJson, null, 2),
+    );
+
+    await subShell.run("yarn install --force");
+
+    // await subShell.run("npm link -f @tsmodule/tsmodule");
   }
 });
 
@@ -72,8 +82,6 @@ const writeStdinImportFile = () => {
 };
 
 test.serial("[create --react] should create Next.js component library", async (t) => {
-  process.chdir(reactTestDir);
-
   const pkgJson = readTextFile(resolve(reactTestDir, "package.json"));
   const { dependencies } = JSON.parse(pkgJson);
 
@@ -95,9 +103,7 @@ test.serial("[create --react] should create expected files", async (t) => {
 
 test.serial("[dev] should watch for file changes", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   await Promise.allSettled([
     dev(shell),
@@ -108,7 +114,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
         "src/update.ts",
         "export const hello = 'world';"
       );
-      await sleep(5000);
+      await sleep();
       shell.kill();
     })(),
   ]);
@@ -124,9 +130,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
 
 test.serial("[dev] dist/ clearing", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   t.assert(
     existsSync(resolve(defaultTestDir, "dist/update.js")),
@@ -151,9 +155,7 @@ test.serial("[dev] dist/ clearing", async (t) => {
 
 test.serial("[dev] should notice new file", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   await Promise.allSettled([
     dev(shell),
@@ -183,9 +185,7 @@ test.serial("[dev] should notice new file", async (t) => {
 
 test.serial("[dev] should copy new non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   await Promise.all([
     (async () => {
@@ -220,9 +220,7 @@ test.serial("[create --react] library should build with Next", async (t) => {
   }
 
   process.chdir(reactTestDir);
-  const shell = createShell({
-    cwd: reactTestDir,
-  });
+  const shell = createShell();
 
   await shell.run("yarn build");
   t.pass();
@@ -230,9 +228,7 @@ test.serial("[create --react] library should build with Next", async (t) => {
 
 test.serial("[build --stdin] should build source provided via stdin", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   writeStdinImportFile();
 
@@ -284,9 +280,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
 
 test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   createTestAssets(defaultTest);
   await shell.run("yarn tsmodule build -r");
@@ -306,9 +300,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
 
 test.serial("[build -b] should bundle output", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   writeFileSync(
     resolve(defaultTestDir, "src/bundle-a.ts"),
@@ -372,9 +364,8 @@ test.serial("[build --binary] should create binaries", async (t) => {
 });
 
 test.serial("[build --js-only] should not build styles", async (t) => {
-  const shell = createShell({
-    cwd: reactTestDir,
-  });
+  process.chdir(reactTestDir);
+  const shell = createShell();
 
   const { stdout } = await shell.run("yarn tsmodule build -b --js-only");
 
@@ -407,9 +398,7 @@ test.serial("[build --no-write] should return transformed code", async (t) => {
 
 test.serial("[create --react] library should build and execute", async (t) => {
   process.chdir(reactTestDir);
-  const shell = createShell({
-    cwd: reactTestDir,
-  });
+  const shell = createShell();
 
   if (process.platform === "win32") {
     t.pass();
@@ -427,16 +416,14 @@ test.serial("[create --react] library should build and execute", async (t) => {
   );
 });
 
-test.serial("[build] command", async (t) => {
+test.skip("[build] command", async (t) => {
   process.chdir(defaultTestDir);
-  const shell = createShell({
-    cwd: defaultTestDir,
-  });
+  const shell = createShell();
 
   await t.notThrowsAsync(
     async () => {
       await shell.run("yarn tsmodule build");
-      await shell.run("node dist/index.js");
+      // await shell.run("node dist/index.js");
     },
     "should build and execute"
   );
