@@ -99,6 +99,10 @@ const defaultSettings: TsModuleProjectConfig = {
      */
     "typescript",
     /**
+     * pkg, for building binaries.
+     */
+    "pkg",
+    /**
      * ESLint deps.
      */
     "eslint@^8.0.1",

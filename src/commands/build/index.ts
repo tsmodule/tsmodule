@@ -1,7 +1,6 @@
 import { createDebugLogger } from "debug-logging";
 import { log } from "@tsmodule/log";
-import { constants, existsSync } from "fs";
-import { copyFile, mkdir, readFile, rm, unlink, writeFile } from "fs/promises";
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, TransformOptions, CommonOptions, Plugin } from "esbuild";
 import { env } from "process";
@@ -10,10 +9,10 @@ import glob from "fast-glob";
 import ora from "ora";
 import { getTsconfig } from "get-tsconfig";
 
-import { getEmittedFile, getWorkingDirs } from "../../utils/cwd";
+import { getDistFile, getWorkingDirs, rmRf } from "../../utils/dirs";
 import { isJsOrTs, isTs, isTsxOrJsx } from "../../utils/resolve";
 import { emitTsDeclarations } from "./lib/emitTsDeclarations";
-import { getPackageJsonFile } from "../../utils/packageJson";
+import { getPackageJson } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
@@ -34,6 +33,8 @@ export interface BuildArgs extends CommonOptions {
   binary?: boolean;
   /** Whether to compile bundles for input files. */
   bundle?: boolean;
+  /** Whether to split output bundles. */
+  splitting?: boolean;
   /** Whether to compile standalone bundles (no chunks, no imports). */
   standalone?: boolean;
   /** Whether to compile in development mode. */
@@ -61,26 +62,36 @@ export interface BuildArgs extends CommonOptions {
  * could mean many things, all of which is handled by the loader which will
  * resolve them for us.
  */
-export const build = async ({
-  input = "src/**/*",
-  styles = "src/components/index.css",
-  target = "esnext",
-  format = "esm",
-  tsconfig = "tsconfig.json",
-  dev = false,
-  bundle = false,
-  binary = false,
-  standalone = false,
-  clear = true,
-  runtimeOnly = false,
-  jsOnly = false,
-  noWrite = false,
-  stdin = undefined,
-  stdinFile = undefined,
-  external = [],
-}: BuildArgs = {}) => {
+export const build = async (options: BuildArgs = {}) => {
+  process.chdir(process.cwd());
+
+  let {
+    bundle = false,
+    runtimeOnly = false,
+    splitting = false,
+  } = options;
+
+  const {
+    input = "src/**/*",
+    styles = "src/components/index.css",
+    target = "esnext",
+    format = "esm",
+    tsconfig = "tsconfig.json",
+    dev = false,
+    standalone = false,
+    binary = false,
+    clear = true,
+    jsOnly = false,
+    noWrite = false,
+    stdin = undefined,
+    stdinFile = undefined,
+    external = [],
+  } = options;
+
   env.NODE_ENV = dev ? "development" : "production";
   const DEBUG = createDebugLogger(build);
+
+  DEBUG.log("Building with options:", options);
 
   if (dev) {
     runtimeOnly = true;
@@ -88,14 +99,21 @@ export const build = async ({
 
   if (standalone) {
     bundle = true;
+    splitting = false;
+  }
+
+  /**
+   * Disable splitting for non-ESM, non-bundle mode, or stdin.
+   */
+  if (format !== "esm" || !bundle || stdin) {
+    splitting = false;
   }
 
   /**
    * If `clear` is set, remove the output directory.
    */
   if (clear) {
-    const outputFiles = await glob("./dist/*");
-    await Promise.all(outputFiles.map((file) => unlink(file)));
+    rmRf("./dist");
   }
 
   const { cwd, srcDir, outDir } = getWorkingDirs();
@@ -103,8 +121,7 @@ export const build = async ({
   /**
    * Initialize build options, and inject process.env for library builds.
    */
-  const pkgJsonFile = await getPackageJsonFile();
-  const pkgJson = JSON.parse(pkgJsonFile);
+  const pkgJson = await getPackageJson();
 
   const commonOptions: CommonOptions = {
     treeShaking: bundle,
@@ -116,7 +133,10 @@ export const build = async ({
     charset: "utf8",
     logLevel: dev ? "warning" : "error",
     define: {
-      "process.env.NODE_ENV": dev ? JSON.stringify("development") : JSON.stringify("production"),
+      "process.env.NODE_ENV":
+        dev
+          ? JSON.stringify("development")
+          : JSON.stringify("production"),
     },
   };
 
@@ -156,14 +176,14 @@ export const build = async ({
   };
 
   const tempCopy = resolve(tmpdir(), `tsconfig.${Date.now()}.json`);
-  await writeFile(tempCopy, JSON.stringify(tsconfigWithOverrides, null, 2));
+  writeFileSync(tempCopy, JSON.stringify(tsconfigWithOverrides, null, 2));
   DEBUG.log("tsconfig copied.");
 
   const buildOptions: BuildOptions = {
     ...commonOptions,
     tsconfig: tempCopy,
     bundle,
-    splitting: !standalone && !stdin && format === "esm" && bundle,
+    splitting,
     absWorkingDir: cwd,
     outbase: "src",
     outdir: "dist",
@@ -236,6 +256,8 @@ export const build = async ({
       .filter((file) => extname(file) !== ".d.ts")
       .map((file) => resolvePath(file));
 
+  DEBUG.log("All files", { allFiles });
+
   if (isAbsolute(input)) {
     /**
      * fast-glob won't pick up absolute filepaths on Windows. Windows sucks.
@@ -251,10 +273,10 @@ export const build = async ({
         .replace(isTsxOrJsx, ".js");
 
     DEBUG.log("Cleaning emitted file:", { outfile });
-    await rm(outfile, { force: true });
+    rmRf(outfile);
   } else {
     DEBUG.log("Cleaning old output:", { outDir });
-    await rm(outDir, { force: true, recursive: true });
+    rmRf(outDir);
   }
 
   /**
@@ -274,7 +296,7 @@ export const build = async ({
           /**
           * Prepend the necessary createElement import to the TSX source.
           */
-          const tsxFileContents = await readFile(tsxFile, "utf-8");
+          const tsxFileContents = readFileSync(tsxFile, "utf-8");
           const runtimeCode = REACT_IMPORTS + tsxFileContents;
 
           const tsxConfig = overwriteEntryPoint(runtimeCode, tsxFile, "tsx");
@@ -316,7 +338,7 @@ export const build = async ({
   /**
    * Delete temp tsconfig.
    */
-  await rm(tempCopy);
+  rmRf(tempCopy);
   DEBUG.log("Deleted tsconfig copy in tmpdir().");
 
   /**
@@ -327,11 +349,11 @@ export const build = async ({
   await showProgress(
     async () => {
       for (const file of nonTsJsInput) {
-        const emittedFile = getEmittedFile(file);
+        const emittedFile = getDistFile(file);
         DEBUG.log("Copying non-source file:", { file, emittedFile });
 
-        await mkdir(dirname(emittedFile), { recursive: true });
-        await copyFile(file, emittedFile, constants.COPYFILE_FICLONE);
+        mkdirSync(dirname(emittedFile), { recursive: true });
+        copyFileSync(file, emittedFile, constants.COPYFILE_FICLONE);
       }
     },
     {
@@ -380,90 +402,84 @@ export const build = async ({
     }).succeed();
   }
 
-  if (runtimeOnly) {
-    return;
-  }
-
-  /**
-   * Build project styles.
-   */
   if (!jsOnly) {
-    if (existsSync(resolve(styles))) {
-      DEBUG.log("Building styles for production.");
-      const { style: bundleOutput = "./dist/bundle.css" } = pkgJson;
+    let stylesToBuild = false;
 
-      /**
-       * Build style bundle.
-       */
-      DEBUG.log("Building style bundle.", { bundleInput: styles, bundleOutput, dev });
-      await showProgress(
-        async () => await buildCssEntryPoint(
-          styles,
-          bundleOutput,
-          dev,
-          // noStandardStyles
-        ),
-        {
-          start: "Bundling styles with Tailwind.",
-          success: "Bundled styles with Tailwind.",
-          error: "Failed to bundle styles.",
-        },
-      );
+    if (!dev && bundle) {
+      const cssFiles = glob.sync("dist/**/*.css");
+      DEBUG.log("Building production style bundles.", { cssFiles });
 
-      /**
-     * If using -b bundle mode, bundle copied styles in-place.
-     */
-      if (bundle) {
-        DEBUG.log("Bundling all styles.");
-        const cssFiles = glob.sync("dist/**/*.css");
-
+      if (cssFiles.length) {
+        stylesToBuild = true;
         await showProgress(
           async () => await Promise.all(
             cssFiles.map(
               async (file) => await buildCssEntryPoint(
                 file,
                 file,
-                dev,
-                // noStandardStyles,
+                true,
+              // noStandardStyles,
               )
             )
           ),
           {
             start: "Bundling emitted styles",
-            success: `Bundled all styles to ${chalk.bold(bundleOutput)}.`,
+            success: "Bundled all styles to dist/.",
             error: "Failed to bundle styles.",
           },
         );
       }
     } else {
+      if (input.endsWith(".css")) {
+        DEBUG.log("Bundling changed CSS styles for development.");
+        stylesToBuild = true;
+
+        await showProgress(
+          async () => await buildCssEntryPoint(
+            input,
+            getDistFile(input),
+            true,
+          ),
+          {
+            start: `Bundling ${input} with Tailwind.`,
+            success: `Bundled ${input} with Tailwind.`,
+            error: `Failed to bundle ${input} with Tailwind.`,
+          },
+        );
+      }
+    }
+
+    if (!stylesToBuild) {
       log();
-      log(chalk.grey("Bundle styles not found for this project."));
-      log("Checked: " + chalk.bold(styles));
+      log(chalk.grey("CSS styles not found for this project."));
+      log("Checked: " + chalk.bold("src/**/*.css"));
     }
+  }
 
-    /**
-     * If `--binary` is passed, build binaries.
-     */
-    if (binary) {
-      bannerLog("Building binary executables.");
-      log("IMPORTANT: Top-level await is not supported yet.", ["bold", "yellow"]);
-      log("Your program cannot be built to a binary if it contains TLA. Wrap with an async iife for now.");
-      log("See: https://github.com/vercel/pkg/issues/1291");
+  /**
+   * If `--binary` is passed, build binaries.
+   */
+  if (binary) {
+    bannerLog("Building binary executables.");
+    log("IMPORTANT: Top-level await is not supported yet.", ["bold", "yellow"]);
+    log("Your program cannot be built to a binary if it contains TLA. Wrap with an async iife for now.");
+    log("See: https://github.com/vercel/pkg/issues/1291");
 
-      await buildBinaries();
-    }
+    await buildBinaries();
   }
 
   bannerLog("Running post-build setup.");
 
-  await showProgress(
-    async () => await emitTsDeclarations(),
-    {
-      start: "Generating type declarations.",
-      success: `Generated declarations for ${allFiles.length} files.`,
-      error: "Failed to generate type declarations.",
-    },
-  );
+  if (!runtimeOnly) {
+    await showProgress(
+      async () => await emitTsDeclarations(),
+      {
+        start: "Generating type declarations.",
+        success: `Generated declarations for ${allFiles.length} files.`,
+        error: "Failed to generate type declarations.",
+      },
+    );
+  }
 
   log();
   log("Build complete.", ["green"]);

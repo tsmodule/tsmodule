@@ -5,7 +5,7 @@ import ora from "ora";
 import { createShell } from "universal-shell";
 import { resolve } from "path";
 
-import { applyDependenciesSpec, applyPackageJsonSpec, applySpecification, ApplyTemplateParams, copyTemplate } from "./lib/templates";
+import { applySpecification, copyTemplate } from "./lib/templates";
 import { setPackageJsonFields } from "../../utils/packageJson";
 
 export const create = async (name: string, { react = false }) => {

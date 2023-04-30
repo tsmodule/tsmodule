@@ -2,7 +2,7 @@ import { readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
 
 export type PackageJsonSettings = {
-  [key: string]: string | number | boolean | object;
+  [key: string]: string | number | boolean | object | undefined;
 };
 
 /**

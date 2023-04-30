@@ -1,6 +1,6 @@
 import { extname, resolve } from "path";
 import { isTs, isTsxOrJsx } from "./resolve.js";
-import {  existsSync } from "fs";
+import {  existsSync, mkdirSync, rmSync } from "fs";
 import chalk from "chalk";
 
 const renameExtension = (path: string, ext: string) => {
@@ -26,7 +26,10 @@ export const getWorkingDirs = () => {
   };
 };
 
-export const getEmittedFile = (file: string) => {
+/**
+ * Get the output filepath in dist for a given input file.
+ */
+export const getDistFile = (file: string) => {
   file = resolve(file);
   const { srcDir, outDir } = getWorkingDirs();
 
@@ -64,4 +67,16 @@ export const getSourceFile = (file: string) => {
   }
 
   return resolvedSourceFile;
+};
+
+export const rmRf = (path: string) => {
+  if (existsSync(path)) {
+    rmSync(path, { recursive: true, force: true });
+  }
+};
+
+export const mkdirp = (dir: string) => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
 };

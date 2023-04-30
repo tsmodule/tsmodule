@@ -3,6 +3,7 @@
 import chalk from "chalk";
 import { SpawnResult } from "universal-shell";
 import { bannerError } from "./logs";
+import { log } from "debug-logging";
 
 const isShellExit = (error: unknown): error is SpawnResult => {
   const anyError = error as any;
@@ -25,21 +26,41 @@ export const programCatch = (
     try {
       return await fn(...args);
     } catch (error) {
-      bannerError("Error");
+      console.log();
 
       if (isShellExit(error)) {
+        bannerError("Error");
+
+        console.group();
         if (error.stdout) {
-          console.log(chalk.red(error.stdout));
+          console.error(chalk.red(error.stdout));
         }
 
         if (error.stderr) {
-          console.log(chalk.redBright(error.stderr));
+          console.error(chalk.redBright(error.stderr));
         }
+        console.groupEnd();
       } else {
-        console.log(chalk.redBright(JSON.stringify(error, null, 2)));
+        if (error instanceof Error) {
+          const { name, message } = error;
+          bannerError(name);
+          console.group();
+          console.error(chalk.redBright(message));
+          console.groupEnd();
+        } else {
+          bannerError("Error");
+          console.group();
+          console.error(chalk.redBright(error));
+          console.groupEnd();
+        }
       }
 
       console.log();
+
+      /**
+       * Propagate the error.
+       */
+      throw error;
     }
   };
 

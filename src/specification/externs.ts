@@ -6,18 +6,22 @@ import { Plugin } from "esbuild";
 export const relativeExternsPlugin: Plugin = {
   name: "relative-externs",
   setup(build) {
-    build.onResolve({ filter: /^\.\.?\// }, ({ path, importer }) => {
-      /**
-       * Do not mark relative imports within node_modules dependencies as
-       * external; they need to be inlined.
-       */
-      if (importer.includes("node_modules")) {
-        return null;
-      }
-      /**
-       * Mark relative imports as external.
-       */
-      return { path, external: true };
-    });
+    build.onResolve(
+      {
+        filter: /^\.\.?\/?/,
+      },
+      ({ path, importer }) => {
+        /**
+         * Do not mark relative imports within node_modules dependencies as
+         * external; they need to be inlined.
+         */
+        if (importer.includes("node_modules")) {
+          return null;
+        }
+        /**
+         * Mark relative imports as external.
+         */
+        return { path, external: true };
+      });
   }
 };

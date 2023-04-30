@@ -135,17 +135,19 @@ export const applySpecification = async ({
   await applyPackageJsonSpec(defaultSettings);
   await applyDependenciesSpec(defaultSettings);
 
-  /**
-   * Apply template spec second, if applicable.
-   */
-  if (template !== "default") {
-    const templateSettings: ApplyTemplateParams = {
-      template,
-      targetDir,
-    };
-
-    await applyTemplateFileSpec(templateSettings);
-    await applyPackageJsonSpec(templateSettings);
-    await applyDependenciesSpec(templateSettings);
+  if (template === "default") {
+    return;
   }
+
+  /**
+   * Template-specific overrides.
+   */
+  const templateSettings: ApplyTemplateParams = {
+    template,
+    targetDir,
+  };
+
+  await applyTemplateFileSpec(templateSettings);
+  await applyPackageJsonSpec(templateSettings);
+  await applyDependenciesSpec(templateSettings);
 };
