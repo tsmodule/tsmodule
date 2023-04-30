@@ -63,8 +63,6 @@ export interface BuildArgs extends CommonOptions {
  * resolve them for us.
  */
 export const build = async (options: BuildArgs = {}) => {
-  process.chdir(process.cwd());
-
   let {
     bundle = false,
     runtimeOnly = false,

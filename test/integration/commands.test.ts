@@ -51,7 +51,7 @@ test.before("[create] should create all template types", async () => {
       cwd: dirToLink,
     });
 
-    await subShell.run("yarn link @tsmodule/tsmodule");
+    await subShell.run("npm link -f @tsmodule/tsmodule");
   }
 });
 
@@ -434,7 +434,10 @@ test.serial("[build] command", async (t) => {
   });
 
   await t.notThrowsAsync(
-    async () => await shell.run("yarn tsmodule build && node dist/index.js"),
+    async () => {
+      await shell.run("yarn tsmodule build");
+      await shell.run("node dist/index.js");
+    },
     "should build and execute"
   );
 
