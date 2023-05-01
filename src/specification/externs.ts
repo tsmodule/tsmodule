@@ -22,6 +22,27 @@ export const relativeExternsPlugin: Plugin = {
          * Mark relative imports as external.
          */
         return { path, external: true };
-      });
+      }
+    );
+  }
+};
+
+/**
+ * Marks CSS files external.
+ */
+export const cssExternsPlugin: Plugin = {
+  name: "css-externs",
+  setup(build) {
+    build.onResolve(
+      {
+        filter: /^\.\.?\/?.+\.css/,
+      },
+      ({ path }) => {
+        /**
+         * Mark relative imports as external.
+         */
+        return { path, external: true };
+      }
+    );
   }
 };

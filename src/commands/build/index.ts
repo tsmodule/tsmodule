@@ -1,7 +1,7 @@
 import { createDebugLogger } from "debug-logging";
 import { log } from "@tsmodule/log";
-import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { dirname, extname, isAbsolute, relative, resolve, resolve as resolvePath, sep } from "path";
+import { constants, copyFileSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { dirname, extname, isAbsolute, relative, resolve, resolve as resolvePath } from "path";
 import { build as esbuild, transform, BuildOptions, TransformOptions, CommonOptions, Plugin } from "esbuild";
 import { env } from "process";
 import chalk from "chalk";
@@ -16,7 +16,7 @@ import { getPackageJson } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
-import { relativeExternsPlugin } from "../../specification/externs";
+import { cssExternsPlugin, relativeExternsPlugin } from "../../specification/externs";
 import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmShim";
 import { buildCssEntryPoint, forceModuleTypeInDist, overwriteEntryPoint } from "./lib/buildUtils";
 import { bannerLog } from "../../utils/logs";
@@ -140,7 +140,7 @@ export const build = async (options: BuildArgs = {}) => {
 
   const defaultExterns = ["esbuild", "*.png"];
 
-  const plugins: Plugin[] = [];
+  const plugins: Plugin[] = [cssExternsPlugin];
   if (!standalone) {
     plugins.push(relativeExternsPlugin);
   }

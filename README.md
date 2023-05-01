@@ -160,11 +160,11 @@ CSS will be bundled from `src/components/index.css` and exported at `my-package/
 
   ```json
   {
-    "style": "./dist/bundle.css",
+    "style": "./dist/components/index.css",
     "exports": {
       ".": "./dist/index.js",
       "./*": "./dist/components/*/index.js",
-      "./styles": "./dist/bundle.css",
+      "./styles": "./dist/components/index.css",
       "./styles/*": "./dist/components/*/index.css",
       "./package.json": "./package.json"
     },
