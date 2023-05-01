@@ -37,29 +37,29 @@
     "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
-    "esbuild": "^0.17.8",
+    "esbuild": "^0.17.18",
     "pkg": "^5.8.1",
-    "typescript": "^4.9.3"
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "@tsmodule/log": "^2.2.1",
-    "@types/node": "^18.11.9",
-    "@typescript-eslint/eslint-plugin": "^5.44.0",
-    "@typescript-eslint/parser": "^5.44.0",
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
     "assert": "^2.0.0",
     "ava": "^5.2.0",
     "chalk": "^5.1.2",
-    "commander": "^10.0.0",
+    "commander": "^10.0.1",
     "debug-logging": "^4.1.2",
-    "es-module-lexer": "^1.1.0",
-    "eslint": "^8.28.0",
-    "eslint-config-next": "^13.0.5",
+    "es-module-lexer": "^1.2.1",
+    "eslint": "^8.39.0",
+    "eslint-config-next": "^13.3.2",
     "fast-glob": "^3.2.12",
-    "get-tsconfig": "^4.4.0",
+    "get-tsconfig": "^4.5.0",
     "node-watch": "^0.7.3",
-    "ora": "^6.1.2",
+    "ora": "^6.3.0",
     "path": "^0.12.7",
-    "release-it": "^15.5.0",
+    "release-it": "^15.10.2",
     "universal-shell": "^35.0.11"
   },
   "release-it": {
