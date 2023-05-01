@@ -1,7 +1,7 @@
 import { createDebugLogger } from "debug-logging";
 import { log } from "@tsmodule/log";
 import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { dirname, extname, isAbsolute, resolve, resolve as resolvePath } from "path";
+import { dirname, extname, isAbsolute, relative, resolve, resolve as resolvePath, sep } from "path";
 import { build as esbuild, transform, BuildOptions, TransformOptions, CommonOptions, Plugin } from "esbuild";
 import { env } from "process";
 import chalk from "chalk";
@@ -28,7 +28,7 @@ export interface BuildArgs extends CommonOptions {
   /** Input file pattern. */
   input?: string;
   /** Input styles pattern. */
-  styles?: string;
+  styles?: string | null;
   /** Whether to build an executable binary with Vercel's pkg library. */
   binary?: boolean;
   /** Whether to compile bundles for input files. */
@@ -71,7 +71,7 @@ export const build = async (options: BuildArgs = {}) => {
 
   const {
     input = "src/**/*",
-    styles = "src/components/index.css",
+    styles = "src/**/*.css",
     target = "esnext",
     format = "esm",
     tsconfig = "tsconfig.json",
@@ -403,8 +403,8 @@ export const build = async (options: BuildArgs = {}) => {
   if (!jsOnly) {
     let stylesToBuild = false;
 
-    if (!dev && bundle) {
-      const cssFiles = glob.sync("dist/**/*.css");
+    if (styles) {
+      const cssFiles = glob.sync(styles);
       DEBUG.log("Building production style bundles.", { cssFiles });
 
       if (cssFiles.length) {
@@ -414,7 +414,7 @@ export const build = async (options: BuildArgs = {}) => {
             cssFiles.map(
               async (file) => await buildCssEntryPoint(
                 file,
-                file,
+                getDistFile(file),
                 true,
               // noStandardStyles,
               )
@@ -428,9 +428,15 @@ export const build = async (options: BuildArgs = {}) => {
         );
       }
     } else {
+      /**
+       * If handling a modified CSS file in dev mode:
+       */
       if (input.endsWith(".css")) {
         DEBUG.log("Bundling changed CSS styles for development.");
         stylesToBuild = true;
+
+        const relativeInput = relative(cwd, input);
+        const relativeInputStyled = chalk.bold(chalk.gray(relativeInput));
 
         await showProgress(
           async () => await buildCssEntryPoint(
@@ -439,9 +445,9 @@ export const build = async (options: BuildArgs = {}) => {
             true,
           ),
           {
-            start: `Bundling ${input} with Tailwind.`,
-            success: `Bundled ${input} with Tailwind.`,
-            error: `Failed to bundle ${input} with Tailwind.`,
+            start: `Bundling with Tailwind: ${relativeInputStyled}`,
+            success: `Bundled with Tailwind: ${relativeInputStyled}`,
+            error: `Failed to bundle with Tailwind: ${relativeInputStyled}`,
           },
         );
       }
@@ -450,7 +456,8 @@ export const build = async (options: BuildArgs = {}) => {
     if (!stylesToBuild) {
       log();
       log(chalk.grey("CSS styles not found for this project."));
-      log("Checked: " + chalk.bold("src/**/*.css"));
+      log(chalk.gray(`Checked: ${chalk.bold(styles)}`));
+      log();
     }
   }
 
@@ -466,7 +473,11 @@ export const build = async (options: BuildArgs = {}) => {
     await buildBinaries();
   }
 
-  bannerLog("Running post-build setup.");
+  if (dev) {
+    return;
+  }
+
+  // bannerLog("Running post-build setup.");
 
   if (!runtimeOnly) {
     await showProgress(
@@ -479,8 +490,7 @@ export const build = async (options: BuildArgs = {}) => {
     );
   }
 
-  log();
-  log("Build complete.", ["green"]);
+  log("Build complete.", ["green"], { preLines: 1 });
 };
 
 export const buildCommand = async (input?: string, options?: BuildArgs) => {

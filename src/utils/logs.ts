@@ -9,7 +9,7 @@ export const bannerLog = (msg: string) => {
     ),
     [],
     {
-      preLines: 1,
+      preLines: 0,
       postLines: 1,
     }
   );

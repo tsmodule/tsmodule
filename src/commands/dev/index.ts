@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { relative, resolve } from "path";
 import { existsSync } from "fs";
 import { lstat } from "fs/promises";
@@ -19,12 +20,11 @@ const clearTerminal = () => {
 };
 
 const showTimestamp = (files: string) => {
-  log(
-    "\n",
-    chalk.gray(`Built ${chalk.bold(files)}.`),
-    "\n",
-    chalk.blue(new Date().toLocaleString())
-  );
+  console.log();
+  console.group();
+  console.log(chalk.blue(`Built ${chalk.bold(files)}.`));
+  console.log(chalk.blue(new Date().toLocaleString()));
+  console.groupEnd();
 };
 
 export type DevArgs = {
@@ -82,12 +82,18 @@ export const dev = async ({
           runtimeOnly: true,
           input: filePath,
           clear: false,
+          /**
+           * After the initial dev build, styles will only be bundled if a
+           * single CSS file changes.
+           */
+          styles: null,
         });
       } catch (e) {
         log("ERROR:", e);
       }
       const time = Date.now() - preTime;
 
+      console.log();
       ora(
         {
           text: chalk.blueBright(
