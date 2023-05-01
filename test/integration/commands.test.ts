@@ -108,7 +108,7 @@ test.serial("[dev] should watch for file changes", async (t) => {
   await Promise.allSettled([
     dev(shell),
     (async () => {
-      await sleep(5000);
+      await sleep();
       writeTestFile(
         defaultTest,
         "src/update.ts",
@@ -318,8 +318,6 @@ test.serial("[build -b] should bundle output", async (t) => {
     resolve(defaultTestDir, "src/bundle-b.ts"),
     "export const b = 42;"
   );
-
-  await sleep(5000);
 
   await t.notThrowsAsync(
     async () => await shell.run("yarn tsmodule build -b"),
