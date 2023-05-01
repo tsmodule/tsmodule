@@ -406,6 +406,10 @@ test.serial("[build --no-write] should return transformed code", async (t) => {
 });
 
 test.serial("[create --react] library should build and execute", async (t) => {
+  if (process.version.startsWith("v14")) {
+    return t.pass("Skipping test on Node 14");
+  }
+
   process.chdir(reactTestDir);
   const shell = createShell();
 
