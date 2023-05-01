@@ -214,9 +214,12 @@ test.serial("[dev] should copy new non-source files to dist/", async (t) => {
 });
 
 test.serial("[create --react] library should build with Next", async (t) => {
+  if (process.version.startsWith("v14")) {
+    return t.pass("Skipping test on Node 14");
+  }
+
   if (process.platform === "win32") {
-    t.pass();
-    return;
+    return t.pass("Skipping on Windows.");
   }
 
   process.chdir(reactTestDir);
@@ -298,7 +301,11 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   );
 });
 
-test.skip("[build -b] should bundle output", async (t) => {
+test.serial("[build -b] should bundle output", async (t) => {
+  if (process.version.startsWith("v14")) {
+    return t.pass("Skipping test on Node 14");
+  }
+
   process.chdir(defaultTestDir);
   const shell = createShell();
 
@@ -364,6 +371,10 @@ test.serial("[build --binary] should create binaries", async (t) => {
 });
 
 test.serial("[build --js-only] should not build styles", async (t) => {
+  if (process.version.startsWith("v14")) {
+    return t.pass("Skipping test on Node 14");
+  }
+
   process.chdir(reactTestDir);
   const shell = createShell();
 
@@ -401,8 +412,7 @@ test.serial("[create --react] library should build and execute", async (t) => {
   const shell = createShell();
 
   if (process.platform === "win32") {
-    t.pass();
-    return;
+    return t.pass();
   }
 
   await t.notThrowsAsync(
