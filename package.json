@@ -2,7 +2,7 @@
   "name": "@tsmodule/tsmodule",
   "platform": "node",
   "type": "module",
-  "version": "42.6.0",
+  "version": "43.0.0",
   "repository": "tsmodule/tsmodule",
   "description": "Create standardized TypeScript ESM packages for Node or browser.",
   "license": "MIT",
@@ -26,7 +26,7 @@
   "scripts": {
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "yarn bootload && npm link -f --no-save",
+    "prebuild": "yarn bootload && npm link -f",
     "build": "node dist/bin.js build --standalone \"src/{index.ts,bin.ts,loader/index.ts}\"",
     "dev": "node dist/bin.js dev",
     "test-bundle": "yarn build && ava",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "esbuild": "^0.17.8",
-    "pkg": "^5.8.0",
+    "pkg": "^5.8.1",
     "typescript": "^4.9.3"
   },
   "devDependencies": {

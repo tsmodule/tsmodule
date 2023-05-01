@@ -72,6 +72,11 @@ export const dev = async ({
 
       const preTime = Date.now();
       try {
+        const isCss = filePath.endsWith(".css");
+        if (isCss) {
+
+        }
+
         await build({
           dev: true,
           runtimeOnly: true,

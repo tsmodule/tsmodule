@@ -1,11 +1,14 @@
+/* eslint-disable no-console */
 import { BuildOptions, Format, Loader } from "esbuild";
 import { existsSync } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, resolve } from "path";
 import { createShell } from "universal-shell";
 
-import { getEmittedFile } from "../../../utils/cwd";
+import { getDistFile } from "../../../utils/dirs";
 import { DEVELOPMENT_MODE } from "../../../utils/resolve";
+import chalk from "chalk";
+import { getPackageJson } from "../../../utils/packageJson";
 
 export const forceModuleTypeInDist = async (mode: Format = "esm") => {
   let distPkgJson;
@@ -47,7 +50,7 @@ export const overwriteEntryPoint = (
   loader?: Loader
 ) => {
   file = resolve(file);
-  const emittedFile = getEmittedFile(file);
+  const emittedFile = getDistFile(file);
 
   const config: BuildOptions = {
     stdin: {
@@ -70,33 +73,53 @@ export const overwriteEntryPoint = (
  * Add an import for standard styles.
  */
 export const buildCssEntryPoint = async (
-  inputStyles: string,
-  outputStyles: string,
-  dev: boolean,
+  inputFile: string,
+  outputFile: string,
+  minify: boolean,
   // noStandardStyles: boolean,
 ) => {
+  const pkgJson = await getPackageJson();
+  const { dependencies = {}, devDependencies } = pkgJson;
 
-  inputStyles = resolve(inputStyles);
-  outputStyles = resolve(outputStyles);
+  /**
+   * Build project styles.
+   */
+  const tailwindcss =
+    dependencies?.tailwindcss ?? devDependencies?.tailwindcss;
 
-  const twCmd = "yarn tailwindcss";
-  const minify = dev ? "" : "--minify";
-  const postcss = "--postcss postcss.config.cjs";
+  if (!tailwindcss) {
+    return;
+  }
 
-  const cmd = [twCmd, minify, postcss, `-i ${inputStyles}`, `-o ${outputStyles}`];
+  inputFile = resolve(inputFile);
+  outputFile = resolve(outputFile);
 
-  if (existsSync(resolve(process.cwd(), "tailwind.config.cjs"))) {
+  const cmd = [
+    "yarn tailwindcss",
+    "--postcss postcss.config.cjs",
+    `-i ${inputFile}`,
+    `-o ${outputFile}`
+  ];
+
+  if (!minify) {
+    cmd.push("--minify");
+  }
+
+  if (existsSync(resolve("tailwind.config.cjs"))) {
     cmd.push("--config tailwind.config.cjs");
   }
 
   const shell = createShell({
     log: DEVELOPMENT_MODE,
-    stdio: "ignore",
+    stdio: DEVELOPMENT_MODE ? "inherit" : "ignore",
   });
 
   const cmdString = cmd.join(" ");
   const { code, stdout, stderr } = await shell.run(cmdString);
   if (code !== 0) {
-    throw new Error(`Building CSS bundle exited with code ${code} for ${inputStyles}.\n\rTried running: ${cmdString}.\n\rError: ${stdout + stderr}`);
+    console.error(chalk.red(chalk.bold(cmdString)));
+    console.log(stdout);
+    console.error(chalk.red(stderr));
+    throw new Error("Failed to build Tailwind styles");
   }
 };
