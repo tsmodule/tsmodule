@@ -16,7 +16,7 @@ import { getPackageJson } from "../../utils/packageJson";
 import { normalizeImportSpecifiers } from "../normalize";
 import { readStdin } from "../../utils/stdin";
 import { showProgress } from "../../utils/showProgress";
-import { cssExternsPlugin, relativeExternsPlugin } from "../../specification/externs";
+import { relativeExternsPlugin } from "../../specification/externs";
 import { ESM_REQUIRE_SHIM, removeEsmShim } from "../../specification/removeEsmShim";
 import { buildCssEntryPoint, forceModuleTypeInDist, overwriteEntryPoint } from "./lib/buildUtils";
 import { bannerLog } from "../../utils/logs";
@@ -140,7 +140,7 @@ export const build = async (options: BuildArgs = {}) => {
 
   const defaultExterns = ["esbuild", "*.png"];
 
-  const plugins: Plugin[] = [cssExternsPlugin];
+  const plugins: Plugin[] = [];
   if (!standalone) {
     plugins.push(relativeExternsPlugin);
   }
