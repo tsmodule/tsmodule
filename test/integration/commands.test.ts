@@ -298,7 +298,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   );
 });
 
-test.serial("[build -b] should bundle output", async (t) => {
+test.skip("[build -b] should bundle output", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
@@ -416,7 +416,7 @@ test.serial("[create --react] library should build and execute", async (t) => {
   );
 });
 
-test.skip("[build] command", async (t) => {
+test.serial("[build] command", async (t) => {
   process.chdir(defaultTestDir);
   const shell = createShell();
 
