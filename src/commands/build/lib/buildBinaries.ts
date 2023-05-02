@@ -12,5 +12,5 @@ export const buildBinaries = async () => {
     input: "src/bin.ts",
   });
 
-  await shell.run("yarn pkg --out-path dist dist/bin.js");
+  await shell.run("pnpm exec pkg --out-path dist dist/bin.js");
 };

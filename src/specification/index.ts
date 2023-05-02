@@ -66,9 +66,9 @@ const defaultSettings: TsModuleProjectConfig = {
     "scripts": {
       "dev": "tsmodule dev",
       "build": "tsmodule build",
-      "pretest": "yarn build",
+      "pretest": "pnpm build",
       "test": "ava",
-      "prepublishOnly": "yarn test",
+      "prepublishOnly": "pnpm test",
       "lint": "eslint src --fix",
     },
   },
@@ -152,9 +152,9 @@ export const specification: TsmoduleSpecification = {
         "build": "next build",
         "start": "next start",
         "lint": "next lint --fix",
-        "pretest": "yarn build",
+        "pretest": "pnpm build",
         "test": "ava",
-        "prepublishOnly": "yarn test && yarn export"
+        "prepublishOnly": "pnpm test && pnpm export"
       },
       /**
        * Lock React types to v17.

@@ -95,7 +95,7 @@ export const buildCssEntryPoint = async (
   outputFile = resolve(outputFile);
 
   const cmd = [
-    "yarn tailwindcss",
+    "pnpm tailwindcss",
     "--postcss postcss.config.cjs",
     `-i ${inputFile}`,
     `-o ${outputFile}`

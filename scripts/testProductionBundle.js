@@ -39,5 +39,5 @@ export const testProductionBundle = async () => {
   /**
    * Run test.
    */
-  await shell.run("yarn test");
+  await shell.run("pnpm test");
 };

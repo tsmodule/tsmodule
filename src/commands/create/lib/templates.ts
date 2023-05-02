@@ -111,11 +111,11 @@ export const applyDependenciesSpec = async ({
   const devDepsToInstall = specification[template].devDependencies;
 
   if (depsToInstall.length) {
-    await shell.run(`yarn add ${depsToInstall.join(" ")}`);
+    await shell.run(`pnpm add ${depsToInstall.join(" ")}`);
   }
 
   if (devDepsToInstall.length) {
-    await shell.run(`yarn add -D ${devDepsToInstall.join(" ")}`);
+    await shell.run(`pnpm add -D ${devDepsToInstall.join(" ")}`);
   }
 };
 
