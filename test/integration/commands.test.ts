@@ -45,23 +45,7 @@ test.before("[create] should create all template types", async () => {
   ]) {
     process.chdir(dirToLink);
     const subShell = createShell();
-
-    const linkedPackageJsonPath = resolve(dirToLink, "package.json");
-    const linkedPackageJsonFile = readTextFile(linkedPackageJsonPath);
-    const linkedPackageJson = JSON.parse(linkedPackageJsonFile);
-
-    const { devDependencies = {} } = linkedPackageJson;
-    devDependencies["@tsmodule/tsmodule"] = INSTALL_ROOT;
-    linkedPackageJson.devDependencies = devDependencies;
-
-    writeFileSync(
-      linkedPackageJsonPath,
-      JSON.stringify(linkedPackageJson, null, 2),
-    );
-
-    await subShell.run("pnpm install --force");
-
-    // await subShell.run("npm link -f @tsmodule/tsmodule");
+    await subShell.run("pnpm link --global @tsmodule/tsmodule");
   }
 });
 

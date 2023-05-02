@@ -26,7 +26,7 @@
   "scripts": {
     "prebootload": "node scripts/bootstrap.js",
     "bootload": "node --no-warnings --loader ./dist/loader/index.js src/index.ts build -r",
-    "prebuild": "pnpm bootload && npm link -f",
+    "prebuild": "pnpm bootload && pnpm link --global",
     "build": "node dist/bin.js build --standalone \"src/{index.ts,bin.ts,loader/index.ts}\"",
     "dev": "node dist/bin.js dev",
     "test-bundle": "pnpm build && ava",
