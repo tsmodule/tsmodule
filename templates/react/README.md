@@ -6,27 +6,27 @@ developed and previewed with Next.js.
 ### Develop
 
 To start the Next server and develop your components, use `next dev` or the
-`yarn dev` script:
+`pnpm dev` script:
 
 ```bash
-yarn dev
+pnpm dev
 # calls `next dev`
 ```
 
 ### Export and publish
 
-To export your component library, use `tsmodule build` or the `yarn export`
+To export your component library, use `tsmodule build` or the `pnpm export`
 script:
 
 ```bash
-yarn export
+pnpm export
 # calls `tsmodule build`
 ```
 
 You can then publish to NPM:
 
 ```bash
-yarn publish
+pnpm publish
 ```
 
 #### Importing from your component library

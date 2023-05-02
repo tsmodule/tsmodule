@@ -22,7 +22,7 @@ test.before("[create] should create all template types", async () => {
   const shell = createShell();
 
   /**
-   * Install dependencies for tests serially to prevent yarn cache errors.
+   * Install dependencies for tests serially to prevent pnpm cache errors.
    */
   if (!process.env.SKIP_TEST_SETUP) {
     await shell.run(`tsmodule create --react ${reactTest}`);
@@ -45,29 +45,13 @@ test.before("[create] should create all template types", async () => {
   ]) {
     process.chdir(dirToLink);
     const subShell = createShell();
-
-    const linkedPackageJsonPath = resolve(dirToLink, "package.json");
-    const linkedPackageJsonFile = readTextFile(linkedPackageJsonPath);
-    const linkedPackageJson = JSON.parse(linkedPackageJsonFile);
-
-    const { devDependencies = {} } = linkedPackageJson;
-    devDependencies["@tsmodule/tsmodule"] = INSTALL_ROOT;
-    linkedPackageJson.devDependencies = devDependencies;
-
-    writeFileSync(
-      linkedPackageJsonPath,
-      JSON.stringify(linkedPackageJson, null, 2),
-    );
-
-    await subShell.run("yarn install --force");
-
-    // await subShell.run("npm link -f @tsmodule/tsmodule");
+    await subShell.run("pnpm link --global @tsmodule/tsmodule");
   }
 });
 
 const dev = async (shell: Shell) => {
   try {
-    await shell.run(`yarn tsmodule dev ${defaultTest}`);
+    await shell.run(`pnpm tsmodule dev ${defaultTest}`);
   } catch (e) {
     console.log({ e });
   }
@@ -225,7 +209,7 @@ test.serial("[create --react] library should build with Next", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
 
-  await shell.run("yarn build");
+  await shell.run("pnpm build");
   t.pass();
 });
 
@@ -270,7 +254,7 @@ test.serial("[build --stdin] should build source provided via stdin", async (t) 
   if (process.platform !== "win32") {
     await t.notThrowsAsync(
       async () => {
-        await shell.run("echo \"console.log(42)\" | yarn tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
+        await shell.run("echo \"console.log(42)\" | pnpm tsmodule build --stdin --stdin-file src/stdin-pipe.ts");
       }
     );
 
@@ -286,7 +270,7 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   const shell = createShell();
 
   createTestAssets(defaultTest);
-  await shell.run("yarn tsmodule build -r");
+  await shell.run("pnpm tsmodule build -r");
 
   await sleep();
 
@@ -320,7 +304,7 @@ test.serial("[build -b] should bundle output", async (t) => {
   );
 
   await t.notThrowsAsync(
-    async () => await shell.run("yarn tsmodule build -b"),
+    async () => await shell.run("pnpm tsmodule build -b"),
     "should bundle non-React projects"
   );
 
@@ -332,7 +316,7 @@ test.serial("[build -b] should bundle output", async (t) => {
 
   process.chdir(reactTestDir);
   await t.notThrowsAsync(
-    async () => await shell.run("yarn tsmodule build -b"),
+    async () => await shell.run("pnpm tsmodule build -b"),
     "should bundle React projects"
   );
 
@@ -376,7 +360,7 @@ test.serial("[build --js-only] should not build styles", async (t) => {
   process.chdir(reactTestDir);
   const shell = createShell();
 
-  const { stdout } = await shell.run("yarn tsmodule build -b --js-only");
+  const { stdout } = await shell.run("pnpm tsmodule build -b --js-only");
 
   t.assert(
     !stdout.includes("Bundled all styles"),
@@ -418,7 +402,7 @@ test.serial("[create --react] library should build and execute", async (t) => {
   }
 
   await t.notThrowsAsync(
-    async () => await shell.run("yarn tsmodule build && node dist/index.js"),
+    async () => await shell.run("pnpm tsmodule build && node dist/index.js"),
     "should build and execute"
   );
 
@@ -434,7 +418,7 @@ test.serial("[build] command", async (t) => {
 
   await t.notThrowsAsync(
     async () => {
-      await shell.run("yarn tsmodule build");
+      await shell.run("pnpm tsmodule build");
       // await shell.run("node dist/index.js");
     },
     "should build and execute"

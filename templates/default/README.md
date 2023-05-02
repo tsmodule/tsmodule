@@ -6,27 +6,27 @@ default, it is assumed to be a Node program, but this can be adjusted via the
 
 ### Develop
 
-Rebuild on changes with `tsmodule dev` or the `yarn dev` script:
+Rebuild on changes with `tsmodule dev` or the `pnpm dev` script:
 
 ```bash
-yarn dev
+pnpm dev
 # calls `tsmodule dev`
 ```
 
 ### Export and publish
 
-To export your component library, use `tsmodule build` or the `yarn build`
+To export your component library, use `tsmodule build` or the `pnpm build`
 script:
 
 ```bash
-yarn build
+pnpm build
 # calls `tsmodule build`
 ```
 
 You can then publish to NPM:
 
 ```bash
-yarn publish
+pnpm publish
 ```
 
 #### Importing from your library

@@ -37,7 +37,7 @@ Create standardized TypeScript ESM packages for Node or browser. Includes
 ### Requirements (global)
 
 - Node v14+ (for ESM support)
-- Yarn (for `resolutions` package.json field)
+- PNPM
 
 ### Existing projects
 
