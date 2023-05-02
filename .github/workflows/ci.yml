@@ -14,7 +14,8 @@ jobs:
       matrix:
         nodejs: [
           18, 
-          # 16, 
+          16,
+          14,
           # "lts/*"
         ]
         os: [
