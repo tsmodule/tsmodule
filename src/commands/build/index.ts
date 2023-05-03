@@ -124,7 +124,9 @@ export const build = async (options: BuildArgs = {}) => {
    */
   const pkgJson = await getPackageJson();
 
-  const define: CommonOptions["define"] = {};
+  const define: CommonOptions["define"] = {
+    "process.env.NODE_ENV": "process.env.NODE_ENV",
+  };
 
   /**
    * Without --raw-process-env, we will overwrite `process.env.NODE_ENV`.
