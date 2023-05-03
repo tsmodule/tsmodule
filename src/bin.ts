@@ -52,6 +52,7 @@ program
   .option("--stdin [source]", "Read from a string or stdin.")
   .option("--stdin-file [file]", "File path to mock for stdin.")
   .option("--no-write", "Return code from build() rather than write to disk.\nFor programmatic use alongside { stdin: ... }.")
+  .option("--raw-process-env", "Do not overwrite process.env in output bundles (default: false).")
   .action(
     programCatch(buildCommand)
   );

@@ -47,6 +47,8 @@ export interface BuildArgs extends CommonOptions {
   jsOnly?: boolean;
   /** Whether to skip writing files to disk. */
   noWrite?: boolean;
+  /** Whether to leave `process.env` in the output (default: false). */
+  rawProcessEnv?: boolean;
   /** tsconfig to use. */
   tsconfig?: string;
   /** Completed stdin stream to build from instead of a file. */
@@ -81,6 +83,7 @@ export const build = async (options: BuildArgs = {}) => {
     clear = true,
     jsOnly = false,
     noWrite = false,
+    rawProcessEnv = false,
     stdin = undefined,
     stdinFile = undefined,
     external = [],
@@ -121,6 +124,20 @@ export const build = async (options: BuildArgs = {}) => {
    */
   const pkgJson = await getPackageJson();
 
+  const define: CommonOptions["define"] = {};
+
+  /**
+   * Without --raw-process-env, we will overwrite `process.env.NODE_ENV`.
+   */
+  if (!rawProcessEnv) {
+    define["process.env.NODE_ENV"] =
+      dev
+        ? JSON.stringify("development")
+        : JSON.stringify("production");
+
+    DEBUG.log("Set process.env.NODE_ENV to", define["process.env.NODE_ENV"]);
+  }
+
   const commonOptions: CommonOptions = {
     treeShaking: bundle,
     target,
@@ -130,12 +147,7 @@ export const build = async (options: BuildArgs = {}) => {
     format,
     charset: "utf8",
     logLevel: dev ? "warning" : "error",
-    define: {
-      "process.env.NODE_ENV":
-        dev
-          ? JSON.stringify("development")
-          : JSON.stringify("production"),
-    },
+    define,
   };
 
   const defaultExterns = ["esbuild", "*.png"];
