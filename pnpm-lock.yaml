@@ -67,8 +67,8 @@ devDependencies:
     specifier: ^15.10.2
     version: 15.10.2
   universal-shell:
-    specifier: ^35.0.11
-    version: 35.0.11
+    specifier: ^35.2.0
+    version: 35.2.0
 
 packages:
 
@@ -4762,8 +4762,8 @@ packages:
       crypto-random-string: 4.0.0
     dev: true
 
-  /universal-shell@35.0.11:
-    resolution: {integrity: sha512-lu3lYwDN9xLzk3GjTYwYID4ulFA1w8MgJGIbcv7q+sKBugLvdbufXF1H/CTVQPzpFImTnF0uTPucf7XHV4uF9g==}
+  /universal-shell@35.2.0:
+    resolution: {integrity: sha512-LfwV+O9db3vP5QSoK4QbOpNCb+xgjWttLJVUUlDyhT6xU0lkKgO5vdLG0xMqH07LkIaTG0LHJfLpDDXSqVS7pQ==}
     dev: true
 
   /universal-user-agent@6.0.0:

@@ -59,7 +59,7 @@
     "ora": "^6.3.0",
     "path": "^0.12.7",
     "release-it": "^15.10.2",
-    "universal-shell": "^35.0.11"
+    "universal-shell": "^35.2.0"
   },
   "release-it": {
     "git": {
