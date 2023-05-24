@@ -6,7 +6,7 @@ const shell = createShell();
 /**
  * Build the productions bundle.
  */
-await shell.run("pnpm build -b");
+await shell.run("pnpm build");
 
 /**
  * Run production bundle tests.
