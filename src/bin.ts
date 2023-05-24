@@ -21,9 +21,9 @@ program
   .name(chalk.white(chalk.bold("tsmodule")))
   .usage(chalk.white(chalk.bold("<file | command> [options]")))
   .description(chalk.blueBright(
-    "A tool for building TypeScript modules.\n\n" +
-    `Run TS directly: ${chalk.bold("tsmodule src/index.ts")} \n` +
-    `Use a command: ${chalk.bold("tsmodule build")}`
+    "A toolkit for working with TypeScript ESM packages.\n\n" +
+    `Run TS directly:\n${chalk.bold("tsmodule src/index.ts")} \n\n` +
+    `Use a command:\n${chalk.bold("tsmodule build")}`
   ))
   .version(String(version));
 
@@ -83,11 +83,17 @@ program
   );
 
 program
-  .command("execute", { isDefault: true })
-  .argument("<file>", "The file to execute.")
+  .command("execute", { isDefault: true, hidden: true })
+  .argument("[file]", "The file to execute.")
   .option("--d, --dev", "Enable development mode")
   .description("Run the given TS program, analogous to `node <file>`.")
-  .action(programCatch(execute));
+  .action(programCatch(async (file) => {
+    if (!file) {
+      return program.help();
+    }
+
+    return await execute();
+  }));
 
 program.parse(process.argv);
 

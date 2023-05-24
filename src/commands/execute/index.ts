@@ -18,7 +18,7 @@ export const execute = async () => {
     "--no-warnings",
     "--loader",
     pathToFileURL(loaderPath).href,
-    ...process.argv.slice(2)
+    process.argv.slice(2),
   ];
 
   const shell = createShell({
