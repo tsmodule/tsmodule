@@ -9,7 +9,7 @@ export const EMIT_DTS_OVERRIDES = {
   noEmit: false,
 };
 
-export const emitTsDeclarations = async () => {
+export const emitTsDeclarations = async (tsconfig: string) => {
   const DEBUG = createDebugLogger(emitTsDeclarations);
   const shell = createShell({
     log: false,
@@ -22,7 +22,7 @@ export const emitTsDeclarations = async () => {
       .map(([key, value]) => `--${key} ${value}`)
       .join(" ");
 
-  const cmd = `pnpm tsc -p tsconfig.json ${argString}`;
+  const cmd = `pnpm tsc -p ${tsconfig} ${argString}`;
   DEBUG.log(`Calling: ${cmd}`);
   await shell.run(cmd);
 };

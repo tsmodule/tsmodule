@@ -495,7 +495,7 @@ export const build = async (options: BuildArgs = {}) => {
 
   if (!runtimeOnly) {
     await showProgress(
-      async () => await emitTsDeclarations(),
+      async () => await emitTsDeclarations(tsconfig),
       {
         start: "Generating type declarations.",
         success: `Generated declarations for ${allFiles.length} files.`,
