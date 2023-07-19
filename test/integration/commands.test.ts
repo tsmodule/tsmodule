@@ -285,6 +285,51 @@ test.serial("[build -r] should copy non-source files to dist/", async (t) => {
   );
 });
 
+test.serial.only("[build --tsconfig <module>] should use alternative tsconfig", async (t) => {
+  process.chdir(defaultTestDir);
+  const shell = createShell();
+
+  const tsconfig = JSON.parse(
+    readTextFile(resolve(defaultTestDir, "tsconfig.tests.json")).replaceAll(/^\s+\#\/\/.*$/g, '')
+  )
+
+  delete tsconfig['compilerOptions']['noEmit']
+  tsconfig['compilerOptions']['emitDeclarationOnly'] = true
+
+  writeFileSync(
+    resolve(defaultTestDir, "tsconfig.example.json"),
+    JSON.stringify(tsconfig, undefined, 2)
+  )
+
+  writeFileSync(
+    resolve(defaultTestDir, "src/bundle-a.ts"),
+    "export const b = 42;"
+  );
+
+  writeFileSync(
+    resolve(defaultTestDir, "test/other-file.ts"),
+    "export const b = 42;"
+  );
+
+  await t.notThrowsAsync(
+    async () => {
+      await shell.run("pnpm tsmodule build --tsconfig tsconfig.example.json");
+    },
+    "should build and execute"
+  );
+  await sleep()
+
+  // Since `tsconfig.tests.json` specifies "wrong" root, we expect to see `src`  and `test` dirs  with types
+  t.assert(
+    existsSync(resolve(defaultTestDir, "dist/src")),
+    "dist/src should exist when using `tsconfig.tests.json`"
+  )
+  t.assert(
+    existsSync(resolve(defaultTestDir, "dist/test")),
+    "dist/test should exist when using `tsconfig.tests.json`"
+  )
+});
+
 test.serial("[build -b] should bundle output", async (t) => {
   if (process.version.startsWith("v14")) {
     return t.pass("Skipping test on Node 14");

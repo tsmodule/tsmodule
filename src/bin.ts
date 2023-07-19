@@ -41,7 +41,7 @@ program
   .option("-t, --target <target>", "ECMAScript featureset to target (default: ESNext).")
   .option("-f, --format <format>", "Output format (default: ESM).")
   .option("-b, --bundle", "Bundle external dependencies into entrypoints.")
-  .option("-t, --tsconfig", "Specify a custom tsconfig.json file.", "tsconfig.json")
+  .option("-t, --tsconfig <file>", "Specify a custom tsconfig.json file.", "tsconfig.json")
   .option("-e, --external <external...>", "External dependencies to exclude from bundling.")
   .option("--binary", "Build binary executables from src/bin.ts.")
   .option("--standalone", "Bundle a standalone entry-points without any import statements (disables splitting).")
